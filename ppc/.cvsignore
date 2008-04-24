@@ -1,0 +1,13 @@
+*%
+.applTop
+Makefile.Dirs
+config
+bin
+data
+db
+dbd
+include
+javalib
+*.dat
+*.log
+Distfile

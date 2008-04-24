@@ -1,0 +1,353 @@
+\magnification=1200
+
+\baselineskip=\normalbaselineskip
+\voffset=2\normalbaselineskip
+\vsize=8.6truein
+\topskip=24truept
+\noindent
+\headline={\hfill \vbox{ \baselineskip=\normalbaselineskip
+\halign{#\hfil\cr
+David Koski\cr
+\cr
+\cr}}}
+
+%\input /u/dkoski/hw/verbatim.tex
+				% import verbatim mode
+
+%\input epsf			% allow pictures to be imported
+%\epsffile{foo.ps} 		% import the file
+%\def\epsfsize#1#2{.5#1}	% scaling
+
+
+\vskip 30truept
+
+\centerline {\bf COMMON LIBRARY}
+
+\beginsection 1. Overview
+
+% what does it do
+% high level design
+% other goals
+
+The main goal of the Common library is to provide routines for message passing.
+As a side effect, it also gives memory management, queue, and debugging
+functions.
+
+\beginsection 2. Design
+
+% more detailed design
+% description of processes, data structures, modules
+
+The common library normally uses three processes, or five if {\tt send\_debug()}
+is used.  One process is the initial process that calls {\tt main()}:  it's
+last step is to call {\tt control()}.  
+The other two standard processes are Reader and Writer.  These processes
+handle all of the inter-processor communication.  Their specifics are discussed
+below.
+
+If a call to {\tt send\_debug()} is made, two processes, DebugBuf and DebugSend
+are allocated and run.  This is transparent to the user, and it should not
+be a problem.
+
+The common library provides two data structures: {\tt command\_form} and
+{\tt queue}.  The {\tt command\_form} is used as an array of function
+pointers.  The {\tt queue} data structure is a simple integer queue.  This
+is used in many places to provide buffered I/O.
+
+The common library consists of 7 modules:
+\halign{\qquad\tt#\hfil&\qquad\vtop{\noindent\hsize=4.3in#\vskip3truept}\hfil\cr
+control& The control module defines the {\tt control()} function.  This simply
+	waits on the {\tt Writer\_to\_Control} channel for a message.  The
+	messages are dispatched according to the {\tt command} structure.
+	This module has one file, {\tt control.c}.\cr
+var& The var module consists of two files {\tt var.c} and {\tt var\_sr.c}.
+	{\tt var()} function handles all {\tt READ\_VAR} and {\tt SET\_VAR}
+	messages.  The {\tt read\_var()} and {\tt set\_var()} functions are
+	the standard methods for setting variables.\cr
+debug& The debug module is one file, {\tt debug.c}, and it provides one
+	function: {\tt send\_debug(char *fmt, ...)}.  This function allows
+	remote nodes to send debugging messages (like {\tt printf}) up to the
+	Sun for display.  This function uses a separate process and channel
+	to communicate with the Reader and Writer, so it is safe to call from
+	any function.  Additionally, it has internal locking, so concurrent
+	calls will not pose a problem.\cr
+queue& The queue module is made up of one file, {\tt queue.c}, and it
+	implements a simple integer queue.  The functions that are provided
+	are:  {\tt queue *q\_alloc()}, {\tt enqueue(q, e)}, {\tt int deq(q)},
+	{\tt int emptyq(q)}, and {\tt int fullq(q)}.  No checking is done for
+	overflow, the user of the routines must check if that is possible.
+	Also, no locking is done in the queue module, if concurrent access is
+	possible, it would be wise to place semaphores around the calls.\cr
+mem& This is a memory allocation module that has one file, {\tt mem.c}.  The
+	memory is allocated using a table showing which blocks are allocated.
+	This is needed because we have to be able to free pieces of memory if
+	they are in the heap (this heap, not the heap provided by libc) and
+	be able to control exactly where the memory is allocated from.  This
+	may not be the fastest way to do it (in fact, I can guarantee it is
+	not, but it is fairly simple and serves the purpose).  This module
+	provides three routines: {\tt mem\_init()}, {\tt mem\_alloc()}, and {\tt
+	mem\_free()}.  The memory to be allocated from is defined in the {\tt
+	commands.c} file using the {\tt \_MEMORY(size);} macro and defining the
+	pointer {\tt char *memory = (char *) address}.  Memory is always
+	allocated in MEM\_BLOCK\_SIZE chunks.\cr
+talk& This module defines the Reader and Writer processes and is one file, 
+	{\tt talk.c}.  The Reader process handles all incoming channels (local
+	and physical), and the Writer passes the messages along via a local or
+	physical channel.  The Reader process watches the list of channels
+	defined by {\tt chan\_list[]}.  If a message can be read (ie it fits
+	in the queue of read messages and the channel that it comes from has
+	not used up its fair share already), Reader reads the message and
+	places it in a message queue.  The Writer signals that it is ready to
+	for another message to write by writing to the {\tt Reader\_to\_Writer}
+	channel.  If a message is available, the Reader passes one along.
+	Messages are guaranteed to be sent along in the order that they
+	were read.  If the message is for a different node, the {\tt
+	router()} function is called to provide a channel to write to,
+	otherwise the message is sent on the {\tt Writer\_to\_Control}
+	channel to be handled locally.  The {\tt SEND(header, buffer,
+	channel)} macro is provided so that processes can send messages to
+	the Reader.\cr
+proc& This module is one file, {\tt proc.c} and it defines two routines and a
+	variable that are needed for downloading code on the fly (the
+	sequencer, for example).  The {\tt prog} variable should be placed in
+	the {\tt var\_ptr} structure in the {\tt commands.c} file, and the
+	{\tt kill\_proc()} and {\tt execute\_proc()} functions should be in
+	the {\tt commands} structure.\cr 
+}
+
+The following channels are used by the common library:
+\halign{\qquad\tt#\hfil&\qquad\vtop{\noindent\hsize=3.55in#\vskip3truept}\hfil\cr
+PROC\_to\_Control& This is a channel that is used by downloaded code
+	(microcode) to signal that it has completed (ie when it is killed or
+	voluntarily dies).  This is necessary because there is no way to
+	actually kill another process on the transputer.  The {\tt cntrl\_reg}
+	is set to {\tt DIE}, and it is up to the microcode to {\tt suicide()}.
+	A single integer is sent over this channel.  Note:  this is only used
+	if downloaded code is being used (by including {\tt \$(OPTIONAL\_OBJS)}
+	in the {\tt \$(OBJS)} line.\cr
+chan\_list[]& This is a {\tt NULL} terminated list of channels for the Reader
+	to watch for messages.  The hardware links, {\tt DEBUG\_CHAN}, {\tt
+	Control\_to\_Reader}, and {\tt Reader\_to\_Writer} (as the last channel)
+	must be in this list.  The standard protocol should be used over these
+	channels.\cr
+out\_chan[]& This is a list of 4 channels that the transputer can use to
+	communicate between transputers.  Normally these are set to {\tt
+	LINKxOUT}.\cr
+hw\_chan[]& This is a list of 4 channels that are external input channels.
+	This lets the Reader know which channels have non local messages.
+	These are normally set to {\tt LINKxIN}.\cr
+DEBUG\_CHAN& This is the connection between Debug and Talk, the standard
+	protocol is used to send debugging messages up to the sun.  The
+	DebugSend process has ownership of this channel.\cr
+Proc\_to\_Debug& {\tt send\_debug()} uses this channel to send a header and a
+	buffer pointer off to the DebugBuf process.\cr
+Buf\_to\_Send& DebugSend writes an integer 0 to this channel to signal that it
+	is ready for another message, and DebugBuf writes a header and buffer
+	back.\cr
+Reader\_to\_Writer& The Writer process writes an integer 0 to this link to
+	signal that it is ready for another message, and the Reader writes a
+	header and buffer back when one is available.\cr
+Writer\_to\_Control& This is the channel that the Writer sends all messages
+	that have the local transputer as the destination through.  This
+	channel obeys the standard protocol.\cr
+Control\_to\_Reader& This is a channel from the Control process back to the
+	Reader, and it follows the standard protocol.\cr
+}
+
+The global variables that the common library uses are listed in the {\bf
+Interfaces} section.
+
+\beginsection 3. Files
+
+% file descriptions
+\halign{\qquad\tt#\hfil&\qquad\vtop{\noindent#\vskip3truept}\hfil\cr
+Makefile& Makefile for the project.\cr
+README& A description of the directory and the files.\cr
+README.nodes& Notes on how the nodes are numbered.\cr
+common.h& The common library header file.\cr
+common.tex& The documentation for the routines in the common library.\cr
+control.c& Top level control function.\cr
+debug.c& Debugging routines.\cr
+mem.c& Memory allocation routines.\cr
+message.c& Some message handling stubs.\cr
+monitor.c& A channel monitor, not used, never tested.\cr
+proc.c& Support for downloaded code.\cr
+protocol.h& The message protocol header file.\cr
+queue.c& Queue manipulation routines.\cr
+shared.h& Shared memory (between the B016 and Sun) header file.\cr
+talk.c& Message passing processes, plus a router.\cr
+var.c& This module handles the set/read var commands.\cr
+var\_sr.c& This is the low level set/read command.\cr
+}
+
+\beginsection 4. Interfaces
+
+To use the common library, simply place {\tt include ../com.make} in
+your makefile and tack {\tt \$(COMMON\_OBJS) \$(OPTIONAL\_OBJS)} onto
+the end of your {\tt OBJS} line.
+The file {\tt commands.c} should be in each transputer directory.  It defines
+how the common library should act on messages.
+This file should include {\tt <conc.h>} and {\tt "common.h"}
+in that order.  These are the things that must be defined in {\tt
+commands.c}:
+
+\halign{\qquad\tt#\hfil&\qquad\vtop{\noindent\hsize=4in#\vskip3truept}\hfil\cr
+MEMORY&
+		This tells the memory management routines how much memory is
+		available.  This is just a macro which defines some variables,
+		and it wants the number of bytes as an argument.  An example
+		is {\tt MEMORY(3*1024*1024 + 512*1024);} to reserve 3.5
+		megabytes of memory.\cr
+command&
+		Is an array of type {\tt command\_form} which contains pointers
+		to functions.  These functions correspond to the protocol
+		commands, one function for each command.  If a command
+		is to be ignored you can use a {\tt NULL} function pointer
+		to have the controller dispose of the message.\cr
+num\_commands&
+		Tells the controller how many positions there are in the command
+		array.  This is normally 18 for all messages.\cr
+var\_ptr&
+		Is an array of integer pointers which correspond to the
+		protocol variables.\cr
+setv\_cmnds&
+		Is an array of functions pointers (type {\tt command\_form})
+		which match up with the variables in the {\tt var\_ptr} array.
+		These functions are called when a variable is being set.
+		These can all be set to {\tt set\_var}.\cr
+readv\_cmnds&
+		Is an array of functions pointers (see above) for actions to
+		take when reading a variable.  These can be set to 
+		{\tt read\_var}.\cr
+chan\_list&
+		Is an array of channels for the controller to watch.  Because
+		you will probably use dynamically allocated channels, you will
+		have to put {\tt NULL} placeholders in and fill it in at 
+		runtime.\cr
+}
+
+\vskip 12truept
+\noindent
+Refer to the {\tt commands.c} files currently in the transputer directories
+for good examples.
+
+\vskip 12truept
+\noindent{\tt main()} also has several things to do:
+
+{\obeylines\obeyspaces\tt
+        mem\_init();                            /* initialize memory */
+\vskip12truept 
+        Reader\_to\_Writer = ChanAlloc();        /* allocate the channels */
+        Control\_to\_Reader = ChanAlloc();
+        Writer\_to\_Control = ChanAlloc();
+\vskip12truept 
+        Preader = ProcAlloc(reader, 4096, 0);  /* allocate the processes */
+        Pwriter = ProcAlloc(writer, 4096, 0);
+\vskip12truept 
+        ProcRun(Preader);                      /* run the processes */
+        ProcRun(Pwriter);
+\vskip12truept 
+        control();                             /* start the library */
+}
+
+The final interface is the standard protocol (defined in {\tt protocol.h}).
+This protocol defines a message format for communicating between different
+transputers.  Each message consists of a 4 byte header, followed by 0 or more
+integers of data.
+
+The header consists of four 8 bit fields that give the destination node, the
+length of the message in integers (not including header), the message type,
+and an optional from node.  These fields can be set using the {\tt
+TO\_NODE(n)}, {\tt OF\_LENGTH(l)}, {\tt MESSAGE(m)}, and {\tt FROM\_NODE(n)}
+macros.  The values can be or'd together to produce a header.  The values can
+be extracted from the header with the {\tt NODE(h)}, {\tt LENGTH(h)}, {\tt
+MESSAGE(h)}, and {\tt FROM\_WHERE(h)} macros.
+
+These are the currently defined messages (illegal messages are ignored):
+
+\halign{\qquad\tt#\hfil&\qquad\vtop{\noindent\hsize=4in#\vskip3truept}\hfil\cr
+IMAGE\_DONE& This message is sent from the dspw's to the b016 when an image is
+	ready to be uploaded.  The dspw can send as many of these as it wants
+	(assuming it has the pictures ready, of course), and the b016 will
+	tell it to send a picture when it is ready.  This message has no
+	data.\cr
+BEGIN\_XMIT& This message has two formats and meanings.  The first is when the
+	b016 sends this message to a dspw.  The message means that the b016 is
+	ready for the dspw to upload a picture.  This message has one integer
+	argument, the block size.  All uploaded pieces of data must be a
+	multiple of the block size in length.  The second use of this message
+	is when the dspw is sending a piece of the picture to the b016.  The
+	message has data that is some multiple of the block size in length.\cr
+SET\_VAR& This message is used to set a variable on a remote transputer.  The
+	available variables are described with each transputer.  The message
+	arguments have two pieces:  the variable number (and optional offset),
+	and the data to set.  The variable number and offset are encoded into
+	a single integer: the offset (in integers) is in the upper 16 bits,
+	and the variable index is in the lower 16 bits.  This message is
+	usually handled by {\tt set\_var()} is {\tt var\_sr.c}, but if it
+	is not, the message may have a different format.\cr
+READ\_VAR& This message is a request to read a variable off of a remote
+	transputer.  This message has two required arguments:  the variable
+	to read (encoded in just like {\tt SET\_VAR} requires), and the
+	node to send the reply to.  This message also takes an optional
+	third argument: length.  The default length is one integer, but
+	if zero is given, a string is sent or the requested number of
+	integers.  The reply message is a {\tt VAR\_READ}.\cr
+DESBUG\_MSG& This is used to send a text message up to the Sun.  The data
+	with this message is just the string in transputer format (byte
+	swapped!).  These messages can be generated using {\tt send\_debug()}.
+	\cr
+ABORT\_MSG& Not used.  Aborting is done differently.\cr
+STOP\_MSG& Not used.  This is the same as abort, except it will save the
+	results so far.\cr
+START\_MSG& This message should be sent to the dspw's when picture taking
+	is about to start.  This message has no extra data.\cr
+PAUSE& Not used.  This would pause the data taking.\cr
+RESUME& Not used.  This would resume the data taking.\cr
+VAR\_READ& This message is the reply from {\tt READ\_VAR}.  There are two
+	fixed size fields:  variable number, and the node it is from.  The
+	requested data follows.\cr
+READ\_HK& The instrument controller responds to this message.  This is a
+	request to read the latest housekeeping data.  The instrument
+	controller responds by setting the {\tt hk\_data} variable on the b016,
+	which causes the {\tt hkserv} program to display the values.\cr
+SET\_VAR\_AKK& This message works just like {\tt SET\_VAR}, except that it
+	must send a {\tt AKK} or {\tt AKK\_FAIL} to inform the setter
+	(the Sun) that it succeeded or not.\cr
+AKK& This message works just like the {\tt DEBUG\_MSG}, plus it also
+	means that a {\tt SET\_VAR\_AKK} succeeded.\cr
+AKK\_FAIL& This message works just like the {\tt DEBUG\_MSG}, plus it also   
+	means that a {\tt SET\_VAR\_AKK} failed.\cr
+KILL\_PROC& This message tells the transputer to kill the currently running
+	downloaded procedure.  When the process has died (for more info, see
+	the {PROC\_to\_Control} entry above), the upper level (tcl) wants to
+	see ``Stopped.'' This message should be sent even if no process was
+	running.\cr
+EXECUTE\_PROC& This tells the transputer to start a new process that runs the
+	code that was downloaded into the {\tt prog[]} array.  The new process
+	is run at high priority with a stack of size {\tt P\_STACK}.\cr
+CHECK\_HK& This message is only recognized by the instrument controller, and
+	it takes no data.  The instrument controller will respond by sending
+	{\tt DEBUG\_MSG}'s up to the Sun saying either ``{*** %d VOLTAGES
+	OUT OF SPEC ***}'' or ``{All hardware-determined voltages are
+	within tolerance.}''\cr
+ERROR& Not used.  This is to send error messages.\cr
+}
+
+Note:  the format of these messages is not strictly enforced.  Some
+transputers (the instrument controller in particular) require a slightly
+different format.
+
+\beginsection 5. Troubleshooting
+
+Since this library is used on all of the transputers, it is believed to be
+thoroughly debugged.  Since this library provied the means to debug a remote
+transputer (ie message passing, debugging messages, and memory allocation),
+it it is not working there is a big problem.  The best way to track things
+down is to get the failure to occur on the b016 and then follow the steps
+outlined in the b016 troubleshooting section.
+
+\beginsection 6. Notes
+
+None.
+\end

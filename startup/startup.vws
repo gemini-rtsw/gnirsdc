@@ -1,0 +1,125 @@
+#
+# VxWorks startup script to load and execute system (iocCore) software.
+#
+# First, vxWorks startup issues:
+
+# Make delete key work for backspace
+#tyBackspaceSet 0177
+
+# cd to application install directory (beware automounter problems)
+cd "$(install)"
+pwd
+
+# The local file contains site-specific information
+# such as the default router and the vxWorks password file.
+
+< $(version)/bin/$(arch)/local
+
+#hostAdd ("icarus", "140.252.15.210")
+#hostAdd ("orcus", "140.252.15.231")
+#hostAdd ("kiwi", "140.252.23.212")
+
+# Load EPICS core and record stuff
+ld < $(epics)/base/bin/$(arch)/iocCore
+ld < $(epics)/base/bin/$(arch)/drvSup
+ld < $(epics)/base/bin/$(arch)/recSup
+ld < $(epics)/base/bin/$(arch)/devSup
+
+# If using state programs, load the sequencer
+# ld < $(epics)/base/bin/$(arch)/seq
+
+# Load any application records, device support or drivers here,
+# or code for subroutine records
+# ld < $(version)/bin/$(arch)/testsub.o
+
+# Gemini Data Handling System (DHS) client libraries.
+# (NOTE: Absolute path names here are not a good idea.
+# Bret is working on an improvement).
+#ld < /home/tvedt/DHS/imp1.3/rel/bin/$(arch)/libers.o
+#ld < /home/tvedt/DHS/imp1.3/rel/bin/$(arch)/libsds.o
+#ld < /home/tvedt/DHS/imp1.3/rel/bin/$(arch)/libimp.o
+#ld < /home/tvedt/DHS/dhs0.6/rel/bin/$(arch)/gen.o
+#ld < /home/tvedt/DHS/dhs0.6/rel/bin/$(arch)/libdhs.o
+#ld < /home/tvedt/DHS/dhs0.6/rel/bin/$(arch)/dhsClient.o
+
+# Load other Gemini libraries (SLALIB, TIMELIB, ASTLIB) here.
+
+
+# Load GNAAC libraries
+ld < $(epics)/extensions/bin/$(arch)/pvload
+ld < $(version)/nosource/cicsLib.o
+ld < $(version)/nosource/cicsLib2.o
+ld < $(version)/nosource/HlthChk.o
+ld < $(version)/nosource/HKVars.o
+ld < $(version)/bin/$(arch)/epCommon.o
+ld < $(version)/bin/$(arch)/naacGlobals.o
+ld < $(version)/bin/$(arch)/sysTasks.o
+ld < $(version)/bin/$(arch)/stateTasks.o
+ld < $(version)/bin/$(arch)/initTasks.o
+ld < $(version)/bin/$(arch)/sysCad.o
+ld < $(version)/bin/$(arch)/stateCad.o
+ld < $(version)/bin/$(arch)/arSetupChk.o
+ld < $(version)/bin/$(arch)/obsSetupChk.o
+ld < $(version)/bin/$(arch)/drRoiChk.o
+ld < $(version)/bin/$(arch)/noopCad.o
+ld < $(version)/bin/$(arch)/combCars.o
+ld < $(version)/bin/$(arch)/simCalc.o
+
+# Load sequences here
+# ld < $(version)/bin/$(arch)/testseq.o
+
+# Configure the Timestamp system, 1=Master IOC
+TSconfigure 1, 0, 0, 0, 0, 0
+
+# Load one or more ASCII databases here
+dbLoad "$(version)/data/$(dctsdr).dctsdr"
+dbLoadRecords "$(version)/data/naacTop.db"
+dbLoadRecords "$(version)/data/naacSadTop.db"
+
+# This turns off logging
+# iocLogDisable=1
+
+iocInit "$(version)/data/resource.def"
+
+# Initialise the DHS Library (NOTE: The user specified in "iam" must be the same
+# as the user running the DHS server)
+#iam ("tvedt")
+#sp (ImpMaster)
+
+# Load Initial Detector Controller parameters. "carVals.pv" sets the
+# "initC" CAR record to BUSY and "sadVals1.pv set the state to "INITIALIZING".
+pvload "$(version)/data/carVals.pv","top=naac:dc:,sadtop=naac:dc:sad:"
+pvload "$(version)/data/sadVals1.pv","top=naac:dc:,sadtop=naac:dc:sad:"
+pvload "$(version)/data/debug.pv","top=naac:dc:,sadtop=naac:dc:sad:"
+pvload "$(version)/data/initVals.pv","top=naac:dc:,sadtop=naac:dc:sad:"
+pvload "$(version)/data/testVals.pv","top=naac:dc:,sadtop=naac:dc:sad:"
+
+# Start sequences
+# seq &testseq
+
+# Initialize the CICS logging routines
+cicsInitLogging
+ 
+# Load and Initialize VxWorks Tasks
+initTasks
+
+# Finally, execute the "init" command and define the simulation mode.
+# "sadVals2.pv" sets the state to "RUNNING" and "init.pv" sets the
+# "initC" CAR record back to IDLE.
+pvload "$(version)/data/sadVals2.pv","top=naac:dc:,sadtop=naac:dc:sad:"
+pvload "$(version)/data/init.pv","top=naac:dc:,sadtop=naac:dc:sad:"
+
+# Connect to the DHS server
+#
+# NOTE: The following command will hang up the shell if the DHS server
+# does not respond correctly. To avoid this please restart the DHS server
+# before rebooting the IOC. The call to "memShow" fixes a memory problem
+# created by a bug in "dhsInit" or "dhsConnect" and must be made.
+#
+# NOTE: The following two commands need to be entered manually to avoid
+# bugs in the DHS library. Please type them in.
+#
+#dataInit ("gnaac",3,"kiwi","testServer")
+#memShow
+
+# End of startup.vws

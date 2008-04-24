@@ -1,0 +1,29 @@
+# VxWorks startup script to load and execute system (iocCore) software.
+# First, vxWorks startup issues:
+# cd to application install directory (beware automounter problems)
+cd "$(install)"
+pwd
+# The local file contains site-specific information
+< ./bin/$(arch)/local
+
+# time environment variables
+putenv("DAYLIGHT=XFALSE")
+putenv("TIMEZONE=-10")
+putenv("SERVER=10.2.2.57")
+
+hostAdd ("mko-dc-ctrl-niri","10.2.2.118")
+# this seems to help ...
+routeAdd ("10.2.4.56","10.2.2.1")
+routeAdd ("10.2.2.118","10.2.2.1")
+
+hostAdd ("mko-cc-niri","10.2.2.116")
+routeAdd ("10.2.2.116","10.2.2.1")
+
+hostAdd ("tcs","10.2.2.104")
+routeAdd ("10.2.2.104","10.2.2.1")
+
+
+
+cd "$(install)./bin/$(arch)"
+pwd
+shellPromptSet "minnie (MINIMAL)\nuse '< startup' to procede with boot : "

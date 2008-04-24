@@ -1,0 +1,119 @@
+This is TeX, C Version 3.14t3 (format=plain 91.6.26)  29 APR 1994 11:05
+**COMMON
+(COMMON.tex 1. Overview  2. Design  [1]
+Underfull \vbox (badness 10000) has occurred while \output is active
+\vbox(517.93536+4.0)x391.46176, glue set 30.2687
+.\glue(\topskip) 13.05556
+.\hbox(6.94444+124.44444)x387.51096
+..\glue(\tabskip) 0.0
+..\hbox(6.94444+124.44444)x56.74971, glue set 20.99982fil
+...\glue 20.00003
+...\tentt m
+...\tentt e
+...\tentt m
+...\glue 0.0 plus 1.0fil
+..\glue(\tabskip) 0.0
+..\hbox(6.94444+124.44444)x330.76125
+...\glue 20.00003
+...\vbox(6.94444+124.44444)x310.76122 []
+...\glue 0.0 plus 1.0fil
+..\glue(\tabskip) 0.0
+.\glue(\lineskip) 1.0
+.\hbox(6.94444+172.44444)x387.51096
+..\glue(\tabskip) 0.0
+..\hbox(6.94444+172.44444)x56.74971, glue set 15.74986fil
+...\glue 20.00003
+...\tentt t
+...\tentt a
+...\tentt l
+...\tentt k
+...etc.
+..\glue(\tabskip) 0.0
+..\hbox(6.94444+172.44444)x330.76125
+...\glue 20.00003
+...\vbox(6.94444+172.44444)x310.76122 []
+...\glue 0.0 plus 1.0fil
+..\glue(\tabskip) 0.0
+.\glue(\lineskip) 1.0
+.etc.
+
+ [2]
+3. Files  [3] 4. Interfaces  [4]
+Underfull \vbox (badness 10000) has occurred while \output is active
+\vbox(517.93536+4.0)x391.46176, glue set 5.6184
+.\glue(\topskip) 12.5
+.\hbox(7.5+16.44444)x390.6095
+..\glue(\tabskip) 0.0
+..\hbox(7.5+16.44444)x81.52948, glue set 5.24995fil
+...\glue 20.00003
+...\tentt r
+...\tentt e
+...\tentt a
+...\tentt d
+...etc.
+..\glue(\tabskip) 0.0
+..\hbox(7.5+16.44444)x309.08002
+...\glue 20.00003
+...\vbox(7.5+16.44444)x289.07999 []
+...\glue 0.0 plus 1.0fil
+..\glue(\tabskip) 0.0
+.\glue(\lineskip) 1.0
+.\hbox(6.94444+28.44444)x390.6095
+..\glue(\tabskip) 0.0
+..\hbox(6.94444+28.44444)x81.52948, glue set 15.74986fil
+...\glue 20.00003
+...\tentt c
+...\tentt h
+...\tentt a
+...\tentt n
+...etc.
+..\glue(\tabskip) 0.0
+..\hbox(6.94444+28.44444)x309.08002
+...\glue 20.00003
+...\vbox(6.94444+28.44444)x289.07999 []
+...\glue 0.0 plus 1.0fil
+..\glue(\tabskip) 0.0
+.\glue 10.0
+.etc.
+
+ [5]
+Underfull \vbox (badness 10000) has occurred while \output is active
+\vbox(517.93536+4.0)x390.6095
+.\glue(\topskip) 13.05556
+.\hbox(6.94444+88.44444)x390.6095
+..\glue(\tabskip) 0.0
+..\hbox(6.94444+88.44444)x81.52948, glue set 10.49991fil
+...\glue 20.00003
+...\tentt B
+...\tentt E
+...\tentt G
+...\tentt I
+...etc.
+..\glue(\tabskip) 0.0
+..\hbox(6.94444+88.44444)x309.08002
+...\glue 20.00003
+...\vbox(6.94444+88.44444)x289.07999 []
+...\glue 0.0 plus 1.0fil
+..\glue(\tabskip) 0.0
+.\glue(\lineskip) 1.0
+.\hbox(6.94444+88.44444)x390.6095
+..\glue(\tabskip) 0.0
+..\hbox(6.94444+88.44444)x81.52948, glue set 26.24977fil
+...\glue 20.00003
+...\tentt S
+...\tentt E
+...\tentt T
+...\kern 0.62996
+...etc.
+..\glue(\tabskip) 0.0
+..\hbox(6.94444+88.44444)x309.08002
+...\glue 20.00003
+...\vbox(6.94444+88.44444)x289.07999 []
+...\glue 0.0 plus 1.0fil
+..\glue(\tabskip) 0.0
+.\glue(\lineskip) 1.0
+.etc.
+
+ [6]
+5. Troubleshooting  6. Notes  [7] )
+Output written on COMMON.dvi (7 pages, 22788 bytes).

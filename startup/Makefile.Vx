@@ -1,0 +1,8 @@
+
+include Target.include
+include .applTop/config/CONFIG
+
+# The *.vws scripts will be edited and put in the bin/$(T_A) directory
+PROD    = $(patsubst ../%.vws, %, $(wildcard ../*.vws))
+
+include .applTop/config/RULES.Build

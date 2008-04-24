@@ -1,0 +1,19 @@
+
+include ../.applTop
+include $(APPLIC_TOP)/config/CONFIG
+
+# The *.vws scripts will be edited and put in the bin/$(T_A) directory
+PROD    = $(patsubst ../%.vws, %, $(wildcard ../*.vws))
+
+PROD	+= ../IMP_Startup.mko-dc-data-niri
+PROD	+= ../IMP_Startup.juliet
+PROD	+= ../calist
+
+include $(APPLIC_TOP)/config/RULES.Build
+
+../IMP_Startup.mko-dc-data-niri:
+
+../IMP_Startup.juliet:
+
+../calist:
+
