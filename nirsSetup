@@ -71,7 +71,8 @@ fi
 #
 
 applSetup -install ${NIRS_DCDIR}  -targets ${NIRS_TARGETS} -targets mv162 \
-	 -subdir_file Makefile.subdirs -I pv -I annex  -I src -I ascii -I dl -I capfast \
+	 -subdir_file Makefile.subdirs -P /home/gemvx/cristian/gnirsFinalTest/gnirs/DC \
+	 -I omega -I pv -I annex  -I src -I ascii -I dl -I capfast \
 	 -I dl -I dqSocket -I epicsCntrlSrc -I globals -I gnRpcSrc -I startup \
 	 -I tempCard -I utilSource \
 	-I config -depends ${NIRS_SLALIBDIR} -depends ${NIRS_TIMELIBDIR} \

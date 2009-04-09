@@ -1,6 +1,15 @@
 *%
-.applTop
 .epics
 .version
+Makefile.Dirs
 config
+bin
+data
+dbd
+include
+javalib
+*.dat
+makeLog
+Distfile
 epics
+config.par
