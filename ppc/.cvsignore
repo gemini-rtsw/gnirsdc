@@ -1,4 +1,5 @@
 *%
+.applTop
 Makefile.Dirs
 config
 bin
@@ -7,6 +8,7 @@ db
 dbd
 include
 javalib
+lib
 *.dat
-makeLog*
+*.log
 Distfile

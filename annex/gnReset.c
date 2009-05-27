@@ -51,7 +51,7 @@ int main (int argc, char *argv[])
   printf ("%d\n",argc);
   if (argc <=2)  
     {
-      printf(" usage:  gnReset {annex} {machine}       \n possible machines\n %s = reboot dc coadd\n\t%s = reboot dcepics\n\t%s = reboot dcboth\n%s = reboot waveFront sensor\n%s = reboot components controller\n\n", COADD,EPICS,BOTH,WFS,CC);
+      printf(" usage:  gnReset {annex} {machine}       \n possible machines\n\t %s = reboot dc coadd\n\t%s = reboot dcepics\n\t%s = reboot dcboth\n\t%s = reboot waveFront sensor\n\t%s = reboot components controller\n\n", COADD,EPICS,BOTH,WFS,CC);
       return(0); 
     }
   strcpy(machine,argv[2]);

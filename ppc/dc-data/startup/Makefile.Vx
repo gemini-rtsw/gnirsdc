@@ -5,15 +5,13 @@ include $(APPLIC_TOP)/config/CONFIG
 # The *.vws scripts will be edited and put in the bin/$(T_A) directory
 PROD    = $(patsubst ../%.vws, %, $(wildcard ../*.vws))
 
-PROD	+= ../IMP_Startup.mko-dc-data-niri
-PROD	+= ../IMP_Startup.juliet
+PROD	+= ../IMP_Startup.gnirsdc1
+PROD	+= ../IMP_Startup.ngnirsdc1
 PROD	+= ../calist
 
 include $(APPLIC_TOP)/config/RULES.Build
 
-../IMP_Startup.mko-dc-data-niri:
-
-../IMP_Startup.juliet:
+./IMP_Startup.gnirsdc1:
 
 ../calist:
 

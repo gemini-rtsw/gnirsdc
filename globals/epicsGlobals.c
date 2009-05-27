@@ -44,11 +44,13 @@ SEM_ID semTest = NULL;
 SEM_ID semInit = NULL;
 SEM_ID semSetWcs = NULL;
 SEM_ID semSetDhsInfo = NULL;
+SEM_ID semSetDhsConnect = NULL;
 SEM_ID semObserve = NULL;
 SEM_ID semPark = NULL;
 SEM_ID semReboot = NULL;
 SEM_ID semAbort = NULL;
 SEM_ID semStop = NULL;
+SEM_ID semDhsConnect = NULL;
 
 SEM_ID semInitWcs = NULL;
 

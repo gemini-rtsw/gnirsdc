@@ -165,7 +165,10 @@ int doObserve( int n1, int n2, int n3, int n4, int n5, int n6, int n7,
     
     /* initialize rpc for this process*/
     while(dqRpcInit(rpcServer)!= OK)
-	;
+      {
+	printf("waiting for rpc\n");
+	sleep (1,0);
+      }
     /* set monitors for variables coadder uses for signaling*/
     caMonitorT(dbTop,FRAMEREADY ".VAL",frameReady,NULL,NULL);
     caMonitorT(dbTop,DCAREADY ".VAL",dcaReady,NULL,NULL);

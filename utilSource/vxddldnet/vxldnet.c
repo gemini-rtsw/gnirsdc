@@ -286,6 +286,7 @@ char	*argv[];
      */
     if (makefn(argv[1], infobuf, LD_INFO_EXT)== ERROR)	/* Make complete filename */
         return ERROR;
+    printf("file = %s\n",infobuf);
     if ((info_fp = (STREAM) fopen(infobuf, "r")) == NULL)
     {
 	sprintf(tmp,"Unable to open network information file: %s\n", infobuf);

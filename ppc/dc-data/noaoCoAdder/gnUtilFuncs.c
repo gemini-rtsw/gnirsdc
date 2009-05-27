@@ -60,6 +60,8 @@ static struct {
 #include <sys/types.h>
 #include <sys/times.h>
 #include <semLib.h>
+#include <vxWorks.h>
+#include <taskLib.h>
 
 #include "gnDCADefs.h"
 #undef	MAIN
@@ -208,3 +210,5 @@ int dcaInqRegister(int Offset)
     return (Val);
 
 }
+
+

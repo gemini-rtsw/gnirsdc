@@ -90,6 +90,7 @@ int dqRpcGetClient(CLIENT **cl)
 	    *cl = clnt_create(dqServer, EPDQPROG, EPDQVERS, "tcp");
 	    if (*cl == (CLIENT *) NULL)
 	    {
+	      printf("error in clnt_create\n");
 		/* Couldn't establish connection with server.
 		 * Print error message and die.
 		 */
@@ -197,7 +198,9 @@ int dqObsSetupRPC( )
     {
       
 	/* Call the remote procedure on the server */
+      /*printf("call dqobssetuprpc_1\n"); */
 	result = dqobssetuprpc_1(&i, cl);
+	/*printf("returned\n"); */
 	if (result == (int *) NULL) 
        	{
 	    printf("obssetuprpc failed once\n");
@@ -538,3 +541,68 @@ int dqRebootRPC( )
      semGive(rpcSem);
     return retval;
 }
+
+/* connect/disconnect from dhs */
+int dqDhsConnectionRPC(int request)
+{
+
+     CLIENT *cl = NULL;
+    int *result, retval = OK;
+    int i = 0;
+
+    semTake (rpcSem,WAIT_FOREVER);
+
+    /* get RPC client handle & perform call */
+    if ((dqRpcGetClient(&cl) == ERROR) || (cl == (CLIENT *) NULL))
+
+    {
+
+
+        sprintf(tmp, "ERROR %s: unable to connect to RPC server %s\n",
+                "dqDhsConnection", dqServer);
+
+        cicsLogMessage(0,tmp);
+        DPRINT(1,tmp);
+        perror("dqDhsConnectionRpc");
+        retval = ERROR;
+    }
+    else
+    {
+
+   i=request;
+
+        /* Call the remote procedure on the server */
+        result = dqdhsconnectionrpc_1(&i, cl);
+        if (result == (int *) NULL)
+        {
+                 clnt_perror(cl, dqServer );
+            clnt_destroy(cl);
+            cl = NULL;
+                 retval =  ERROR;
+        }
+
+        /* Okay, we successfully called the remote procedure, handle resul
+t. */
+        else if (*result == 0)   /* server routine failed */
+        {
+            sprintf(tmp, "%s: sorry, %s couldn't handle your message\n",
+                    "dqdhsconnection", dqServer);
+            cicsLogMessage(0,tmp);
+        DPRINT(1,tmp);
+            retval = ERROR;
+        }
+        else  /* server routine successful */
+        {
+            sprintf(tmp, "%s: successful at running remote routine\n",
+                    "dqdhsconnection");
+            printf("%s",tmp);
+        }
+
+        clnt_destroy(cl);
+
+    }
+    semGive(rpcSem);
+
+    return retval;
+}
+

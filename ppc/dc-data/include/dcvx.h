@@ -57,7 +57,7 @@
  */
 #ifndef DCVX_H
 
-/* #include "imhutils.h"  */  /* for IRAF types */
+#include "imhutils.h"    /* for IRAF types */
 #include "saverCommon.h"
 #include "saveDefines.h"
 #define DHS_OK     0

@@ -16,6 +16,6 @@ endif
 .applTop : ../.applTop
 	$(CP) $< $@
 
-clean ::
-	$(RM) .applTop
+#clean ::
+#	$(RM) .applTop
 

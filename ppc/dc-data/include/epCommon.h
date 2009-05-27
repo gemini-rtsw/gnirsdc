@@ -124,7 +124,6 @@
 #define CLEAR_CARS      "data/clearCars.par"
 #define CLEAR_CADS      "data/clearCads.par"
 #define COL_HI 		"colHigh"
-#define COMMENT 	"comment"
 #define CUR_COL 	"curCol" /* pr 2-27 */
 #define CUR_MAX_COL 	"curMaxCol"
 #define CUR_MAX_ROW 	"curMaxRow"
@@ -205,6 +204,7 @@
 #define INST_ECHO_AO    "inst_EchoMe"
 #define INST_ECHO_AI    "instEchoMe"
 #define INT_TIME        "intTime"
+#define EXP_TIME        "integTime"
 #define IS1024          "is1024"
 #define IS128           "is128"
 #define IS256           "is256"
@@ -283,7 +283,6 @@
 #define TEST_CAD        "test"
 #define TEST_CAR        "testC"
 #define TEST_VALS_PAR   "data/testVals.par"
-#define TITLE           "title"
 
 #define UC_CODETYPE     "uCodeType"
 #define UC_DAVGDLY      "ucDAvgsDly"
@@ -402,9 +401,12 @@ enum SIM_MODE    {SIM_NONE, SIM_VSM, SIM_FAST, SIM_FULL};
  */
 #define DHS_PERM    0
 #define DHS_TEMP    1
-#define DHS_UINT32  32
-#define DHS_UINT16  16
-#define DHS_UINT8   8
+#define DHS_UINT32  4
+#define DHS_UINT16  1
+#define DHS_UINT8   2
+#define DHS_FLT64   3
+#define DHS_FLT32   32
+
 
 
 

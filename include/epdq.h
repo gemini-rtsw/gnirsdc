@@ -40,3 +40,8 @@ extern int *dqobsstoprpc_1();
 /* rpc to stop an observe*/
 #define DQREBOOTRPC ((u_long)6)
 extern int *dqrebootrpc_1();
+
+/* rpc to dhsconnection */
+#define DQDHSCONNECTIONRPC ((u_long)7)
+int *dqdhsconnectionrpc_1(int *argp,CLIENT *clnt);
+

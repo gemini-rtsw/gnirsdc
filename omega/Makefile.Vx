@@ -26,7 +26,7 @@ OBJS	=  $(strip $(patsubst ../%.c,    %.o, $(SRCS.c))             \
 # Standard macros for files which are to be built and installed.
 # PROD (products) and SCRIPTS are installed in INSTALL_BIN
 # By default, don't try to build 'sys'
-PROD	= $(notdir $(shell cd ..; pwd)).o
+PROD	= omega.o
 SCRIPTS	=
 
 # LIBNAME is installed in INSTALL_LIB

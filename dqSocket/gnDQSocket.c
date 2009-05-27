@@ -8,7 +8,7 @@ static struct {
 };
 
 
-/* #define DEBUG */
+#define DEBUG
 /*****************************************************************************
  * Copyright 1997 Association of Universities for Research in Astronomy, Inc. 
  * See the file COPYRIGHT for more details.
@@ -44,7 +44,10 @@ static struct {
 #include <cicsLib.h>
 int socketdebug;
 int sd = 0;
-int CalcWcs(int, int);
+extern int CalcWcs(int, int);
+extern long getWcsParams();
+extern void getDqBancomTime(char *);
+extern void getDqBancomDate(char *);
 STATUS getEpics (char* name, void *val,int count,void **tmp);
 STATUS putEpics (char* name, void *val,void **tmp);
 /*****************************************************************************
@@ -116,14 +119,15 @@ void gnDCASocketIntrfc()
 
 	/*connect*/
 	DPRINT( t1,"waiting for new connection\n");
-	sockAccept(sFd, &clientAddr, &clientFd);
+	if(sockAccept(sFd, &clientAddr, &clientFd)!= ERROR)
+	  {
 
-	DPRINT(t1,"starting task\n");
-	sprintf(name,"tDcaSocket%d",i++);
-	/*start server*/
-
-	tid = taskSpawn(name,60,VX_FP_TASK,10000,gnDCASocketIntrfc2,clientFd,0,0,0,0,0,0,0,0,0);
-
+	    DPRINT(t1,"starting task\n");
+	    sprintf(name,"tDcaSocket%d",i++);
+	    /*start server*/
+	    
+	    tid = taskSpawn(name,60,VX_FP_TASK,10000,gnDCASocketIntrfc2,clientFd,0,0,0,0,0,0,0,0,0);
+	  }
     }
 }
 #define NUM_HEADER (14+55+6) /*same as NUM_HEADER in ppc*/
@@ -180,7 +184,15 @@ int gnDCASocketIntrfc2(int clientFd,int a,int b,int c,int d,int e,int f,int g,in
 				switch (msg.op)	 
 				{
 					
+                                        /* update the wcs */
+					DPRINT(t1,"gnDQSocket.c getWcsParams \n\n\n\n\n");
+           				if (( msg.status = getWcsParams()) == OK) {
 					/*calculate	 wcs information*/
+					DPRINT(t1,"gnDQSocket.c WCS\n\n\n\n\n");
+					CalcWcs(0,msg.val.l);
+					DPRINT(t1,"calcwcs finished\n");
+                                        }
+					break;
 				  case CAREAD: 
 /* 					printf("op = %d,id = %d, name = %s, type = %d, LONG = %d, double = %d, string = %d\n",msg.op,msg.id,msg.name,msg.type,DCALONG,DCADOUBLE,DCASTRING); */
 					switch (msg.type)
@@ -226,6 +238,7 @@ int gnDCASocketIntrfc2(int clientFd,int a,int b,int c,int d,int e,int f,int g,in
 					DPRINT(t1,"gnDQSocket.c WCS\n\n\n\n\n");
 					CalcWcs(0,msg.val.l);
 					DPRINT(t1,"calcwcs finished\n");
+					printf("calcwcs finished in gnDQSocket.c line 235\n");
 					break;
 					/* reading an epics variable*/
 				  case DCAREAD:
@@ -234,8 +247,8 @@ int gnDCASocketIntrfc2(int clientFd,int a,int b,int c,int d,int e,int f,int g,in
 					  case DCALONG:
 						type = DBF_LONG; 
 						status = getDbInfo(msg.name,errMess,type,&msg.val.l); 
-						sprintf(buf,"read  %s = %d\n",msg.name,msg.val.l);
-						DPRINT(t1,buf);
+						/*sprintf(buf,"read  %s = %d\n",msg.name,msg.val.l); */
+						/*DPRINT(t1,buf); */
 						if(status != OK)
 							printf("error in dcaread %s %s %d\n",msg.name,
 								   errMess,msg.val.l);
@@ -244,8 +257,8 @@ int gnDCASocketIntrfc2(int clientFd,int a,int b,int c,int d,int e,int f,int g,in
 					  case DCADOUBLE:
 						type = DBF_DOUBLE; 
 						status = getDbInfo(msg.name, errMess,type,&msg.val.d); 
-						sprintf(buf,"read  %s = %f\n",msg.name,msg.val.d);
-						DPRINT(0,buf);
+						/*sprintf(buf,"read  %s = %f\n",msg.name,msg.val.d);
+						DPRINT(0,buf); */
 						if(status != OK)
 							printf("error in dcawrite %s %s %f\n",msg.name,
 								   errMess,msg.val.d);
@@ -254,8 +267,8 @@ int gnDCASocketIntrfc2(int clientFd,int a,int b,int c,int d,int e,int f,int g,in
 					  case DCASTRING:
 						type = DBF_STRING; 
 						status = getDbInfo(msg.name, errMess,type,msg.val.s); 
-						sprintf(buf,"read  %s = %s\n",msg.name,msg.val.s);
-						DPRINT(0,buf);
+						/*sprintf(buf,"read  %s = %s\n",msg.name,msg.val.s);
+						DPRINT(0,buf); */
 						if(status != OK)
 							printf("error in dcawrite %s %s %s\n",msg.name,
 								   errMess,msg.val.s);

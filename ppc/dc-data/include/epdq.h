@@ -13,6 +13,15 @@
 #include <rpc/types.h>
 #endif
 
+typedef union dqargument {
+                int dqobserverpc_1_arg;
+                int dqobssetuprpc_1_arg;
+                int dqobsstatusrpc_1_arg;
+                int dqobsabortrpc_1_arg;
+                int dqobsstoprpc_1_arg;
+                int dqrebootrpc_1_arg;
+                int dqdhsconnectionrpc_1_arg;
+        } dqargument;
 
 #define EPDQPROG ((u_long)99)
 #define EPDQVERS ((u_long)1)
@@ -40,3 +49,8 @@ extern int *dqobsstoprpc_1();
 /* rpc to stop an observe*/
 #define DQREBOOTRPC ((u_long)6)
 extern int *dqrebootrpc_1();
+
+/* rpc to handle dhs connection */
+#define DQDHSCONNECTIONRPC ((u_long)7)
+extern int *dqdhsconnectionrpc_1( dqargument * );
+

@@ -11,6 +11,6 @@ niri:dc:wcs_ctype2
 niri:dc:wcs_mjdobs
 tcs:sad:date
 tcs:sad:sourceAInputFrame
-niri:dc:sad:dataLabel.VAL
-niri:dc:sad:dhsConnected.VAL
-niri:dc:sad:dhsMissing.VAL
+niri:sad:dc:dataLabel.VAL
+niri:sad:dc:dhsConnected.VAL
+niri:sad:dc:dhsMissing.VAL

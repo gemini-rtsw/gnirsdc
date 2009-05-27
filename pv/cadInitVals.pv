@@ -2,11 +2,11 @@
 # abortCad
 group {
 
-}
+} 
 
 #arSetupCad
 group {
-   string $(top)arSetup.A = "/home/gemini/gnirs/ucode/NAAC/";
+   string $(top)arSetup.A = "./tpSource/ucode/NAAC/";
    string $(top)arSetup.B = "gnAIII_1024xSU01_4u";
    string $(top)arSetup.C = "1.9";
    string $(top)arSetup.D = "1.2";
@@ -94,7 +94,7 @@ group {
    string $(top)obsSetup.L = "OFF";
    string $(top)obsSetup.M = "STARE";
    string $(top)obsSetup.N = "BEFORE";
-   string $(top)setWcs.A = "data/chip";
+   string $(top)setWcs.A = "data/wcs";
 }
  string $(top)setWcs.DIR = "CLEAR";
 #observeCad

@@ -1,10 +1,20 @@
 [schematic2]
-uniq 66
+uniq 68
 [tools]
 [detail]
 w 488 -949 100 0 n#63 hwin.hwin#62.in 512 -960 512 -960 esirs.minInt.INP
 w -120 -949 100 0 n#61 hwin.hwin#60.in -96 -960 -96 -960 esirs.exposed.INP
 [cell use]
+use esirs 1648 199 100 0 obsepoch
+xform 0 1856 352
+p 1744 176 100 0 1 DESC:EPOCH at exposure start
+p 1584 0 100 0 0 EGU:time
+p 1584 -64 100 0 0 FDSC:EPOCH at exposure start
+p 1744 144 100 0 1 FTVL:DOUBLE
+p 1840 128 100 0 0 PREC:11
+p 1744 80 100 0 1 PV:$(sadtop)
+p 1744 112 100 0 1 SNAM:
+p 1760 192 100 1024 0 name:$(sadtop)$(I)
 use esirs 1056 -729 100 0 dhsMissing
 xform 0 1264 -576
 p 1152 -752 100 0 1 DESC:DHS server connected
@@ -178,6 +188,15 @@ use esirs 1056 -249 100 0 instrument
 xform 0 1264 -96
 p 992 -352 100 0 1 DESC:Instrument name
 p 1152 -304 100 1024 1 name:$(sadtop)$(I)
+use esirs 1648 -249 100 0 datestart
+xform 0 1856 -96
+p 1744 -272 100 0 1 DESC:DATE at exposure start
+p 1584 -448 100 0 0 EGU:time
+p 1584 -512 100 0 0 FDSC:DATE at exposure start
+p 1744 -304 100 0 1 FTVL:STRING
+p 1744 -368 100 0 1 PV:$(sadtop)
+p 1744 -336 100 0 1 SNAM:
+p 1760 -256 100 1024 0 name:$(sadtop)$(I)
 use hwin -960 -521 100 0 hwin#50
 xform 0 -864 -480
 p -957 -488 100 0 -1 val(in):Bancomm address

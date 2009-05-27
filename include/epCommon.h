@@ -252,6 +252,7 @@
 #define SEQ_NUM         "seqNum"
 #define SEQTRACEFLAG  	"seqTraceFlag"
 #define SETDHSINFO_CAD  "setDhsInfo"
+#define DHSCONNECT_CAD  "dhsConnect"
 #define SETWCS_CAD      "setWcs"
 #define START_PROC      "startProcess"
 #define STARTUC         "StartUC"

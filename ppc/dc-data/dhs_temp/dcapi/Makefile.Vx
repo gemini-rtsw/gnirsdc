@@ -10,7 +10,7 @@ include $(APPLIC_TOP)/config/CONFIG
 # User compiler and loader flags
 # SNC_FLAGS    =
 USR_CFLAGS   = -DDHS_NO_SERVER -DHOST_SUN -DVxWorks -DDPOSIX_1 -DVXWORKS -g
-USR_INCLUDES = -I$(APPLIC_INSTALL)/dhs/include
+USR_INCLUDES = -I$(APPLIC_INSTALL)/dhs/include -I$(APPLIC_TOP)/dc-data/include
 # USR_LDFLAGS  =
 # USR_LDLIBS   =
 

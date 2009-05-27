@@ -640,7 +640,7 @@ STATUS getWCSInfo(int roiNum,int captBuf)
 /*     sprintf(headerVals[captBuf].frame[HDR_CTYPE2][1], "%s", wcs.ctype2); */
 /*     sprintf(headerVals[captBuf].frame[HDR_CRPIX2][1], "%f", wcs.crpix2); */
 /*     sprintf(headerVals[captBuf].frame[HDR_CRVAL2][1], "%f", wcs.crval2); */
-/*     sprintf(headerVals[captBuf].frame[HDR_CD1_1][1], "%f", wcs.cd1_1); */
+     sprintf(headerVals[captBuf].frame[HDR_CD1_1][1], "%f", wcs.cd1_1); 
 /*     sprintf(headerVals[captBuf].frame[HDR_CD1_2][1], "%f", wcs.cd1_2); */
 /*     sprintf(headerVals[captBuf].frame[HDR_CD2_1][1], "%f", wcs.cd2_1); */
 /*     sprintf(headerVals[captBuf].frame[HDR_CD2_2][1], "%f", wcs.cd2_2); */

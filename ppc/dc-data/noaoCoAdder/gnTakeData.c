@@ -132,6 +132,7 @@ int pr(int a)
 int DCArdd()
 {
   int intTime;
+  int expTime;
   int nextInBuf;
   int status = (OK);
   int cntCA, cntLNR;
@@ -215,7 +216,9 @@ int DCArdd()
 	  /*enable interrupts*/
 	  noao_intDisable = 0;
 	  gnGetEpicsT(dbTop, INT_TIME ".VAL",DCALONG, &intTime); 
+	  gnGetEpicsT(dbTop, EXP_TIME ".VAL",DCALONG, &expTime); 
 	  gnPutEpicsT(dbTop, DCAREADY ".VAL",DCALONG, &binTrue); 
+	  /*printf("Integration  Time = %i\n", intTime); */
 	  /* Start the Data taking loop */
   }
   else
@@ -252,14 +255,13 @@ int DCArdd()
 #endif 	
 		  
 		  
-		  
 		  if( semTake(sem.coAdFrame,sysClkRateGet()*15 ) != OK)
           {
 			  printf("Error getting first frame\n");
 			  status = ERROR;
 			  break;
           }
-		  
+		  printf("got coadsem\n");
 		  numAcq++;
 		  cntLNR++;
       }
@@ -279,6 +281,7 @@ int DCArdd()
 			  status = ERROR;
 			  break;
           }
+		  printf("got coadsem 2\n");
 		  /* 	    printf("%d",cntLNR); */
 		  numAcq++;
 		  cntLNR++;
@@ -314,8 +317,10 @@ int DCArdd()
 		  clearBuf(nextInBuf);
 		  break;
       }
+	 
 	  /* taskDelay(10); */
 	  cntCA++; 
+
 	  /* on the last frame this will cause the system to drop out of the 
 		 coAdd loop The frame will probably not arrive until later but we 
 		 are done here everything else will be taken care of by the DHS 
@@ -474,6 +479,7 @@ int DCArrd()
             status = ERROR;
             break;
 	}
+	printf("got coad int\n");
 		/* taskDelay(10); */
         cntCA++;
     }
@@ -618,22 +624,11 @@ initHeader(nextInBuf);
 	    printf("Error getting  frame %d\n",cntCA);
 	    break;
 	}
-
+	printf("got coadsem sep\n");
 	/* taskDelay(10); */
 
 	cntCA++;
     }   
-
-
-
-
-
-
-
-
-
-
-
 
     semGive(coaddSem);   
 	setObsFlags(FALSE, FALSE, FALSE);
@@ -818,4 +813,6 @@ int DCAtest()
     return OK;
 
 }
+
+/*****************************************************************************/
 

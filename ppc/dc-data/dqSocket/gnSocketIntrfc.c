@@ -1181,16 +1181,19 @@ STATUS getWCS(wcsHeader *wcs,int roiNum)
 	/*  gnOpenSocket(gnEPICSName,gnEPICSPort); */
   
 	DPRINT(t1,"Get wcs information\n");
+	/*printf("Get wcs information\n"); */
 	msg.op = DCAWCS;
 	msg.val.l = roiNum;
 	/* send request*/
-/* 	printf("message = %d\n",msg.op); */
+ 	/*printf("message.op = %d\n",msg.op); */
 	DPRINT(t1,"calculating wcs values\n");
+	/*printf("calculating wcs values\n");*/
 	retVal = msgQSend(sendQ,(char *)&msg,sizeof(msg),NO_WAIT,MSG_PRI_NORMAL);
 	/* 	retVal = sockWrite(gnEPICSSocket,(char *)&msg,sizeof(dcaMsgStruct)); */
 	/* wait for status*/
 	if(retVal != ERROR)	  {
 	    DPRINT(t1,"waiting for return message from socket for wcs\n"); 
+	    /*printf("waiting for return message from socket for wcs\n");*/ 
 	    retVal = msgQReceive(receiveQ,(char *)&ret,sizeof(ret),WAIT_FOREVER);
 	    /* 	    retVal = sockRead(gnEPICSSocket,(char *)&ret,sizeof(dcaMsgStruct)); */
 	}
@@ -1200,11 +1203,14 @@ STATUS getWCS(wcsHeader *wcs,int roiNum)
 	
 	  
 	/* 	  sockClose(&gnEPICSSocket); */
+	/*printf("retVal = %i\n",retVal);
+	printf("status = %i\n",status);*/
 
 	  status = semGive(socketSem);
 	  
-	if((retVal != ERROR) && (ret.status == OK))	  {
+	if((retVal != ERROR) && (status == OK))	  { 
 	    DPRINT(t1,"Getting individual wcs values\n");
+	    /*printf("****Getting individual wcs values\n");*/
 	    gnGetEpicsT(dbTop,WCS_CTYPE1,DCASTRING,&wcs->ctype1);
 	    gnGetEpicsT(dbTop,WCS_CRPIX1,DCADOUBLE,&wcs->crpix1);
 	    gnGetEpicsT(dbTop,WCS_CRVAL1,DCADOUBLE,&wcs->crval1);
@@ -1220,12 +1226,14 @@ STATUS getWCS(wcsHeader *wcs,int roiNum)
 	    gnGetEpicsT(dbTop,WCS_MJDOBS,DCADOUBLE,&wcs->mjdobs);
 	    sprintf(buf,"crpix1 = %f, crval1 = %f, ctype2 = %s, crpix2 = %f, crval2 = %f\n",wcs->crpix1,wcs->crval1,wcs->ctype2,wcs->crpix2,wcs->crval2);
 	    DPRINT(t1,buf);
+	    /*printf("crpix1 = %f, crval1 = %f, ctype2 = %s, crpix2 = %f, crval2 = %f\n",wcs->crpix1,wcs->crval1,wcs->ctype2,wcs->crpix2,wcs->crval2);*/
 	   
 	}
 	else {
 #ifdef TRACE
 	    printf("WCS not set - use defaults pixel ref\n");
 #endif
+	    printf("WCS not set - use defaults pixel ref\n");
 		sprintf(wcs->ctype1,"PIXEL");
 		wcs->crpix1=0.0;
 		wcs->crval1=0.0;
@@ -1238,7 +1246,8 @@ STATUS getWCS(wcsHeader *wcs,int roiNum)
 		wcs->cd2_2=1.0;
 		sprintf(wcs->radecsys,"INDEF");
 		wcs->equinox=0.0;
-		wcs->mjdobs=0.0;
+		wcs->mjdobs=0.0; 
+
 		}
 /* 	closeEpicsSocket(); */
     }

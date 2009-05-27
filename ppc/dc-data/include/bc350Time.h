@@ -15,7 +15,7 @@
 #define INTSTAT (short*)(BASE+0x2A)
 #define FIFO    (char*)(BASE+0x27)
 #define ACK     (short*)(BASE+0x22)
-#define TIME_SERVER "140.252.23.212"
+#define TIME_SERVER "172.17.2.10"
 struct time_struct {
           int day;               /* day of the year 1 - 366 */
           int hour;

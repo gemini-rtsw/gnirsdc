@@ -10,7 +10,7 @@ include $(APPLIC_TOP)/config/CONFIG
 # User compiler and loader flags
 # SNC_FLAGS    =
 
-USR_CFLAGS   = -DVXWORKS
+USR_CFLAGS   = -DVXWORKS -DDEBUG -DTRACE 
 #-DCOADD_TEST -DDEBUG -DTRACE -DTUCSON -DDHS_WAIT -DONEFRAME
 USR_INCLUDES = -I../../include
 # USR_LDFLAGS  =

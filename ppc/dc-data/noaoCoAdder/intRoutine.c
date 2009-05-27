@@ -100,6 +100,8 @@ int interruptInit(void)
          */
 
     if (sysIntEnable(INTERRUPT_LEVEL) == ERROR) {
+	/* fkraemer - testoutput */
+	fprintf(stderr, "Unable to enable SDSU_INTERRUPT.");
 	logMessage(CICS_DB_ERROR, "Unable to enable SDSU_INTERRUPT.");
 	return ERROR;
     }
@@ -107,6 +109,8 @@ int interruptInit(void)
       
         /* Create watchdog */
     if ((readoutWd = wdCreate()) == NULL) {
+	/* fkraemer - testoutput */
+	fprintf(stderr, "Cannot create watchdog.");
 	logMessage(CICS_DB_ERROR, "Cannot create watchdog.");
 	return ERROR;
     }
@@ -264,7 +268,6 @@ void transIntHandlr(int dummy)
    /*give semaphore*/
   
     if(semGive (sem.transFrame) == ERROR)
-	/*print error*/
 	return;
   
 }
@@ -324,12 +327,11 @@ void coAddIntHndlr(int dummy)
   wdCancel(readoutWd);
   /* release semaphore*/
   
-/*   logMsg("got coAddInt %d\n",noao_intDisable,0,0,0,0,0); */
-	   
+  logMsg("got coAddInt %d\n",noao_intDisable,0,0,0,0,0);
+/*   printf("got coAddInt %d\n",noao_intDisable); */
   if(noao_intDisable ==0)
     {
       if(semGive (sem.coAdFrame) == ERROR)
-        /*print error*/
         ;
 /*       logMessage(CICS_DB_NOLOG, "coadd int asserted.\n"); */
     }
@@ -372,17 +374,16 @@ void coAddIntHndlr(int dummy)
  */
 void unscrambleIntHndlr(int dummy)
 {
-/*   logMsg("got unscrambleInt %d\n",noao_intDisable,0,0,0,0,0); */
+  logMsg("got unscrambleInt %d\n",noao_intDisable,0,0,0,0,0);
 
+/*   printf("got unscramble %d\n",noao_intDisable); */
     /* release sem*/
     if(noao_intDisable ==0)
     {
 	
 	if(semGive (sem.unScrambleFrame) == ERROR)
-	    /*print error*/
 	    ; 
 	if(semGive (sem.coAdFrame) == ERROR)
-	    /*print error*/
 	    ; 
 /* 	logMessage(CICS_DB_NOLOG, "unscramble int asserted.\n"); */
     }

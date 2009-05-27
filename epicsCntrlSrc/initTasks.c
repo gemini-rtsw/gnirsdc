@@ -145,6 +145,7 @@ void initTasks(void)
    initTask(&semInitWcs,SEM_EMPTY,dbTop,SETWCS_CAD,60,VX_FP_TASK,10000,initWcsCtrl);
 /*    initTask(&semSetWcs,SEM_EMPTY,dbTop,SETWCS_CAD,60,VX_FP_TASK,4000,doSetWcs); */
    initTask(&semSetDhsInfo,SEM_EMPTY,dbTop,SETDHSINFO_CAD,60,VX_FP_TASK,4000,doSetDhsInfo);
+   initTask(&semDhsConnect,SEM_EMPTY,dbTop,DHSCONNECT_CAD,60,VX_FP_TASK,4000,doDhsConnect);
 
    initTask(&semObserve,SEM_EMPTY,dbTop,OBSERVE_CAD,60,VX_FP_TASK,10000,doObserve); 
    initTask(&semPark,SEM_EMPTY,dbTop,PARK_CAD,60,VX_FP_TASK,6000,doPark);

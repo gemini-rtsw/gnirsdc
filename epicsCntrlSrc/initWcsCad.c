@@ -181,19 +181,77 @@ int initWcsCad(struct cadRecord *pCad)
  */
 long updateAstCtx(struct genSubRecord *pgsub)
 {
+/*printf ("wfsUpdateAstCtx: pgsub->sevr = %s\n", &pgsub->sevr); */
  
     if(pgsub->sevr != INVALID_ALARM)
     { 
+        /*printf("TCS = 1 !!!!!, to astSetctx\n"); */
         TCS = 1; 
         astSetctx(pgsub->a); 
+        printf("From astSetctx\n"); 
     } 
     else 
     { 
+        /*printf("TCS = 0 ??????\n"); */
         TCS = 0 ;
         return ERROR; 
     } 
 
  
+
+    return OK;
+}
+
+/*
+ *+
+ * FUNCTION NAME:
+ *      selectWcs
+ *
+ * INVOCATION:
+ *      called when "astCtx"  gensub is processed
+ *
+ * PARAMETERS: (">" input, "!" modified, "<" output)
+ *      none
+ * FUNCTION VALUE:
+ *      status
+ *
+ * PURPOSE:
+ *      Get context from TCS.
+ *
+ * DESCRIPTION:
+ *      Tries to get ast context from TCS.  If it fails, it just sets a 
+/
+...skipping
+ */
+long selectWcs(struct cadRecord *pCad)
+{
+   static char camera[MAX_STRING_SIZE] = "unknown";
+   static char slit[MAX_STRING_SIZE] = "unknown";
+   /*printf("en selectWcs\n"); */
+   switch (DIRECTIVE)
+    {
+      case CAD_START:            /* No action required           */
+          strncpy(camera, (char *)pCad->a, MAX_STRING_SIZE-1);
+          strncpy(slit, (char *)pCad->b, MAX_STRING_SIZE-1);
+  
+          /*printf("camera = %s\n",camera); 
+          printf("slit = %s\n",slit); */
+      break;
+     }
+
+    return OK;
+}
+
+long copyTCSvalues(struct genSubRecord *pgsub)
+{
+printf ("in copyTCSvalues\n"); 
+printf ("tcsValues.a = %s\n",pgsub->a); 
+printf ("tcsValues.b = %s\n",pgsub->b); 
+printf ("tcsValues.c = %s\n",pgsub->c); 
+ 
+        pgsub->vala = pgsub->a; 
+        pgsub->valb = pgsub->b; 
+        pgsub->valc = pgsub->c; 
 
     return OK;
 }

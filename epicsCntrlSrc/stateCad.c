@@ -59,6 +59,8 @@ static struct {
 #include <naacTasks.h>
 #include <car.h>
 #include <symLib.h>
+#include <timeLib.h>
+#include <slalib.h>
 extern char *dbTop;
 
 /*
@@ -324,8 +326,13 @@ long abortProc( struct cadRecord *pCad )
 
 long observeProc( struct cadRecord *pCad ) 
 {
-   long status;         /* return status */
-   long lVal;
+   long   status;         /* return status */
+   long   lVal;
+   int    mjd[7];
+   int    stat;
+   double epoch;
+   double mjd2;
+
 
    /* Initialise CAD status */
    status = CAD_ACCEPT;
@@ -375,6 +382,21 @@ long observeProc( struct cadRecord *pCad )
 		 if(status == CAD_ACCEPT)
 		 {   strcpy(pCad->vala, pCad->a);
 		     strcpy(pCad->valb, pCad->b);
+                     stat = timeNowC(UTC,1, mjd);
+                     sprintf(pCad->valc,"%02d:%02d:%02d.%d",mjd[3],mjd[4],mjd[5],mjd[6]);
+                     sprintf(pCad->vald,"%d-%02d-%02d",mjd[0],mjd[1],mjd[2]);
+                     /*printf("***UT = %s\n",pCad->valc);
+                     printf("***DATE = %s\n",pCad->vald);*/
+  
+                     /* put in epics the epoch only at the start of exposure */
+
+                      stat = timeNowD(UTC, &mjd2);
+                      epoch =  slaEpj(mjd2);
+                      *(double *) pCad->vale = epoch;
+
+                     /* Clean dhs Label */
+		     /*strcpy(pCad->a,""); */
+
 		     semGive(semObserve);
 		 }
 		 else

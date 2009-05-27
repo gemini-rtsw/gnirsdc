@@ -79,7 +79,7 @@ xform 0 1520 3488
 use ebos -128 3392 100 0 active
 xform 0 -80 3328
 p -528 3182 100 0 0 ONAM:Activate
-p -528 3214 100 0 0 ZNAM:inactive
+p -528 3214 100 0 0 ZNAM:Deactivate
 use estringouts 736 3472 100 0 activstr
 xform 0 784 3408
 p 720 3328 100 0 1 OMSL:closed_loop

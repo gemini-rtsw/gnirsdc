@@ -254,8 +254,8 @@ STATUS setHeaderROI(int roiNum,tRect *proi,int captBuf)
  *****************************************************************************/
 STATUS setHeaderDEBUG(int captBuf,unsigned int xstart1,unsigned int xstart2 ,unsigned int vme)
 {
-    sprintf(dsHdr[captBuf][HDR_DEBUG].value.sval,"0x%x 0x%x 0x%x",xstart1,xstart2,vme);
-	 dsHdr[captBuf][HDR_DEBUG].status = OK;
+    /*sprintf(dsHdr[captBuf][HDR_DEBUG].value.sval,"0x%x 0x%x 0x%x",xstart1,xstart2,vme);
+	 dsHdr[captBuf][HDR_DEBUG].status = OK; */
 	return OK;
 }
 
@@ -330,30 +330,30 @@ dsHdr[captBuf][HDR_CD2_2].status= OK;
 dsHdr[captBuf][HDR_MJD_OBS].status= OK;
 	
 
-	sprintf(frameHdr[captBuf][FRHDR_CTYPE1].value.sval,"%s",wcs.ctype1);
-	frameHdr[captBuf][FRHDR_CRPIX1].value.dval=wcs.crpix1;
-	frameHdr[captBuf][FRHDR_CRVAL1].value.dval=wcs.crval1	;
-	sprintf(frameHdr[captBuf][FRHDR_CTYPE2].value.sval,"%s",wcs.ctype2);
-	frameHdr[captBuf][FRHDR_CRPIX2].value.dval=wcs.crpix2	;
-	frameHdr[captBuf][FRHDR_CRVAL2].value.dval=wcs.crval2	;
-	frameHdr[captBuf][FRHDR_CD1_1].value.dval=wcs.cd1_1	;
-	frameHdr[captBuf][FRHDR_CD1_2].value.dval=wcs.cd1_2	;
-	frameHdr[captBuf][FRHDR_CD2_1].value.dval=wcs.cd2_1	;
-	frameHdr[captBuf][FRHDR_CD2_2].value.dval=wcs.cd2_2	;
-	frameHdr[captBuf][FRHDR_MJD_OBS].value.dval=wcs.mjdobs	;
+/* 	sprintf(frameHdr[captBuf][FRHDR_CTYPE1].value.sval,"%s",wcs.ctype1); */
+/* 	frameHdr[captBuf][FRHDR_CRPIX1].value.dval=wcs.crpix1; */
+/* 	frameHdr[captBuf][FRHDR_CRVAL1].value.dval=wcs.crval1	; */
+/* 	sprintf(frameHdr[captBuf][FRHDR_CTYPE2].value.sval,"%s",wcs.ctype2); */
+/* 	frameHdr[captBuf][FRHDR_CRPIX2].value.dval=wcs.crpix2	; */
+/* 	frameHdr[captBuf][FRHDR_CRVAL2].value.dval=wcs.crval2	; */
+/* 	frameHdr[captBuf][FRHDR_CD1_1].value.dval=wcs.cd1_1	; */
+/* 	frameHdr[captBuf][FRHDR_CD1_2].value.dval=wcs.cd1_2	; */
+/* 	frameHdr[captBuf][FRHDR_CD2_1].value.dval=wcs.cd2_1	; */
+/* 	frameHdr[captBuf][FRHDR_CD2_2].value.dval=wcs.cd2_2	; */
+/* 	frameHdr[captBuf][FRHDR_MJD_OBS].value.dval=wcs.mjdobs	; */
 	
-frameHdr[captBuf][FRHDR_CTYPE1].status= OK;
-frameHdr[captBuf][FRHDR_CRPIX1].status= OK;
-frameHdr[captBuf][FRHDR_CRVAL1].status= OK;
-frameHdr[captBuf][FRHDR_CTYPE2].status= OK;
-frameHdr[captBuf][FRHDR_CRPIX1].status= OK;
-frameHdr[captBuf][FRHDR_CRPIX2].status= OK;
-frameHdr[captBuf][FRHDR_CRVAL2].status= OK;
-frameHdr[captBuf][FRHDR_CD1_1].status= OK;
-frameHdr[captBuf][FRHDR_CD1_2].status= OK;
-frameHdr[captBuf][FRHDR_CD2_1].status= OK;
-frameHdr[captBuf][FRHDR_CD2_2].status= OK;
-frameHdr[captBuf][FRHDR_MJD_OBS].status= OK;
+/* frameHdr[captBuf][FRHDR_CTYPE1].status= OK; */
+/* frameHdr[captBuf][FRHDR_CRPIX1].status= OK; */
+/* frameHdr[captBuf][FRHDR_CRVAL1].status= OK; */
+/* frameHdr[captBuf][FRHDR_CTYPE2].status= OK; */
+/* frameHdr[captBuf][FRHDR_CRPIX1].status= OK; */
+/* frameHdr[captBuf][FRHDR_CRPIX2].status= OK; */
+/* frameHdr[captBuf][FRHDR_CRVAL2].status= OK; */
+/* frameHdr[captBuf][FRHDR_CD1_1].status= OK; */
+/* frameHdr[captBuf][FRHDR_CD1_2].status= OK; */
+/* frameHdr[captBuf][FRHDR_CD2_1].status= OK; */
+/* frameHdr[captBuf][FRHDR_CD2_2].status= OK; */
+/* frameHdr[captBuf][FRHDR_MJD_OBS].status= OK; */
 
 
 

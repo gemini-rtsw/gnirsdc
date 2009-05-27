@@ -597,8 +597,65 @@ int *dqrebootrpc_1(int i)
 }
 
 
+/*****************************************************************************
+ * Function name:
+ *      gnDhsConnection
+ *
+ * Invocation:
+ *      invoked by RPC call from other IOC
+ *              status = gnDhsConnection(  );
+ *
+ * PARAMETERS:
+ *      None
+ *
+ * FUNCTION VALUE:
+ *      int - Status value returned by function
+ *
+ * PURPOSE:
+ *
+ *
+ * DESCRIPTION:
+ *
+ *
+ * EXTERNAL VARIABLES:
+ *      Lots - see gnaaDCAVars.h
+ *
+ * PRIOR REQUIREMENTS:
+ *
+ *
+ * DEFICIENCIES:
+ *      None known
+ *
+ * HISTORY:
+ *      11-June-1997  Original version  N Buchholz
+ *
+ *****************************************************************************/
 
+extern int servP_DhsConnect();
+extern int servP_DhsDisConnect();
 
+int *dqdhsconnectionrpc_1( dqargument *pconn )
+{
+#ifdef DEBUG
+    int t1;
+#endif
+    static int result; /* must be static! */
 
+printf("en dqdhsconnectionrpc_1\n");
+    if (pconn->dqdhsconnectionrpc_1_arg)
+    {
+     printf("to servP_DhsConnect \n");
+     servP_DhsConnect();
+     printf("from servP_DhsConnect \n"); 
+    }
+    else
+    {
+     printf("to servP_DhsDisConnect \n");
+     servP_DhsDisConnect();
+     printf("from servP_DhsDisConnect \n"); 
+    }
 
+    result = RPC_OK;
+    return (&result);
+}
 

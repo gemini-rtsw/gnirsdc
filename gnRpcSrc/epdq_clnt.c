@@ -104,3 +104,18 @@ dqrebootrpc_1(argp, clnt)
 	}
 	return (&res);
 }
+
+int *
+dqdhsconnectionrpc_1(argp, clnt)
+        int *argp;
+        CLIENT *clnt;
+{
+        static int res;
+
+        bzero((char *)&res, sizeof(res));
+        if (clnt_call(clnt, DQDHSCONNECTIONRPC, xdr_int, argp, xdr_int, &res, TIMEOUT) != RPC_SUCCESS) {
+                return (NULL);
+        }
+        return (&res);
+}
+

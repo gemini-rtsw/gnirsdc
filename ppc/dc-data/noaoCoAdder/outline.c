@@ -140,7 +140,7 @@ void gemTimeLogMsg(dhs_timer *ptimer, int level, const char *pFormat, ...) {
     va_list		pvar;
     int tick;
 	
-    if (level > loglevel) return;
+    /* if (level > loglevel) return;*/
 	
     va_start (pvar, pFormat);
     tick=tickGet();
@@ -209,12 +209,13 @@ int saveDataset()
     DHS_STATUS rc = DHS_S_SUCCESS;
     dhsParams *dhs;
 	
-    sleep(5,0);
+/*     sleep(5,0); */
     /* connect to server if we are using dhs*/
+#if 1
     if(svrP.server == DHS_SAVE)    
     {
 	dhs = &(svrP.param.dhs);
-#if 1
+
 	gemLogMsg(4,"connecting to dhs name = %s\n",dhs->name);
 	
 	saverOK = 0;
@@ -245,16 +246,17 @@ int saveDataset()
 	
 	if(gnPutEpicsT(dbSadTop, DHSCONNECTED ".VAL", DCALONG, &rc)!= OK)
 	    gemLogMsg (1,"failed to set DHSCONNECTED\n");
-#endif	
+	
 	
 	firstTick = tickGet();
 	
     }
+#endif
     while (1)    
     {
 	/* wait for semaphore, this is released by the unscramble interrupt
 	   routine  (a frame is ready to be saved)*/
-	/* 	printf("Waiting for frame to save\n"); */
+	 	printf("Waiting for frame to save\n");
 	gemLogMsg(10,"outline.c\n");
 	if(semTake (sem.unScrambleFrame,WAIT_FOREVER) == ERROR)
 	{
@@ -262,7 +264,7 @@ int saveDataset()
 	    gemLogMsg(1,"saveDataset: Error taking semaphore\n");
 	    goto Error;
 	}
-	
+	printf("got unscramble int\n");
 	gemLogMsg(10,"outline.c after semtake\n");
 	
 	/* 	setObsFlags(FALSE, FALSE, TRUE); */ /*set prep FALSE, acq FALSE, rdout TRUE */
@@ -407,9 +409,13 @@ int saveDhsData(int bufNum, dhsParams *dhs, roiParams *roiStruct)
     status = DHS_S_SUCCESS;
 
 
+printf ("**** IN saveDhsData\n");
     /* connect to dhs server if not done already*/
+    printf("connect to dhs? %d\n",dhs->connect);
     if (dhs->connect == NULL)
     {
+      printf("connecting to dhs\n");
+      sleep(1,0);
 	gemLogMsg( 5,"connecting to dhs name = %s from %s\n",dhs->name,dhs->impName);
 	 
 	if(DhsConnect(dhs) != OK)
@@ -560,7 +566,7 @@ int dhsSave(int arg1 ,int arg2 ,int arg3 ,int arg4 ,int arg5 ,int arg6 ,
     /* 	printf("dhsSave: format = %d, int32 = %d\n",dhs->format,DHS_DT_INT32); */
     roiStruct = &cb->roi;
     bufNum = cb->bufNum;
-   
+  
 #ifdef TRACE
     gemTimeLogMsg(ptimer, 5 ,"%d, dhsSave task trace\n",run);
 #else
@@ -574,15 +580,16 @@ int dhsSave(int arg1 ,int arg2 ,int arg3 ,int arg4 ,int arg5 ,int arg6 ,
     if(dhs_ok) 
     {
 	/* one supplied */
-	/* 	printf("label length = %d\n",strlen (dhs->dhsDatalabel)); */
-	if (strlen(dhs->dhsDatalabel) >= 1) 
+	printf(" ********** *** label length = %d\n",strlen (dhs->dhsDatalabel)); 
+	if (strlen(dhs->dhsDatalabel) >= 1 && strcmp(dhs->dhsDatalabel,"NONE")) 
 	{
 	    strncpy(dsDHSdataLabel,dhs->dhsDatalabel,MAX_STRING_SIZE);
 	    dsName = &dsDHSdataLabel[0];
+            
 	}
 	else 
 	{
-	    /* 		  printf ("getting dhs label\n"); */
+	     		  printf ("***** **** getting dhs label\n"); 
 	    /* get it from the DHS server */
 	    dsName = dhsBdName(dhs->connect,&status);
 	    if(status != DHS_S_SUCCESS) 
@@ -609,7 +616,7 @@ int dhsSave(int arg1 ,int arg2 ,int arg3 ,int arg4 ,int arg5 ,int arg6 ,
 	}
     }
 
-    /*   printf("set stream\n"); */
+     printf("set stream\n"); 
     
     if(strlen(dhs->qlStream) >0) 
     {
@@ -670,7 +677,7 @@ int dhsSave(int arg1 ,int arg2 ,int arg3 ,int arg4 ,int arg5 ,int arg6 ,
 	/* first transfer*/
 	dx = dx1 = dx2 = proi->hiX - proi->lowX +1;
 	dy = proi->hiY -  proi->lowY +1;
-	/* 	printf("hiX %d , hiY %d , loX %d , loY %d, size = %d\n",proi->hiX ,proi->hiY,proi->lowX,proi->lowY,transsize[arSizeIdx]); */
+	 	printf("hiX %d , hiY %d , loX %d , loY %d, size = %d\n",proi->hiX ,proi->hiY,proi->lowX,proi->lowY,transsize[arSizeIdx]); 
 
 
 	/*set parameters for 2 dma transfers*/
@@ -744,16 +751,18 @@ int dhsSave(int arg1 ,int arg2 ,int arg3 ,int arg4 ,int arg5 ,int arg6 ,
 	/* create label from ObservID*/
 	sprintf(label,"%s:%d",dsName,index);
 	gemLogMsg(5,"label = %s\n",label);
-	/* 	printf("dhs_ok = %d\n",dhs_ok); */
+	 	printf("dhs_ok = %d\n",dhs_ok); 
 	if(dhs_ok)
 	{
+            printf("IN DHS_OK: dhs->format = %i\n",dhs->format);
 	    if (dhs->format == DHS_UINT32)
 	    {
+                printf("IN dhs->format == DHS_UINT32\n");
 		frame = dhsBdFrameNew( ds, label, index, DHS_DT_INT32, 
 				       ndims[0], dims, 
 				       (const void **)&dhs->data,&status); 
-		/* 	printf("frame = %x, success = %d, status = %d\n",frame, */
-		/* 		       DHS_S_SUCCESS,status); */
+	 	printf("frame = %x, success = %d, status = %d\n",frame, 
+		 		       DHS_S_SUCCESS,status); 
 	    }
 	    else if (dhs->format == DHS_UINT16) 
 	    {
@@ -773,6 +782,18 @@ int dhsSave(int arg1 ,int arg2 ,int arg3 ,int arg4 ,int arg5 ,int arg6 ,
 		/* 	printf("frame = %x, success = %d, status = %d\n",frame, */
 		/* 		       DHS_S_SUCCESS,status); */
 	    } 
+            else if (dhs->format == DHS_FLT32) 
+            {
+                printf("IN dhs->format == DHS_FLT32\n");
+                frame = dhsBdFrameNew( ds, label, index, DHS_DT_FLOAT, 
+                                       ndims[0], dims, 
+                                       (const void **)&dhs->dataf32,&status);
+                printf( "dx = %i\n", dx);
+                printf( "dy = %i\n", dy);
+                dhs->data = (long*) malloc (sizeof(long)*dx*dy);
+		 	printf("frame = %x, success = %d, status = %d\n",frame, 
+		 		       DHS_S_SUCCESS,status); 
+            }
 	    else
 		gemLogMsg(1,"dhs->format not set\n");
 	}
@@ -786,7 +807,7 @@ int dhsSave(int arg1 ,int arg2 ,int arg3 ,int arg4 ,int arg5 ,int arg6 ,
 	}
 	
 	/* this is a  compulsary keyword */		
-	dhsBdAttribAdd (ds, "instrument", DHS_DT_STRING, 0, NULL, "gnirs" ,&status );
+	dhsBdAttribAdd (ds, "instrument", DHS_DT_STRING, 0, NULL, "GNIRS" ,&status );
 	
 	if (status != DHS_S_SUCCESS)
 	{
@@ -949,19 +970,25 @@ int dhsSave(int arg1 ,int arg2 ,int arg3 ,int arg4 ,int arg5 ,int arg6 ,
 	 */
 	
 	/* send data*/
-	dx = proi->cols;
-	dy = proi->rows;
+	/*dx = proi->cols;
+	dy = proi->rows; */
 	putEmptyBuf(bufNum);
 	
 	
 	gemLogMsg( 5 ,"pbuf = %x, dx = %d, dy = %d\n",(unsigned int)(dhs->data),dx,dy);
+	printf("pbuf = %x, dx = %d, dy = %d\n",(unsigned int)(dhs->data),dx,dy);
 	
 #if 1
 	if(WRITE_FILE )
 	{
+	/*   for (i=0;i<1024*1022;i++) */
+/* 	    { */
+/* 	      dhs->data[i] = i%1022; */
+/* 	    } */
 	    gemLogMsg(6,"write file\n");
-	    /*   if ((dhs->format == DHS_UINT32) && (numLNRs > 1))  */
-	    /* 	      { */
+	    if ((dhs->format == DHS_UINT32) && (numLNRs > 1))  
+	        { 
+                  printf("IN WRITE FILE DHS_UINT32\n");
 	    /* 		dhs_data32=dhs->data; */
 	    /* 		for (dhs_i=0;dhs_i<dx;dhs_i++) */
 	    /* 		  for(dhs_j=0;dhs_j<dy;dhs_j++)  */
@@ -970,8 +997,8 @@ int dhsSave(int arg1 ,int arg2 ,int arg3 ,int arg4 ,int arg5 ,int arg6 ,
 	    /* 		      dhs->data++; */
 	    /* 		    } */
 	    /* 		dhs->data=dhs_data32; */
-	    /* 	      } */
-	    /* 	    else */
+	    } 
+	    else 
 	    if (dhs->format == DHS_UINT16) 
 	    {
 		gemLogMsg( 3 ,"converting frame to 16 bits\n");
@@ -998,7 +1025,21 @@ int dhsSave(int arg1 ,int arg2 ,int arg3 ,int arg4 ,int arg5 ,int arg6 ,
 		free(dhs_data32);
 		gemLogMsg( 3 ,"conversion done\n");
 	    }
-	    
+            else if (dhs->format == DHS_FLT32) 
+            {
+                printf( "!!!!!converting frame to 32 bits float\n");
+                printf( "dx = %i\n", dx);
+                printf( "dy = %i\n", dy);
+                dhs_data32=dhs->data;
+                for (dhs_i=0;dhs_i<dx;dhs_i++)
+                    for(dhs_j=0;dhs_j<dy;dhs_j++) {
+                        *dhs->dataf32++ = (float)((double) (*dhs->data++) / (double) (numLNRs)); 
+                    }
+                gemLogMsg( 3 ,"free 32 bits buffer\n");
+                free(dhs_data32);
+                printf("conversion done\n");
+                gemLogMsg( 3 ,"conversion done\n");
+            }
 	    
 	    
 	    
@@ -1014,6 +1055,7 @@ int dhsSave(int arg1 ,int arg2 ,int arg3 ,int arg4 ,int arg5 ,int arg6 ,
 		    putTag = dhsBdPut(dhs->connect,dsName,DHS_BD_PT_DS_QL,DHS_TRUE,ds,cb,&status);
 		else
 		    putTag = dhsBdPut(dhs->connect,dsName,DHS_BD_PT_DS,DHS_TRUE,ds,cb,&status);
+                
 	    }
 	    
 	    gemLogMsg( 1 ," done...  %s\n",dsName);
@@ -1034,8 +1076,9 @@ int dhsSave(int arg1 ,int arg2 ,int arg3 ,int arg4 ,int arg5 ,int arg6 ,
 	    
 	    
 	    /* now post the dataset has been done */
+            /*printf("en gnPutEpicsT \n");*/
 	    if(gnPutEpicsT(dbSadTop, DATALABEL ".VAL", DCASTRING, dsName)!= OK)
-		gemLogMsg(0,"failed to set DATALABEL\n");
+		gemLogMsg(0,"failed to set DATALABEL\n"); 
 	    
 	    
 	    if(status != DHS_S_SUCCESS)
@@ -1045,13 +1088,16 @@ int dhsSave(int arg1 ,int arg2 ,int arg3 ,int arg4 ,int arg5 ,int arg6 ,
 	    }
 	    
 	    /* free dhs structures*/
+            /*printf("to dhsTagFree\n"); */
 	    if(dhs_ok)
 			dhsTagFree (putTag, &status); 
 	    
+            /*printf("from  dhsTagFree\n"); */
 	    gemLogMsg( 5 ,"dhsTagFree done... run = %d\n",run);
 	    
 	    if(status != DHS_S_SUCCESS)
 	    {
+                printf("dhs tagfree returned error\n");
 		gemLogMsg(0,"dhs tagfree returned error\n");
 		goto DHSError;
 	    }
@@ -1059,12 +1105,18 @@ int dhsSave(int arg1 ,int arg2 ,int arg3 ,int arg4 ,int arg5 ,int arg6 ,
 	/*  semGive(coaddSem);	 */
 #endif
 	if(dhs_ok)
-	  
 	    if (ds != NULL)       
+            {
+                /*printf("TO dhsBdDsFree \n"); */
 		dhsBdDsFree(ds,&status); 
-	
+                /*printf("FROM dhsBdDsFree \n"); */
+            }
+
+        /*printf("ds = %x\n",ds);
+        printf("status = %d\n",status); */
 	if(status != DHS_S_SUCCESS)
 	{
+	    printf("dhsBdDsFree failed to free dataset !\n");
 	    gemLogMsg(0,"dhsBdDsFree failed to free dataset !\n");
 	    goto DHSError;
 	}
@@ -1073,7 +1125,7 @@ int dhsSave(int arg1 ,int arg2 ,int arg3 ,int arg4 ,int arg5 ,int arg6 ,
 	
 	i++;
     }
-    
+   /*printf(" TO RETURN OK\n");*/ 
 #ifdef TRACE
     free(ptimer);		
 #endif
@@ -1250,7 +1302,7 @@ int transFrame()
 /******************************************************************************
  * setDsHeader
  ******************************************************************************/
-int setDsHeader(DHS_BD_DATASET ds, int bufNum)
+int setDsHeader(DHS_AV_LIST ds, int bufNum)
 {
     int n;
     DHS_STATUS status;
@@ -1299,7 +1351,7 @@ int setDsHeader(DHS_BD_DATASET ds, int bufNum)
 /******************************************************************************
  * setFrameHeader
  ******************************************************************************/
-int setFrameHeader(DHS_BD_FRAME frame, int bufNum)
+int setFrameHeader(DHS_AV_LIST frame, int bufNum)
 {
     int n;
     DHS_STATUS status;

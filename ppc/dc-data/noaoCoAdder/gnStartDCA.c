@@ -230,7 +230,6 @@ int gnDCAStart( void )
 	 return ERROR;
      }
 
-
      /* everything else depends on the configuration at run time and is setup
       * by gnSetupRDD or 	gnSetupRD depending on ucode, etc.
       */

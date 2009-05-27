@@ -29,9 +29,6 @@ install: all
 include ../util.make
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
-commands.trl: /dlirim0/gn.4/tptools/bin/../include/conc.h
 commands.trl: ../../include/common.h seq_defs.h seq_vars.h seqhdw.h seq.h
-main.trl: /dlirim0/gn.4/tptools/bin/../include/conc.h ../../include/common.h
 main.trl: seq_defs.h seq_vars.h seqhdw.h
-vars.trl: /dlirim0/gn.4/tptools/bin/../include/conc.h ../include/protocol.h
 vars.trl: ../../include/common.h seqhdw.h seq_vars.h

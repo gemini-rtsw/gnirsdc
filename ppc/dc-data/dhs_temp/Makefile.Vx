@@ -10,7 +10,7 @@ include $(APPLIC_TOP)/config/CONFIG
 # User compiler and loader flags
 # SNC_FLAGS    =
 # USR_CFLAGS   =
-# USR_INCLUDES =
+# USR_INCLUDES = $(APPLIC_TOP)/dc-data/includes
 # USR_LDFLAGS  =
 # USR_LDLIBS   =
 

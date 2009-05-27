@@ -45,6 +45,7 @@ rcsid =
 #include <vxLib.h>
 #include <ctype.h>
 #include <string.h>
+#include <time.h>
 #include "epCommon.h"
 #include "gnDCADefs.h"
 #include "localWcs.h"
@@ -156,6 +157,7 @@ STATUS getEpics (char* name, void *val,int count,void **tmp);
  */
 int InitWcs(int numChips,char *file1, char *file2, char *file3)
 {
+/*printf("!!!!!!!!!!!! Starting InitWcs\n"); */
     if (getWcsPoints(1, file1) != OK)
 	{
 		printf("getWcsPoints returned error\n");
@@ -166,6 +168,7 @@ int InitWcs(int numChips,char *file1, char *file2, char *file3)
         return ERROR;
     if ((numChips>2)&&(getWcsPoints(3, file3) != OK))
         return ERROR;
+/*printf("Ending InitWcs\n"); */
     return OK;
 }
 
@@ -214,16 +217,20 @@ int getWcsPoints(int chip, char *file)
     char *p;
     FILE *fp;
 
+    /*printf("2.... Starting getWcsPoints\n");
+    printf("wcs file =  '%s'\n", file); */
     c = chip - 1;
     wcsInfo[c].numPoints = 0;
     if ((strncmp(file, "NONE", 4) == 0) || (*file == '\0')) {
         sprintf(ErrorMessage,"No wcs data for chip %d", chip);
+        printf("No wcs data for chip %d", chip);
 	DPRINT(1,ErrorMessage);
         return OK;
     }
     fp = fopen(file, "r");
     if (fp == NULL) {
         sprintf(ErrorMessage, "Cannot open wcs file '%s'", file);
+        printf("Cannot open wcs file '%s'", file);
 	DPRINT(1,ErrorMessage);
         return ERROR;
     }
@@ -234,6 +241,7 @@ int getWcsPoints(int chip, char *file)
                 break;
             else {
                 sprintf(ErrorMessage,"Error reading wcs file '%s'", file);
+                printf("Error reading wcs file '%s'", file);
 	DPRINT(1,ErrorMessage);
                 fclose(fp);
                 return ERROR;
@@ -242,6 +250,9 @@ int getWcsPoints(int chip, char *file)
         count = sscanf(buffer, "%lf %lf %lf %lf",
               &(wcsInfo[c].pixij[n][0]), &(wcsInfo[c].pixij[n][1]),
                &(wcsInfo[c].fpxy[n][0]), &(wcsInfo[c].fpxy[n][1]));
+        /*printf("wcs file buffer = %f %f %f %f\n", (wcsInfo[c].pixij[n][0]),(wcsInfo[c].pixij[n][1]),
+						      (wcsInfo[c].fpxy[n][0]), (wcsInfo[c].fpxy[n][1])); */
+
         if (count != 4) {
 	    n--;
 	    continue;
@@ -249,6 +260,7 @@ int getWcsPoints(int chip, char *file)
     }
     fclose(fp);
     wcsInfo[c].numPoints = n;
+    /*printf("2...... Ending getWcsPoints\n"); */
     return OK;
 }
 
@@ -414,15 +426,16 @@ int wcsCalibrate(int chip, int ibin, int jbin, int iskip, int jskip)
                                  */
     gmosChip *wp;
 
+/*printf("#### Starting wcsCalibrate\n"); */
     wp = &wcsInfo[chip];
-/*     printf("bin = %d, %d, skip = %d, %d\n",ibin,jbin,iskip,jskip); */
+    /*printf("bin = %d, %d, skip = %d, %d\n",ibin,jbin,iskip,jskip); */
     for (p = 0; p < wp->numPoints; p++) {
         wp->detij[p][0] = ((wp->pixij[p][0] - 0.5 - (double) iskip) /
                            (double) ibin) + 0.5;
 
         wp->detij[p][1] = ((wp->pixij[p][1] - 0.5 - (double) jskip) /
                            (double) jbin) + 0.5;
-/* 	printf("det[%d][0] = %f, det[%d][1] = %f\n",p,wp->detij[p][0],p,wp->detij[p][1]); */
+ 	/*printf("det[%d][0] = %f, det[%d][1] = %f\n",p,wp->detij[p][0],p,wp->detij[p][1]); */
     }
 
 
@@ -430,7 +443,7 @@ int wcsCalibrate(int chip, int ibin, int jbin, int iskip, int jskip)
      * Define the (i,j) to (X,Y) transformation. The transformation is written
      * to matrix cij.
      */
-  /*   printf("numPoints = %d\n",wp->numPoints); */
+    /*printf("numPoints = %d\n",wp->numPoints); */
 
     wcsStat = astFitij(wp->numPoints, wp->fpxy, wp->detij, wp->cij,
                        &pixis, &pixjs, &perp, &orient);
@@ -450,10 +463,14 @@ int wcsCalibrate(int chip, int ibin, int jbin, int iskip, int jskip)
 
     sprintf(buffer, "Cij matrix contains %f %f %f %f %f %f\n",
                    wp->cij[0], wp->cij[1], wp->cij[2], wp->cij[3], wp->cij[4], wp->cij[5]);
-	DPRINT(1,buffer);
+    /*printf("Cij matrix contains %f %f %f %f %f %f\n",
+                   wp->cij[0], wp->cij[1], wp->cij[2], wp->cij[3], wp->cij[4], wp->cij[5]);*/
+/*	DPRINT(1,buffer); */
 
+/*printf("##### Ending wcsCalibrate\n");*/
     return OK;
 }
+
 STATUS getROI(roiParams *proi)
 {
     int i;
@@ -463,6 +480,7 @@ STATUS getROI(roiParams *proi)
     getDbInfoT(dbTop,DRROISET_CAD ".VALA",dummy, DBF_LONG,&proi->numRois);
     for (i=0;i<proi->numRois;i++)
     {
+    /*printf("getRoi primer IF\n");*/
 	sprintf(name,"%s%s%d.VAL",dbTop,LOWCOL,i+1);
 	getDbInfo(name,dummy, DBF_LONG, &proi->roi[i].lowX);
 	sprintf(name,"%s%s%d.VAL",dbTop,LOWROW,i+1);
@@ -476,6 +494,7 @@ STATUS getROI(roiParams *proi)
   
     if(proi->numRois == 0)
     {
+    /*printf("getRoi segundo IF\n");*/
 	proi->numRois = 1;
 	proi->roi[0].lowX = 0;
 	proi->roi[0].lowY = 0;
@@ -540,23 +559,39 @@ int CalcWcs(int chip, int roiNum)
     tRect *p;
     char buffer[80];
 
+    /*printf("IN CALCWCS !!!\n"); */
     /* if no wcs data, return */
     if (wcsInfo[chip].numPoints == 0)
     {
 	DPRINT(t1,"CalcWcs: no points \n");
         return OK;
     }
+
+
+    /*printf("timeTAI = %f\n",timeTAI);   */ 
+    /*printf("To getWcsParams \n");   */ 
+    wcsStat = getWcsParams();
+    /*printf("from getWcsParams \n");    
+    printf("timeTAI after getWcsParams = %f\n",timeTAI); */
+
+    
     getROI(&roi);
     p = &roi.roi[roiNum];       /* requested row values, unmodified */
 
-  /*   printf("lowx = %d, lowy = %d\n",p->lowX,p->lowY); */
+    /*printf("1. In CALCWCS lowx = %d, lowy = %d\n",p->lowX,p->lowY);
+    printf("1. In CALCWCS hiX = %d, hiY = %d\n",p->hiX,p->hiY);
+    printf("1. In CALCWCS rows = %d, cols = %d\n",p->rows,p->cols);
+    printf("!!!. In CALCWCS chip = %d xbin = %d, ybin = %d\n",chip,xbin,ybin);
+    printf("to wcsCalibrate \n");*/
     wcsStat = wcsCalibrate(chip, xbin, ybin, p->lowX, p->lowY );
+    /*printf("from wcsCalibrate \n");*/
     if (wcsStat != OK)
     {
 	DPRINT(t1,"CalcWcs: wcscalibrate error \n");
         return wcsStat;
     }
 
+    /*printf("4. to astXtndtr \n"); */
     wcsStat = astXtndtr(wcsInfo[chip].cij, wcs, &wcsij);
     if (wcsStat != 0) {
         sprintf(buffer, "astXtndtr failed : %d", wcsStat);
@@ -569,6 +604,20 @@ int CalcWcs(int chip, int roiNum)
      *
      */
 
+    /*printf("to astFITSv\n");*/
+    /*printf("ab0[0] = %f \n",wcsij.ab0[0]);
+    printf("ab0[1] = %f \n",wcsij.ab0[1]);
+    printf("coeffs[0] = %f \n",wcsij.coeffs[0]);
+    printf("coeffs[1] = %f \n",wcsij.coeffs[1]);
+    printf("coeffs[2] = %f \n",wcsij.coeffs[2]);
+    printf("coeffs[3] = %f \n",wcsij.coeffs[3]);
+    printf("coeffs[4] = %f \n",wcsij.coeffs[4]);
+    printf("coeffs[5] = %f \n",wcsij.coeffs[5]);
+    printf("trackFrame = %d \n",trackFrame);
+    printf("trackEquinox YEAR = %f \n",trackEquinox.year);
+    printf("trackEquinox TYPE = %c \n",trackEquinox.type);
+    printf("timeTAI = %f \n",timeTAI); */
+
     wcsStat = astFITSv(wcsij, trackFrame, trackEquinox, timeTAI,
                        ctype1, &crpix1, &crval1,
                        ctype2, &crpix2, &crval2,
@@ -580,11 +629,11 @@ int CalcWcs(int chip, int roiNum)
 	DPRINT(1,buffer);
         return (ERROR);
     }
-/*     printf("crpix1 = %s, %f"); */
     
+	/*printf("CalcWcs: setting values \n");*/
 	DPRINT(t1,"CalcWcs: setting values \n");
     sprintf(name,"%s%s.VAL",dbTop,WCS_CTYPE1);
-	DPRINT(t1,name);
+	/*DPRINT(t1,name); */
     putDbInfo(name,dummy,DBF_STRING,ctype1);
     sprintf(name,"%s%s.VAL",dbTop,WCS_CRPIX1);
     putDbInfo(name,dummy,DBF_DOUBLE,&crpix1);
@@ -610,8 +659,8 @@ int CalcWcs(int chip, int roiNum)
     putDbInfo(name,dummy,DBF_DOUBLE,&equinox);
     sprintf(name,"%s%s.VAL",dbTop,WCS_MJDOBS);
     putDbInfo(name,dummy,DBF_DOUBLE,&mjdobs);
-#if 0
-    printf("World Coordinate System Header\n");
+/*#if 0 */
+    /*printf("World Coordinate System Header\n");
     printf("------------------------------\n");
     printf("ctype1   = %s\n", ctype1);
     printf("crpix1   = %f pixels\n", crpix1);
@@ -626,9 +675,9 @@ int CalcWcs(int chip, int roiNum)
     printf("cd2_2    = %f\n", cd2_2);
     printf("radecsys = %s\n", radecsys);
     printf("equinox  = %f\n", equinox);
-    printf("mjd-obs  = %f\n", mjdobs);
+    printf("mjd-obs  = %f\n", mjdobs); */
     
-#endif
+/*#endif */
     /* write out the values into the headers */
  /*    if (D.dataOp != DOWRITE) */
 /*         return OK; */
@@ -741,15 +790,20 @@ long getWcsParams()
   if(TCS)
     {
     /* get time from tcs and convert it to TAI */
+    /*printf("*** 1. in getWcsparams \n Getting time from TCS\n");*/
         if(timeNow(&timeStamp) != OK)
         {
-            DPRINT(1,"Failed to get time stamp");
+            DPRINT(1,"Failed to get time stamp\n");
             return ERROR;
         }
+/*        bc635_read(&timeStamp); */
+        
+/*        printf("en getWcsParams: timeStamp = %f\n",timeStamp); */
     }
     else /* fake time if tcs not available */
     {  
         DPRINT(1,"TCS disconntected\n");
+        printf("TCS disconntected\n");
         tai = 49560.643391203703;
         if(j = mytimeOffline(tai,elong,phi,hm,dleap,dat,dut)) 
 	{ 
@@ -761,14 +815,18 @@ long getWcsParams()
     }
     
     DPRINT(1,"getWcsParams got time\n");
+    /*printf("2. getWcsParams got time\n");*/
     if(timeThenD(timeStamp,TT,&timeTAI) != OK)
     {
         DPRINT(1,"Failed to convert time stamp to TAI\n");
+        printf("Failed to convert time stamp to TAI\n");
         return ERROR;
     } 
     
+    /*printf("TimeTAI en WCS  = %f\n",timeTAI); */
 
-    DPRINT(1,"getWcsParams convert time\n");
+    /*DPRINT(1,"getWcsParams convert time\n"); */
+    /*printf("getWcsParams convert time\n"); */
 
     /* these need to be tested when there is a tcs available*/
     /* get values from tcs sad database*/
@@ -821,37 +879,69 @@ long getWcsParams()
         trackEquinox.year = 2000.0;
     }
 
-    DPRINT(1,"getWcsParams set defaults\n");
+    /*DPRINT(1,"getWcsParams set defaults\n"); */
+    /*printf("getWcsParams set defaults\n"); */
     /* get ctx context from tcs or simulate it it with astSimctx_r*/
     if(TCS)
     {
+        /*printf("@@@@@@@@@@@@@@@@ to astGetctx\n");*/
         if(astGetctx(&ctx) != OK)
         {
             DPRINT(1,"Failed to get current wcs context\n");
+            printf("Failed to get current wcs context\n");
             return ERROR;
         }
     }
     else /* simulate wcs context*/
     { 
-        wcsInfo[n].pixij[0][0] = 51.3;
-        wcsInfo[n].pixij[0][1] = 49.5;
-        wcsInfo[n].fpxy[0][0] = -19.15;
-        wcsInfo[n].fpxy[0][1] = 12.31;
-        wcsInfo[n].pixij[1][0] = 50.7;
-        wcsInfo[n].pixij[1][1] = 1227.8;
-        wcsInfo[n].fpxy[1][0] = -23.77;
-        wcsInfo[n].fpxy[1][1] = -13.95;
-        wcsInfo[n].pixij[2][0] = 2179.6;
-        wcsInfo[n].pixij[2][1] = 1230.4;
-        wcsInfo[n].fpxy[2][0] =  23.36;
-        wcsInfo[n].fpxy[2][1] =  -22.26;
-        wcsInfo[n].pixij[3][0] = 2182.3;
-        wcsInfo[n].pixij[3][1] = 53.1;
-        wcsInfo[n].fpxy[3][0] =  28.08;
-        wcsInfo[n].fpxy[3][1] =  3.9;
-        wcsInfo[n].numPoints =  4;
+        /*printf("SIMULATING PIXIJ with wcs_short parameters...\n");*/
+        wcsInfo[n].pixij[0][0] = 513.710000;
+        wcsInfo[n].pixij[0][1] = 458.070000;
+        wcsInfo[n].fpxy[0][0] = 2.916646;
+        wcsInfo[n].fpxy[0][1] = -0.80052624;
+        wcsInfo[n].pixij[1][0] = 758.47;
+        wcsInfo[n].pixij[1][1] = 443.46;
+        wcsInfo[n].fpxy[1][0] = 25.995383;
+        wcsInfo[n].fpxy[1][1] = -2.0912972;
+        wcsInfo[n].pixij[2][0] = 600.76;
+        wcsInfo[n].pixij[2][1] = 461.34;
+        wcsInfo[n].fpxy[2][0] =  11.157722;
+        wcsInfo[n].fpxy[2][1] =  -0.45301097;
+        wcsInfo[n].pixij[3][0] = 513.44;
+        wcsInfo[n].pixij[3][1] = 457.19;
+        wcsInfo[n].fpxy[3][0] =  2.916646;
+        wcsInfo[n].fpxy[3][1] =  -0.80052624;
+        wcsInfo[n].pixij[4][0] = 480.47;
+        wcsInfo[n].pixij[4][1] = 468.50;
+        wcsInfo[n].fpxy[4][0] =  -0.21719704;
+        wcsInfo[n].fpxy[4][1] =  0.19858015;
+        wcsInfo[n].pixij[5][0] = 663.12;
+        wcsInfo[n].pixij[5][1] = 454.07;
+        wcsInfo[n].fpxy[5][0] =  17.009631;
+        wcsInfo[n].fpxy[5][1] =  -1.0735739;
+        wcsInfo[n].pixij[6][0] = 513.93;
+        wcsInfo[n].pixij[6][1] = 457.29;
+        wcsInfo[n].fpxy[6][0] =  2.916646;
+        wcsInfo[n].fpxy[6][1] =  -0.80052624;
+        wcsInfo[n].pixij[7][0] = 714.49;
+        wcsInfo[n].pixij[7][1] = 471.93;
+        wcsInfo[n].fpxy[7][0] =  21.8252;
+        wcsInfo[n].fpxy[7][1] =  0.57712357;
+        wcsInfo[n].pixij[8][0] = 403.46;
+        wcsInfo[n].pixij[8][1] = 468.79;
+        wcsInfo[n].fpxy[8][0] =  -7.4777838;
+        wcsInfo[n].fpxy[8][1] =  0.26063645;
+        wcsInfo[n].pixij[9][0] = 747.48;
+        wcsInfo[n].pixij[9][1] = 459.67;
+        wcsInfo[n].fpxy[9][0] =  24.940426;
+        wcsInfo[n].fpxy[9][1] =  -0.53368416;
+        wcsInfo[n].pixij[10][0] = 513.79;
+        wcsInfo[n].pixij[10][1] = 457.28;
+        wcsInfo[n].fpxy[10][0] =  2.916646;
+        wcsInfo[n].fpxy[10][1] =  -0.80052624;
+        wcsInfo[n].numPoints =  11;
 
-        wcsCalibrate(n,1,1,0,0);  
+        wcsCalibrate(n,1,1,0,0);   
 /* 	for (i=0;i< 6;i++) */
 /* 	{ */
 /* 	    printf("cij[%d] = %f   ",i,wcsInfo[n].cij[i]); */
@@ -860,12 +950,12 @@ long getWcsParams()
 
         aia = slaDranrm (wcsInfo[n].orient -90.0*D2R);
 
-        slaXy2xy((IPIX+1.0)/2.0,(JPIX+1.0)/2.0,wcsInfo[n].cij,&tel.pox,&tel.poy);
+        slaXy2xy((IPIX+1.0)/2.0,(JPIX+1.0)/2.0,wcsInfo[n].cij,&tel.pox,&tel.poy); 
 /* 	printf("tai = %f, elongm = %f, phim = %f\n",tai,elongm,phim); */
 /* 	printf("hm = %f, xp = %f yp = %f, tdk = %f\n",hm,xp,yp,tdk); */
-/* 	printf("pmb = %f,rh = %f, tlr = %f, trackWavelength = %f\n",pmb,rh,tlr,trackWavelength); */
-/* 	printf("aia = %f,pai = %f,trackFrame = %d\n",aia,pai,trackFrame); */
-/* 	printf("year = %f, type = %c\n",trackEquinox.year,trackEquinox.type); */
+/* 	printf("pmb = %f,rh = %f, tlr = %f, trackWavelength = %f\n",pmb,rh,tlr,trackWavelength); 
+ 	printf("aia = %f,pai = %f,trackFrame = %d\n",aia,pai,trackFrame); 
+ 	printf("year = %f, type = %c\n",trackEquinox.year,trackEquinox.type); */
 /* 	printTel(tel); */
 /* 	printf("trackRA = %f, trackDec = %f\n",track_ra,track_dec); */
 
@@ -876,7 +966,7 @@ long getWcsParams()
         {
             DPRINT(1,"bad status from astSimctx_r: \n");
             return ERROR;
-        }
+        } 
 
 /* 	printf("getwcsparams 4\n"); */
 /* 	sleep(1,0); */
@@ -894,8 +984,11 @@ ext*/
         return ERROR;
     }
   
+    /*printf("WCS information extracted from TCS context is valid at time %f\n",rawTime);*/ 
 /*     DPRINT(1,"getWcsParams got wcs\n"); */
+       /*printf("getWcsParams got wcs\n"); */
 /*     sleep(1,0); */
+
     /* send values to controller*/
     if(WcsContext(&wcs, trackFrame,&trackEquinox,timeTAI) != OK)
     {   
@@ -906,8 +999,10 @@ ext*/
     }
 
     DPRINT(1,"getWcsParams done\n");
+    /*printf("getWcsParams done\n");*/
     return OK;
 } 
+
 long printctx(struct WCS_CTX ctx)
 {
     int i;

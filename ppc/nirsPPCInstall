@@ -1,23 +1,23 @@
-#!/bin/sh -f
+#!/bin/csh -f
 #
 # DCDATA_TARGET and DCCTRL_TARGET specify which targets to use for the two application
 # only concerned with DCDATA_TARGET here
 #
 # Matthieu Bec - 12/20/2001
 #
-DCDATA_TARGET=ppc604
+setenv DCDATA_TARGET ppc604
 #setenv DCCTRL_TARGET mv167   ;# actually an mv162, but that's irrelevant for cross compiling
 
-applSetup.pl --targets ${DCDATA_TARGET} --site CP \
-	     --P /home/gemvx/cristian/gnirsFinalTest/gnirs/DC/ \
-	     --depends /gemini/dhs/dhs-0.19b/external \
-	     --depends /gemini/dhs/dhs-0.19b
-#        --targets ${DCDATA_TARGET}\
-#        --targets ${DCCTRL_TARGET}\
-#        --site CP\
-#	--P /home/gemvx/cristian/gnirsFinalTest/gnirs/DC/\
-#        --depends /gemini/dhs/dhs-0.19b/external\
-#		--depends /gemini/dhs/dhs-0.19b
+applSetup.pl \
+        -T ${DCDATA_TARGET}\
+	-i ${NIRS_DIR}\
+        --site MK\
+	-P ${NIRS_DCINSTPATH}/ppc\
+        -d /gemini/dhs/dhs-0.19b/external\
+	-d /gemini/dhs/dhs-0.19b\
+	-I dc-data\
+	-I startup\
+	-s Makefile.Dirs
 
 #        --depends /gemini/astlib\
 #        --depends /gemini/slalib\

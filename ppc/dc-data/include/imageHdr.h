@@ -67,7 +67,6 @@ STATUS setHeaderDEBUG(int captBuf,unsigned int xstart1,unsigned int xstart2 ,uns
  *============================================================================*/
 
 typedef enum {
-	HDR_DEBUG,
 	HDR_CTYPE1,
 	HDR_CRPIX1,
 	HDR_CRVAL1,
@@ -84,30 +83,50 @@ typedef enum {
 } dhsDsHdrIndex ;
 
 
-#define DHSDSHEADER (15)
+#define DHSDSHEADER (61)
 #ifndef DUM_GBLSOURCE
 extern dhsHeadersDef dhsDsHeader[];
 extern HeaderVals dsHdr		[MAXCAPTBUFS][DHSDSHEADER];
 #else
 HeaderVals dsHdr			[MAXCAPTBUFS][DHSDSHEADER];
 dhsHeadersDef dhsDsHeader[] =
-{/*   keyword             type          timing   detail    pvname               proc     id #*/
-	{"DEBUG", 	         DCASTRING,		NEVER,	 HDR_DC,   NULL,  	            NULL,    0},
-	{"CTYPE1",        	 DCASTRING,  	NEVER, 	 HDR_DC,   DC_TOP WCS_CTYPE1,   NULL,    1	},			/*  the handling of the WCS	    */
-	{"CRPIX1",	         DCADOUBLE,  	NEVER, 	 HDR_DC,   DC_TOP WCS_CRPIX1,   NULL,    2	},			/*  is somewhat different       */
-	{"CRVAL1",	         DCADOUBLE,  	NEVER, 	 HDR_DC,   DC_TOP WCS_CRVAL1,   NULL,    3	},			/* and will need to be sorted out*/
-	{"CTYPE2",        	 DCASTRING,  	NEVER, 	 HDR_DC,   DC_TOP WCS_CTYPE2,   NULL,    4	},			/*   for now it's got it's	    */
-	{"CRPIX2",        	 DCADOUBLE,  	NEVER, 	 HDR_DC,   DC_TOP WCS_CRPIX2,   NULL,	 5},			/*      own         		    */
-	{"CRVAL2",        	 DCADOUBLE,  	NEVER, 	 HDR_DC,   DC_TOP WCS_CRVAL2,   NULL,	 6},			/*      	getWCS				*/
-	{"CD1_1",        	 DCADOUBLE,  	NEVER, 	 HDR_DC,   DC_TOP WCS_CD1_1,    NULL,	 7},			/*      and					    */
-	{"CD1_2",        	 DCADOUBLE,  	NEVER, 	 HDR_DC,   DC_TOP WCS_CD1_2,    NULL,	 8},			/*      	getWCSinfo			*/
-	{"CD2_1",	         DCADOUBLE,  	NEVER, 	 HDR_DC,   DC_TOP WCS_CD2_1,    NULL,	 9},			/*      routine					*/
-	{"CD2_2",	         DCADOUBLE,  	NEVER, 	 HDR_DC,   DC_TOP WCS_CD2_2,    NULL,	 10},			/*  I flagged them as never    	*/
-	{"MJD_OBS",	         DCADOUBLE,  	NEVER, 	 HDR_DC,   DC_TOP WCS_MJDOBS,   NULL,	 11},			/*  for this reason    			*/
-	{"INTEGRITY",        DCASTRING,		AFTER,   HDR_DC,   NULL,  		       sethdrINTEGRITY, 12		},
-	{"FRAME",          	 DCASTRING,  	AFTER,   HDR_DC,   TCS_SAD_TOP "sourceAInputFrame",	NULL, 13	},			/* here it's NOW or NEVER - so NOW */
-	{NULL,  	         DCASTRING,     BEFORE,  HDR_DC,   NULL,	NULL, 14}
-	};
+  {/*   keyword     type      timing   detail    pvname                       proc     id #*/
+/*    {"DEBUG", 	 DCASTRING,  NEVER,   HDR_DC,   NULL,  	                       NULL,  0}, */
+    {"CTYPE1",   DCASTRING,  NEVER,   HDR_DC,   DC_TOP WCS_CTYPE1,             NULL,  0},/*  the handling of the WCS	    */
+    {"CRPIX1",	 DCADOUBLE,  NEVER,   HDR_DC,    DC_TOP WCS_CRPIX1,             NULL,  1},/*  is somewhat different       */
+    {"CRVAL1",	 DCADOUBLE,  BEFORE,  HDR_DC,    DC_TOP WCS_CRVAL1,             NULL,  2},/* and will need to be sorted out*/
+    {"CTYPE2",   DCASTRING,  NEVER,   HDR_DC,    DC_TOP WCS_CTYPE2,             NULL,  3},/*   for now it's got it's	    */
+    {"CRPIX2",   DCADOUBLE,  NEVER,   HDR_DC,    DC_TOP WCS_CRPIX2,             NULL,  4},/*      own         		 */
+    {"CRVAL2",   DCADOUBLE,  NEVER,   HDR_DC,    DC_TOP WCS_CRVAL2,             NULL,  5},/*      	getWCS		*/
+    {"CD1_1",    DCADOUBLE,  NEVER,   HDR_DC,    DC_TOP WCS_CD1_1,              NULL,  6},/*      and			 */
+    {"CD1_2",    DCADOUBLE,  NEVER,   HDR_DC,    DC_TOP WCS_CD1_2,              NULL,  7},/*      	getWCSinfo	*/
+    {"CD2_1",	 DCADOUBLE,  NEVER,   HDR_DC,    DC_TOP WCS_CD2_1,              NULL,  8},/*      routine		*/
+    {"CD2_2",	 DCADOUBLE,  NEVER,   HDR_DC,    DC_TOP WCS_CD2_2,              NULL,  9},/*  I flagged them as never */
+   
+    {"MJD_OBS",	 DCADOUBLE,  NEVER,   HDR_DC,    DC_TOP WCS_MJDOBS,             NULL,  10},/*  for this reason    	*/
+    {"INTEGRITY",DCASTRING,  AFTER,   HDR_DC,    NULL,  	     sethdrINTEGRITY,  11},
+    {"FRAME",    DCASTRING,  AFTER,   HDR_DC,    TCS_SAD_TOP "sourceAInputFrame",NULL, 12},/* here it's NOW or NEVER - so NOW */	 
+    {"FRAME",  	 DCASTRING,  NOW,     HDR_DC,    TCS_SAD_TOP "sourceAInputFrame", NULL,13},/* here it's NOW or NEVER - so NOW */
+    {"UCODEPTH", DCASTRING,  BEFORE,  HDR_DC,   "nirs:dc:arSetup.A",	        NULL, 14},
+    {"UCODENAM", DCASTRING,  BEFORE,  HDR_DC,   "nirs:dc:arSetup.B",	        NULL, 15},
+    {"COADDS",   DCALONG,    BEFORE,  HDR_DC,   "nirs:dc:obsSetup.VALE",	NULL, 16},
+    {"LNRS",     DCALONG,    BEFORE,  HDR_DC,   "nirs:dc:obsSetup.VALD",	NULL, 17},
+    {"NDAVGS",   DCALONG,    BEFORE,  HDR_DC,   "nirs:dc:obsSetup.VALC",        NULL, 18},
+    {"ROWS",     DCALONG,    BEFORE,  HDR_DC,   "nirs:dc:curMaxRow.VAL",	NULL, 19},
+    {"P_MODE",   DCASTRING,  BEFORE,  HDR_DC,   "nirs:sad:dc:procMode.VAL",	NULL, 20},
+    {"COLS",     DCALONG,    BEFORE,  HDR_DC,   "nirs:dc:curMaxCol.VAL",	NULL, 21},
+    {"EXPTIME",	 DCADOUBLE,  BEFORE,  HDR_DC,   "nirs:dc:integTime.VAL",	NULL, 22},
+    {"MIN_INT",	 DCADOUBLE,  BEFORE,  HDR_DC,   "nirs:dc:minInt.VAL",	        NULL, 23},
+    {"FRMS_EXP", DCALONG,    BEFORE,  HDR_DC,   "nirs:dc:ucFrmsPCycle.VAL",	NULL, 24},
+    {"DSRDTEMP", DCADOUBLE,  BEFORE,  HDR_DC,   "nirs:dc:C1.SETP",	        NULL, 27},
+    {"DETTEMP",  DCADOUBLE,  BEFORE,  HDR_DC,   "nirs:dc:C1Tmp",	        NULL, 28},
+    {"TMP_ERROR",DCADOUBLE,  NEVER,   HDR_DC,   "nirs:dc:rdFootHGain",	        NULL, 29},
+    {"FOOT_PWR", DCADOUBLE,  BEFORE,  HDR_DC,   "nirs:dc:C1Heat",	        NULL, 30},
+    {"MNT_PWR",  DCADOUBLE,  NEVER,   HDR_DC,   "nirs:dc:mntHtrFB",	        NULL, 31},
+    {"IMG_NAME", DCASTRING,  NEVER,  HDR_DC,   "nirs:dc:imName.VAL",	        NULL, 32},
+    {"IMG_NUM",  DCALONG,    NEVER,  HDR_DC,   "nirs:dc:imNum.VAL",	        NULL, 33}, 
+    {NULL,  	 DCASTRING, BEFORE,  HDR_DC,   NULL,	NULL, 34}
+  };
 
   
 
@@ -141,7 +160,7 @@ typedef enum {
 
 
 
-#define DHSFRAMEHEADER (DHSDSHEADER+58)
+#define DHSFRAMEHEADER (DHSDSHEADER+12)
 
 #ifndef DUM_GBLSOURCE
 	extern dhsHeadersDef dhsFrameHeader[];
@@ -149,63 +168,19 @@ typedef enum {
 #else
 	HeaderVals frameHdr		[MAXCAPTBUFS][DHSFRAMEHEADER-DHSDSHEADER];
 	dhsHeadersDef dhsFrameHeader[] =
-	{/*   keyword     type      timing   detail    pvname               proc      id #*/
-    	{"CTYPE1",	DCASTRING,	NEVER,   HDR_DC,	DC_TOP WCS_CTYPE1, 	NULL, DHSDSHEADER	},			/*  the handling of the WCS	    */
-    	{"CRPIX1",	DCADOUBLE, 	NEVER,   HDR_DC,	DC_TOP WCS_CRPIX1,	NULL, DHSDSHEADER+1	},			/*  is somewhat different       */
-    	{"CRVAL1",	DCADOUBLE, 	NEVER,   HDR_DC, 	DC_TOP WCS_CRVAL1,	NULL, DHSDSHEADER+2	},			/* and will need to be sorted out*/
-    	{"CTYPE2",	DCASTRING, 	NEVER,   HDR_DC,	DC_TOP WCS_CTYPE2,	NULL, DHSDSHEADER+3	},			/*   for now it's got it's	    */
-    	{"CRPIX2",	DCADOUBLE, 	NEVER,   HDR_DC,	DC_TOP WCS_CRPIX2,	NULL, DHSDSHEADER+4	},			/*      own         		    */
-    	{"CRVAL2",	DCADOUBLE, 	NEVER,   HDR_DC,	DC_TOP WCS_CRVAL2,	NULL, DHSDSHEADER+5	},			/*      	getWCS				*/
-    	{"CD1_1",	DCADOUBLE,  NEVER,   HDR_DC,	DC_TOP WCS_CD1_1, 	NULL, DHSDSHEADER+6	},			/*      and					    */
-    	{"CD1_2",	DCADOUBLE,  NEVER,   HDR_DC,	DC_TOP WCS_CD1_2, 	NULL, DHSDSHEADER+7	},			/*      	getWCSinfo			*/
-    	{"CD2_1",	DCADOUBLE,  NEVER,   HDR_DC,	DC_TOP WCS_CD2_1, 	NULL, DHSDSHEADER+8	},			/*      routine					*/
-    	{"CD2_2",	DCADOUBLE,  NEVER,   HDR_DC,	DC_TOP WCS_CD2_2, 	NULL, DHSDSHEADER+9	},			/*  I flagged them as never    	*/
-    	{"MJD_OBS",	DCADOUBLE,  NEVER,   HDR_DC,	DC_TOP WCS_MJDOBS,	NULL, DHSDSHEADER+10	},			/*  for this reason    			*/
-		{"FRAME",  	DCASTRING,  NOW,     HDR_DC,   TCS_SAD_TOP "sourceAInputFrame",	NULL, DHSDSHEADER+11	},	/* here it's NOW or NEVER - so NOW */
-		{"BNCH_TMP",	     DCADOUBLE,     BEFORE,  HDR_ALL,  "nirs:sad:cc:benchTempPoint",	NULL, DHSDSHEADER+12},
-		{"FW1_POS",  	     DCASTRING,     BEFORE,  HDR_ALL,  "nirs:sad:cc:fw1Position",	NULL, DHSDSHEADER+13},
-		{"FW1_ENG",	         DCALONG,     BEFORE,  HDR_ALL,  "nirs:sad:cc:fw1Eng",	NULL, DHSDSHEADER+14},
-		{"FW2_POS",  	     DCASTRING,     BEFORE,  HDR_ALL,  "nirs:sad:cc:fw2Position",	NULL, DHSDSHEADER+15},
-		{"FW2_ENG",	         DCALONG,     BEFORE,  HDR_ALL,  "nirs:sad:cc:fw2Eng",	NULL, DHSDSHEADER+16},
-		{"CAM_POS",  	     DCASTRING,     BEFORE,  HDR_ALL,  "nirs:sad:cc:cameraPosition",	NULL, DHSDSHEADER+17},
-		{"CAM_ENG",	         DCALONG,     BEFORE,  HDR_ALL,  "nirs:sad:cc:cameraEng",	NULL, DHSDSHEADER+18},
-		{"SLIT_POS",  	     DCASTRING,     BEFORE,  HDR_ALL,  "nirs:sad:cc:slitPosition",	NULL, DHSDSHEADER+19},
-		{"SLIT_ENG",	     DCALONG,     BEFORE,  HDR_ALL,  "nirs:sad:cc:slitEng",	NULL, DHSDSHEADER+20},
-		{"DKR_POS",       DCASTRING,     BEFORE,  HDR_ALL,  "nirs:sad:cc:deckerPosition",	NULL, DHSDSHEADER+21},
-		{"DKR_ENG",	     DCALONG,     BEFORE,  HDR_ALL,  "nirs:sad:cc:deckerEng",	NULL, DHSDSHEADER+22},
-		{"GR_POS",      DCASTRING,     BEFORE,  HDR_ALL,  "nirs:sad:cc:gratingPosition",	NULL, DHSDSHEADER+23},
-		{"GR_ENG",	     DCALONG,     BEFORE,  HDR_ALL,  "nirs:sad:cc:gratingEng",	NULL, DHSDSHEADER+24},
-		{"GR_WL",	 DCADOUBLE, BEFORE,  HDR_ALL,  "nirs:sad:cc:gratingWvlength",	NULL, DHSDSHEADER+25},
-		{"GR_ORDER"    ,DCALONG,       BEFORE,  HDR_ALL,  "nirs:sad:cc:gratingOrder",	NULL, DHSDSHEADER+26},
-		{"GR_TILT",     DCADOUBLE,     BEFORE,  HDR_ALL,  "nirs:sad:cc:gratingTilt",	NULL, DHSDSHEADER+27},
-		{"PRSM_POS",  	     DCASTRING,     BEFORE,  HDR_ALL,  "nirs:sad:cc:xdispPosition",	NULL, DHSDSHEADER+28},
-		{"PRSM_ENG",	     DCALONG,     BEFORE,  HDR_ALL,  "nirs:sad:cc:xdispEng",	NULL, DHSDSHEADER+29},
-		{"ACQ_POS",  	     DCASTRING,     BEFORE,  HDR_ALL,  "nirs:sad:cc:acqPosition",	NULL, DHSDSHEADER+30},
-		{"CVER_POS",  	     DCASTRING,     BEFORE,  HDR_ALL,  "nirs:sad:cc:coverPosition",	NULL, DHSDSHEADER+31},
-		{"FCS_POS",  	     DCASTRING,     BEFORE,  HDR_ALL,  "nirs:sad:cc:focusPosition",	NULL, DHSDSHEADER+32},
-		{"FCS_MODE",       DCASTRING,     BEFORE,  HDR_ALL,  "nirs:cc:focusPosCad.VALB",	NULL, DHSDSHEADER+33},
-		{"FCS_ENG",	     DCALONG,     BEFORE,  HDR_ALL,  "nirs:sad:cc:focusEng",	NULL, DHSDSHEADER+34},
-		{"UCODEPTH",       DCASTRING,     BEFORE,  HDR_DC,   "nirs:dc:arSetup.A",	NULL, DHSDSHEADER+35},
-		{"UCODENAM",       DCASTRING,     BEFORE,  HDR_DC,   "nirs:dc:arSetup.B",	NULL, DHSDSHEADER+36},
-		{"COADDS",        DCALONG,       BEFORE,  HDR_DC,   "nirs:dc:obsSetup.VALE",	NULL, DHSDSHEADER+37},
-		{"LNRS",           DCALONG,       BEFORE,  HDR_DC,   "nirs:dc:obsSetup.VALD",	NULL, DHSDSHEADER+38},
-		{"NDAVGS",            DCALONG,       BEFORE,  HDR_DC,   "nirs:dc:obsSetup.VALC",	NULL, DHSDSHEADER+39},
-	{"ROWS",         DCALONG,       BEFORE,  HDR_DC,   "nirs:dc:curMaxRow.VAL",	NULL, DHSDSHEADER+40},
-	{"P_MODE",  	 DCASTRING,     BEFORE,  HDR_DC,   "nirs:sad:dc:procMode.VAL",	NULL, DHSDSHEADER+41},
-	{"COLS",         DCALONG,       BEFORE,  HDR_DC,   "nirs:dc:curMaxCol.VAL",	NULL, DHSDSHEADER+42},
-	{"INT_TIME",	 DCADOUBLE,     BEFORE,  HDR_DC,   "nirs:dc:integTime.VAL",	NULL, DHSDSHEADER+43},
-	{"MIN_INT",	 DCADOUBLE,     BEFORE,  HDR_DC,   "nirs:dc:minInt.VAL",	NULL, DHSDSHEADER+44},
-	{"FRMS_EXP",     DCALONG,       BEFORE,  HDR_DC,   "nirs:dc:ucFrmsPCycle.VAL",	NULL, DHSDSHEADER+45},
-	{"COMMENT",  	 DCASTRING,     BEFORE,  HDR_DC,   "nirs:dc:commStr.VAL",	NULL, DHSDSHEADER+46},
-	{"TITLE",        DCASTRING,     BEFORE,  HDR_DC,   "nirs:dc:titleStr.VAL",	NULL, DHSDSHEADER+47},
-	{"DSRDTEMP",     DCADOUBLE,     BEFORE,  HDR_DC,   "nirs:dc:C1.SETP",	        NULL, DHSDSHEADER+48},
-	{"DC_TEMP",      DCADOUBLE,     BEFORE,  HDR_DC,   "nirs:dc:C1Tmp",	        NULL, DHSDSHEADER+49},
-	{"TMP_ERROR",	 DCADOUBLE,     NEVER,  HDR_DC,   "nirs:dc:rdFootHGain",	NULL, DHSDSHEADER+50},
-	{"FOOT_PWR",	 DCADOUBLE,     BEFORE,  HDR_DC,   "nirs:dc:C1Heat",	        NULL, DHSDSHEADER+51},
-	{"MNT_PWR",	 DCADOUBLE,     NEVER,  HDR_DC,   "nirs:dc:mntHtrFB",	        NULL, DHSDSHEADER+52},
-	{"IMG_NAME",  	 DCASTRING,     BEFORE,  HDR_DC,   "nirs:dc:imName.VAL",	NULL, DHSDSHEADER+53},
-	{"IMG_NUM",  	     DCALONG,     BEFORE,  HDR_DC,   "nirs:dc:imNum.VAL",	NULL, DHSDSHEADER+54},
-	{NULL,  	         DCASTRING,     BEFORE,  HDR_DC,   NULL,	        NULL, DHSDSHEADER+55}
+	  {/*   keyword     type      timing   detail     ----pvname------               proc      id #*/
+	  {"CTYPE1",	DCASTRING,  NEVER,   HDR_DC,	DC_TOP WCS_CTYPE1,   NULL, DHSDSHEADER},/*  the handling of the WCS   */
+	  {"CRPIX1",	DCADOUBLE,  NEVER,   HDR_DC,	DC_TOP WCS_CRPIX1,   NULL, DHSDSHEADER+1},/*  is somewhat different   */
+	  {"CRVAL1",	DCADOUBLE,  NEVER,   HDR_DC, 	DC_TOP WCS_CRVAL1,   NULL, DHSDSHEADER+2},/* and will need to be sorted out*/
+	  {"CTYPE2",	DCASTRING,  NEVER,   HDR_DC,	DC_TOP WCS_CTYPE2,   NULL, DHSDSHEADER+3},/*   for now it's got it's  */
+	  {"CRPIX2",	DCADOUBLE,  NEVER,   HDR_DC,	DC_TOP WCS_CRPIX2,   NULL, DHSDSHEADER+4},/*      own              */
+	  {"CRVAL2",	DCADOUBLE,  NEVER,   HDR_DC,	DC_TOP WCS_CRVAL2,   NULL, DHSDSHEADER+5},/*      	getWCS	*/
+	  {"CD1_1",	DCADOUBLE,  NEVER,   HDR_DC,	DC_TOP WCS_CD1_1,    NULL, DHSDSHEADER+6},   /*      and	   */
+	  {"CD1_2",	DCADOUBLE,  NEVER,   HDR_DC,	DC_TOP WCS_CD1_2,    NULL, DHSDSHEADER+7},   /*      	getWCSinfo*/
+	  {"CD2_1",	DCADOUBLE,  NEVER,   HDR_DC,	DC_TOP WCS_CD2_1,    NULL, DHSDSHEADER+8},   /*      routine	*/
+	  {"CD2_2",	DCADOUBLE,  NEVER,   HDR_DC,	DC_TOP WCS_CD2_2,    NULL, DHSDSHEADER+9},   /*  I flagged them as never*/
+	  {"MJD_OBS",	DCADOUBLE,  NEVER,   HDR_DC,	DC_TOP WCS_MJDOBS,   NULL, DHSDSHEADER+10},   /*  for this reason    */
+	  {NULL,  	DCASTRING,  BEFORE,  HDR_DC,   NULL,	             NULL, DHSDSHEADER+11}
 	};
 #endif
 

@@ -58,18 +58,12 @@ epdqprog_1(rqstp, transp)
 	struct svc_req *rqstp;
 	register SVCXPRT *transp;
 {
-	union {
-		int dqobserverpc_1_arg;
-		int dqobssetuprpc_1_arg;
-		int dqobsstatusrpc_1_arg;
-		int dqobsabortrpc_1_arg;
-		int dqobsstoprpc_1_arg;
-		int dqrebootrpc_1_arg;
-	} argument;
+	dqargument argument;
 	char *result;
 	bool_t (*xdr_argument)(), (*xdr_result)();
 	char *(*local)();
-	
+
+        /*printf("antes del switch\n");	 */
 	switch (rqstp->rq_proc) {
 	case NULLPROC:
 		(void) svc_sendreply(transp, xdr_void, (char *)NULL);
@@ -104,11 +98,18 @@ epdqprog_1(rqstp, transp)
 		xdr_result = xdr_int;
 		local = (char *(*)()) dqobsstoprpc_1;
 		break;
-	  case DQREBOOTRPC:
+        case DQREBOOTRPC:
 		xdr_argument = xdr_int;
 		xdr_result = xdr_int;
 		local = (char *(*)()) dqrebootrpc_1;
 		break;
+
+        case DQDHSCONNECTIONRPC:
+                printf("in epdq_svc, DQDHSCONNECTIONRPC \n");
+                xdr_argument = xdr_int;
+                xdr_result = xdr_int;
+                local = (char *(*)()) dqdhsconnectionrpc_1;
+                break;
 
 	default:
 		svcerr_noproc(transp);

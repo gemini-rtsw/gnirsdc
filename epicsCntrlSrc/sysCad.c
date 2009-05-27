@@ -876,18 +876,83 @@ long setDhsInfoProc( struct cadRecord *pCad )
    return status;
 }
 
-
-
-
-
-
-
-
-
-
-
-
 #endif
+
+/*
+ *+
+ * FUNCTION NAME:
+ * dhsConnectProc
+ *
+ * INVOCATION:
+ * struct cadRecord *pCad;
+ * status = dhsConnectProc( pCad );
+ *
+ * PARAMETERS: (">" input, "!" modified, "<" output)
+ * ! pCad   (struct cadRecord *)   pointer to CAD data structure
+ *
+ * FUNCTION VALUE:
+ * long  Status value written to CAD VAL field
+ *
+ * PURPOSE:
+ * User defined function for "dhsConnectProc" CAD record
+ *
+ * DESCRIPTION:
+ * This routine is called whenever the dhsConnect CAD record is processed.
+ * dhsConnect is the command for connecting/disconnecting to the DHS
+ * The command has one argument:
+ *
+ * EXTERNAL VARIABLES:
+ * None
+ *
+ * PRIOR REQUIREMENTS:
+ * It is assumed the CAD record has already been initialized and the
+ * directive and any arguments have already been assembled into the cadRecord
+ * data structure.
+ *
+ * DEFICIENCIES:
+ * None
+ *
+ * HISTORY:
+ * 03-April-2002  creation   Matthieu Bec
+ *
+ *-
+ */
+
+long dhsConnectProc( struct cadRecord *pCad )
+{
+   long status=CAD_ACCEPT;
+
+   switch (pCad->dir) {
+      case CAD_MARK:
+         break;
+      case CAD_PRESET:
+         if (!(strcmp(pCad->a,"connect")))
+                      *(long*)pCad->vala=1;
+         else if (!(strcmp(pCad->a,"disconnect")))
+            *(long*)pCad->vala=0;
+         else {
+            status = CAD_REJECT;
+            sprintf(pCad->mess,"dhsConnect invalid args");
+            }
+         break;
+      case CAD_CLEAR:
+         break;
+      case CAD_START:
+         setCar(GSYS_CAR,CAR_BUSY,OK,"",dummy);
+              printf("give semDhsConnect\n");
+              semGive(semDhsConnect);
+         break;
+      case CAD_STOP:
+         strcpy( pCad->mess, "dhsConnect cannot be stopped");
+         status = CAD_REJECT;
+         break;
+      default:
+         strcpy( pCad->mess, "Unrecognized CAD directive" );
+         status = CAD_REJECT;
+         break;
+   }
+   return status;
+}
 
 
 

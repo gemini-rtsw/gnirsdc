@@ -1,5 +1,6 @@
 ./
 ../
+.applTop@
 .cvsignore
 adcHealth.adl
 adcHK.adl
@@ -17,12 +18,14 @@ carVals.adl
 carVals.dl
 choice1Cad.adl
 colors.dl
+core
 dataCube.adl
 DC/
 debugging.adl
 defineROICad.adl
 dhsCntrl.adl
 dhsCntrl.adl.old*
+dhsConnect.adl*
 dhsSad.adl
 diagCntrl.adl
 dqHealth.adl
@@ -34,6 +37,7 @@ gmColors.adl
 gmColors.dl
 gnaacEngDisp.adl
 gnaacEngDisp.dl
+gnaacEngDisp.dl.17AUG2004
 gnaacStart*
 health.adl
 healthSad.adl
@@ -42,10 +46,7 @@ Makefile*
 Makefile.Unix*
 mark.adl
 mark.dl
-motors.adl
-motors.dl
-motorSad.adl
-motorSad.dl
+O.solaris/
 obsrvCntrl.adl
 obsSetupCad.adl
 omega.adl
@@ -65,9 +66,9 @@ sad4.adl
 seqVarsCad.adl
 setDebug.adl
 setSim.adl
-tempCntrl.adl*
+tempCntrl.adl
 tempCntrl.dl
-tempHealth.adl*
+tempHealth.adl
 template.adl
 voltagesCad.adl
 voltsHealth.adl

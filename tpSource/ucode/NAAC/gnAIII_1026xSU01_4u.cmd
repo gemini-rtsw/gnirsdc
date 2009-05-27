@@ -27,7 +27,7 @@ group {
    long $(top)pucFrmsPCycle.VAL = 2;
    long $(top)ucFrmsPCycle.VAL = 2;
 
-   string $(top)detType.VAL = "ALADDIN_III";
+   string $(top)detType.VAL = "ALADDIN_III_1026";
 }
 
 

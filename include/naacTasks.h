@@ -42,6 +42,7 @@ extern SEM_ID semTest;
 extern SEM_ID semInit;
 extern SEM_ID semSetWcs;
 extern SEM_ID semSetDhsInfo;
+extern SEM_ID semDhsConnect;
 extern SEM_ID semObserve;
 extern SEM_ID semPark;
 extern SEM_ID semReboot;
@@ -69,6 +70,8 @@ extern int doSetWcs( int n1, int n2, int n3, int n4, int n5, int n6, int n7,
 		  int n8, int n9, int n10);
 extern int doSetDhsInfo( int n1, int n2, int n3, int n4, int n5, int n6, int n7,
 		  int n8, int n9, int n10);
+extern int doDhsConnect( int n1, int n2, int n3, int n4, int n5, int n6, int n7,
+                  int n8, int n9, int n10);
 extern int doObserve( int n1, int n2, int n3, int n4, int n5, int n6, int n7,
 		  int n8, int n9, int n10);
 extern int doPark( int n1, int n2, int n3, int n4, int n5, int n6, int n7,

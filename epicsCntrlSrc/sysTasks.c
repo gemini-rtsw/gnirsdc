@@ -36,10 +36,15 @@ static struct {
 #include <epCommon.h>
 #include <naacTasks.h>
 #include <sysLib.h>
+#include <rpcLib.h>
 #include <car.h>
+#include <gnerrno.h>
 extern char *dbTop;
 extern char *dbSadTop;
 int sysdebug = 0;
+
+extern int dqDhsConnectionRPC(int);
+
 /*
  *+
  * FUNCTION NAME:
@@ -319,5 +324,105 @@ int doSetDhsInfo( int n1, int n2, int n3, int n4, int n5, int n6, int n7,
 	}
     }
     return status;
+}
+
+/*
+ *+
+ * FUNCTION NAME:
+ *      doDhsConnect
+ *
+ * INVOCATION:
+ *      spawned from initTasks function
+ *
+ * PARAMETERS: (">" input, "!" modified, "<" output)
+ *      10 ints as defined in taskSpawn function
+ *      The first one is a pointer to the cad record.
+ *
+ * FUNCTION VALUE:
+ *      infinite loop, never returns
+ *
+ * PURPOSE:
+ *
+ * DESCRIPTION:
+ *
+ * EXTERNAL VARIABLES:
+ * None
+ *
+ * PRIOR REQUIREMENTS:
+ *
+ * DEFICIENCIES:
+ *
+ * HISTORY (optional):
+ *
+ *-
+ */
+/*extern globals*/
+extern char *rpcServer; 
+int dqRpcInit(char *server) ;
+
+int doDhsConnect( int n1, int n2, int n3, int n4, int n5, int n6, int n7,
+                  int n8, int n9, int n10)
+{
+    struct cadRecord *pCad;
+    long status;
+    long error;
+    char errMess[MAX_STRING_SIZE];
+    char dummy[MAX_STRING_SIZE];
+    char name[MAX_STRING_SIZE];
+
+
+     printf("en doDhsConnect\n");
+      while(dqRpcInit(rpcServer)!= OK)
+        ;
+
+     printf("dqRpcIni OK\n");
+    /* Sleep until there is something to do */
+    while( 1 ) {
+      cicsLogMessage(2,"task tdoDhsConnect sleeping ...");
+      semTake(semDhsConnect,WAIT_FOREVER);
+      cicsLogMessage(2, "task tDoSetDhsInfo awake");
+      printf("task tDoSetDhsInfo awake\n");
+
+      /* Initialise the status and error message */
+      status = OK;
+      error = 0;
+      strcpy(errMess, "\0");
+
+      /* Get the address of the CAD record so command arguments
+         are accessible.
+       */
+      pCad = (struct cadRecord *) n1;
+      printCadVals(0,pCad,1);
+
+      if (*(long*)pCad->vala == 1) {
+         /* request a connection */
+         printf("request a connection\n"); 
+         status = dqDhsConnectionRPC(1);
+         }
+      else if (*(long*)pCad->vala == 0) {
+         /* request a disconnection */
+         printf("request a disconnection\n"); 
+         status = dqDhsConnectionRPC(0); 
+         }
+
+      if(status == OK) {
+         /* we only send a request (which might fail)
+          * let sad update from dc-data
+          * sprintf( name, "%s%s", dbSadTop ,SAD_DHSCONNECTED);
+          * putDbInfo(name, errMess, DBF_LONG, *(long*)pCad->vala);
+          */
+         setCar(GSYS_CAR,CAR_IDLE,OK,"",dummy);
+         }
+      else {
+         /* we only send a request (which might fail)
+          * let sad update from dc-data
+          * sprintf( name, "%s%s", dbSadTop ,SAD_DHSCONNECTED);
+          * putDbInfo(name, errMess, DBF_LONG, *(long*)pCad->vala);
+          */
+         printf("dqDhsConnectionRPC failed\n");
+         /*setCar(GSYS_CAR,CAR_ERROR,DQ_RPC_FAILED,errMess,dummy); */
+         }
+      }
+   return status;
 }
 

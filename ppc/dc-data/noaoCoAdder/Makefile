@@ -2,7 +2,7 @@ include .applTop
 -include $(APPLIC_TOP)/config/CONFIG
 
 # only build the ppc
-APPLIC_TARGETS = $(DCDATA_TARGET)
+#APPLIC_TARGETS = $(DCDATA_TARGET)
 
 APPLIC_DIR_TYPE = sys
 

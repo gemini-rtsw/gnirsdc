@@ -24,12 +24,14 @@ typedef struct {
     char impName[MAXSTRING];
     char qlStream[MAXSTRING];
     long *data;
-	short *data16;
-	char *data8;
+    short *data16;
+    char *data8;
+    float *dataf32;
     int wait;
     DHS_CONNECT connect;
     long headers;					/* flag headers collection: NORMAL/PARTIAL/FULL */
     long lifetime;					/* flag DHS life time: PERM/TEMP */
+    int connected;                   /* connection flag */
 }dhsParams;
 typedef struct {
     int run;

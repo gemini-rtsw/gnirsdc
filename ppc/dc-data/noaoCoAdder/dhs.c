@@ -117,7 +117,9 @@ void dropDhs()
     (void) dhsExit(&status);
 	
     dhs->initDone = FALSE;
+    dhs->connected = FALSE;
 	
+    printf(" dhs->connected = %i\n",dhs->connected);
 	status=0;
     if(gnPutEpicsT(dbSadTop, DHSCONNECTED ".VAL", DCALONG, &status)!= OK)
   		 printf ("dropDhs: failed to set DHSCONNECTED\n");
@@ -218,7 +220,7 @@ void useDHS(char *ip, char *server, int simulation,char *impName)
 
     dhs = &svrP.param.dhs;
     dhs->format = DHS_DT_INT32;
-	printf("useDHS: format = %d\n",svrP.param.dhs.format);
+	printf("********************* useDHS: format = %d\n",svrP.param.dhs.format);
     strncpy(dhs->impName,impName,MAXSTRING);
     dhs->initDone = 0;
     strncpy(dhs->name, server, MAXSTRING);
@@ -330,6 +332,7 @@ int DhsConnect(dhsParams *dhs)
 	  if (status == DHS_S_SUCCESS) 
 	  {
 	      dhs->initDone = TRUE;
+                printf( "dhs Init completed successfully");
 	  }
 	  else 
 	  {
@@ -358,12 +361,15 @@ int DhsConnect(dhsParams *dhs)
 	else 
 	{
             printf( "Cannot connect to DHS server.\n");
+            printf( "dhs->ip=%s, dhs->name=%s\n",dhs->ip,dhs->name);
             dhs->connect = DHS_CONNECT_NULL;
             svrP.health = BAD;
             logMessage(CICS_DB_ERROR5, "Cannot connect to DHS server.");
             return ERROR;
         }
     }
+
+    dhs->connected = TRUE;
     sprintf(buf,"Connected to dhs %ld\n",dhs->connect);
     DPRINT(t1,buf);
 	
@@ -580,4 +586,77 @@ void dhsErrorCallback(DHS_CONNECT connect, DHS_STATUS errorNum,
     }
         printf("\nerrornum : %d\n message = %s", errorNum, msg);
 }
+
+
+/*****************************************************************************
+ * servP_DhsConnect
+ *****************************************************************************/
+int servP_DhsConnect() {
+   DHS_STATUS status = DHS_S_SUCCESS;
+   dhsParams *dhs;
+   dhs = &svrP.param.dhs;
+
+   printf ("IN servP_DhsConnect dhs %x connect %ld\n",dhs,dhs->connect);
+
+    printf("dhs->connected = %i\n",dhs->connected);
+
+   if (dhs->connected == FALSE) {
+      /* connection */
+      status = DHS_S_SUCCESS;
+      printf("IN servP_DhsConnect: dhsConnect : ip %s,name %s ... \n",dhs->ip,dhs->name);
+      dhs->connect = dhsConnect(dhs->ip, dhs->name, NULL, &status);
+      if (status != DHS_S_SUCCESS) {
+              printf( "Cannot connect to DHS server.\n");
+         dhs->connect = DHS_CONNECT_NULL;
+         dhs->connected = FALSE;
+         svrP.health = BAD;
+         if(gnPutEpicsT(dbSadTop, DHSCONNECTED ".VAL", DCALONG, &dhs->connected)!= OK)
+            printf ("failed to set DHSCONNECTED\n");
+         return ERROR;
+         }
+      dhs->connected = TRUE;
+      if(gnPutEpicsT(dbSadTop, DHSCONNECTED ".VAL", DCALONG, &dhs->connected)!= OK)
+         printf ("failed to set DHSCONNECTED\n");
+      printf("done %ld\n",dhs->connect);
+      svrP.health = GOOD;
+      printf("all good\n");
+      return OK;
+      }
+   else {
+      printf("already connected to DHS\n");
+      return OK;
+      }
+   }
+
+/*****************************************************************************
+ * servP_DhsDisConnect
+ *****************************************************************************/
+int servP_DhsDisConnect() {
+   DHS_STATUS status = DHS_S_SUCCESS;
+   dhsParams *dhs;
+   dhs = &svrP.param.dhs;
+
+   if (dhs->connected == TRUE) {
+      /* connection */
+      status = DHS_S_SUCCESS;
+      printf("dhsDisconnect : ip %s,name %s ... \n",dhs->ip,dhs->name);
+      dhsDisconnect(dhs->connect, &status);
+      if (status != DHS_S_SUCCESS) {
+              printf( "Cannot disconnect from DHS.\n");
+         return ERROR;
+         }
+      dhs->connected = FALSE;
+      if(gnPutEpicsT(dbSadTop, DHSCONNECTED ".VAL", DCALONG, &dhs->connected)!= OK)
+         printf ("failed to set DHSCONNECTED\n");
+      printf("!!!!!! disconnected\n");
+      svrP.health = BAD;
+      dhs->connect = DHS_CONNECT_NULL;
+      return OK;
+      }
+   else {
+      printf("already disconnected to DHS\n");
+      return OK;
+      }
+   }
+
 
