@@ -44,6 +44,10 @@ addenv LD_LIBRARY_PATH /home/gemini/epics/epics3.13.4GEM7/extensions/lib/solaris
 setenv CAPDIR /home/p3/wcs/bin
 setenv DCDATA_TARGET ppc604
 setenv HOST_ARCH solaris
-setenv NIRS_INSTPATH pisces:/gemini/epics3.13.4/gnirs/gnirs.fkraemer.test
-setenv NIRS_DCINSTPATH ${NIRS_INSTPATH}/DC
+setenv NIRS_DIR /home/mrippa/root/src/gnirsCVS
+setenv NIRS_CVSRELEASE gnirs_northV1-1_AT
+setenv NIRS_INSTPATH pisces:/gemini/epics3.13.4/gnirs
+setenv NIRS_DCINSTPATH ${NIRS_INSTPATH}/DC/${NIRS_CVSRELEASE}
 alias gmake make
+
+
