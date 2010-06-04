@@ -1,9 +1,9 @@
-DIRS += annex
+#DIRS += annex
 DIRS += dhs_temp
 DIRS += dqSocket
 DIRS += globals
 DIRS += gnRpcSrc
 DIRS += noaoCoAdder
-DIRS += startup
+#DIRS += startup
 DIRS += utilSource
 
