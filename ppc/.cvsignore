@@ -1,5 +1,6 @@
 *%
 .applTop
+Makefile.Dirs
 config
 bin
 data
@@ -11,6 +12,3 @@ lib
 *.dat
 *.log
 Distfile
-O.*
-solaris
-solaris/*
