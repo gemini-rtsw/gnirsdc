@@ -12,3 +12,6 @@ lib
 *.dat
 *.log
 Distfile
+O.*
+solaris
+solaris/*
