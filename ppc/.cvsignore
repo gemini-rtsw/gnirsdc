@@ -1,6 +1,5 @@
 *%
 .applTop
-Makefile.Dirs
 config
 bin
 data
