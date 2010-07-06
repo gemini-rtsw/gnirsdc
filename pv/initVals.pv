@@ -10,7 +10,7 @@ group {
 
 group {
 
-   string $(sadtop)detID   = "UNKNOWN";
+   string $(sadtop)detID   = "SN7638228.1";
 #   string $(top)detType    = "ALLADIN_III";
    string $(top)imPath    = "/data0/caTest";
    string $(top)imName    = "naacData";
