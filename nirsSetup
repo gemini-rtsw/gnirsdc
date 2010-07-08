@@ -42,6 +42,7 @@ fi
 # Make links to other package directories.
 #
 
+echo "cd into $NIRS_DCDIR ..."
 cd $NIRS_DCDIR
 
 rm -f LIB
