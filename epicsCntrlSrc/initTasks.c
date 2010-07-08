@@ -29,6 +29,9 @@
  *
  *INDENT-OFF*
  * $Log$
+ * Revision 1.2  2009/05/27 19:32:21  fkraemer
+ * fkraemer - copied my complete working dir over trunk
+ *
  * Revision 1.1.1.1  1998/12/15 16:18:50  buchholz
  * Imported gnaacSrc into CVS
  *
@@ -1088,7 +1091,7 @@ long setBias(struct cadRecord* cadPtr, long *errNo, char* errText)
 		       					DBF_DOUBLE, &biasVal);
 
     status += putDbInfoT(dbTop, DBIAS ".VAL", cadPtr->mess, DBF_DOUBLE, &biasVal);
-    sleep(0,5000000);	/* Give bias time to settle then read the housekeeping */
+	sleep(0,5000000); /* 5 ms for bias to settle */
     status += putDbInfoT(dbTop, HK_VDDUC ".VAL", cadPtr->mess, DBF_DOUBLE, 
 			 &vdducVal);
     status += getDbInfoT(dbTop, HK_VDDUC ".VAL", cadPtr->mess, DBF_DOUBLE,
@@ -1097,6 +1100,10 @@ long setBias(struct cadRecord* cadPtr, long *errNo, char* errText)
 			 &chanVdetVal);
     status += getDbInfoT(dbTop, HK_VDET ".VAL", cadPtr->mess, DBF_DOUBLE,
 			 &chanVdetVal);
+
+    printf("DC: setBias delay to 3.1 seconds, giving HK SCAN time to run\n");
+    sleep(3,100000000);	/* Give bias time to settle then read the housekeeping */
+    printf("DC: end setBias delay 3.1 seconds \n");
 
     actBias = fabs(fabs(vdducVal) - fabs(chanVdetVal));
 
@@ -1120,7 +1127,8 @@ long setBias(struct cadRecord* cadPtr, long *errNo, char* errText)
 	rVal = &binFalse;
 	sprintf(errText, "%s", "All OK");
     }
-	
+
+    printf("DC: Bias level is: %f\n", actBias);	
     status += putDbInfoT(dbTop, BIAS_FAILED ".VAL", cadPtr->mess,
 							DBF_DOUBLE, rVal);
     return status;
