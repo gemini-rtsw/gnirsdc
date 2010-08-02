@@ -58,6 +58,9 @@ long testwcs()
     double tai,dleap,dat,dut,elongm,phim,hm,xp,yp,tdk,pmb,rh;
     double tlr,elong,phi,daz,ut,r,d,xi,eta;
     int j,i;
+
+/* wcsInfo set by file selection eleswhere */
+/*
     wcsInfo[n]. pixij[0][0] = 51.3;
     wcsInfo[n].pixij[0][1] = 49.5;
     wcsInfo[n].fpxy[0][0] = -19.15;
@@ -76,7 +79,7 @@ long testwcs()
     wcsInfo[n].fpxy[3][1] =  3.9;
 
         wcsInfo[n].numPoints =  4;
-    
+  */  
     dleap = 50083.0;
     dat = 29.0;
     dut = .0746;
@@ -130,8 +133,13 @@ long testwcs()
     }
     for (i=0;i<4;i++)
     {
-	printf("%f	%f 	%f	%f\n",wcsInfo[n].fpxy[i][0],wcsInfo[n].pixij[i][0],wcsInfo[n].fpxy[i][1],wcsInfo[n].pixij[i][1]);
+	printf("%f	%f 	%f	%f\n",
+	wcsInfo[n].fpxy[i][0],
+	wcsInfo[n].pixij[i][0],
+	wcsInfo[n].fpxy[i][1],
+	wcsInfo[n].pixij[i][1]);
     }
+
     if(j = astFitij(4,wcsInfo[n].fpxy,
 		    wcsInfo[n].pixij,wcsInfo[n].cij,
 		    &wcsInfo[n].pixis,&wcsInfo[n].pixjs,
