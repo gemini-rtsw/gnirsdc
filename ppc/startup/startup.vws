@@ -15,7 +15,6 @@ ld </gemini/dhs/dhs/external/lib/mv2700T2/libsds.o
 ld </gemini/dhs/dhs/lib/mv2700T2/libgen.a
 ld </gemini/dhs/dhs/lib/mv2700T2/libdhs.a
 
-
 # global variable file
 ld < ./bin/$(arch)/globals.o
 ld < ./bin/$(arch)/coadGlobals.o
@@ -29,29 +28,25 @@ ld <./bin/$(arch)/bc350time.o
 # epics interface
 ld <./bin/$(arch)/gnSocketIntrfc.o
 
-
 # set database prefix
 setTop("nirs:dc:","nirs:sad:dc:")
 
-
 # set EPICSName to IP of gnirsdc2
 #gnSetEPICSName("172.17.2.84")
-gnSetEPICSName("10.1.2.84")
+gnSetEPICSName("10.2.2.84")
 
 # coadder code
 ld <./bin/$(arch)/gnDataCoAdder.o
-
 
 # rpc code
 ld <./bin/$(arch)/dqrpc.o
 sp epdq_server
 
+cd "./bin/ppc604"
 
 # DHS
-# reggie
-useDHS ("10.2.4.56", "dataServer1", 0,"ngnirsdc1")
-#useDHS ("172.17.3.12", "dataServerSS", 0,"gnirsdc1")
-#useDHS ("140.252.23.212", "dataServerNS", 0,"juliet2.tuc.noao.edu")
+# archie
+useDHS ("10.2.4.56", "dataServerNS", 0,"ngnirsdc1")
 
 # dhs master routine
 taskSpawn ( "ImpMaster", 100, 0x8, 20000, ImpMaster)
@@ -60,7 +55,6 @@ loglevel = 0
 
 ### set bancom board -> disabled for now
 initTime 1
-
  
 # start system
 gnDCAStart
@@ -68,5 +62,7 @@ gnDCAStart
 # start socket server
 taskSpawn( "epicsServer",100,0x8,200000,epicsServer)
 
+cd "../.."
 
 loglevel = 1000
+
