@@ -26,6 +26,9 @@ static struct {
  *
  *INDENT-OFF*
  * $Log$
+ * Revision 1.2  2009/05/27 19:32:21  fkraemer
+ * fkraemer - copied my complete working dir over trunk
+ *
  *INDENT-ON* 
  */
 
@@ -118,6 +121,7 @@ int initWcsCad(struct cadRecord *pCad)
 
       case CAD_START:
 	/* copy filenames to output */
+
 
 	status = assignVal(pCad->ftva, pCad->a, pCad->vala, MSG);
 	status += assignVal(pCad->ftvb, pCad->b, pCad->valb, MSG);
@@ -223,19 +227,56 @@ long updateAstCtx(struct genSubRecord *pgsub)
 /
 ...skipping
  */
+int overridePort = 0;
+
 long selectWcs(struct cadRecord *pCad)
 {
-   static char camera[MAX_STRING_SIZE] = "unknown";
-   static char slit[MAX_STRING_SIZE] = "unknown";
-   /*printf("en selectWcs\n"); */
+   char camera[MAX_STRING_SIZE] = "unknown";
+   char selectedPort[MAX_STRING_SIZE] = "unknown";
+   char wcscamera[MAX_STRING_SIZE] = "unknown";
+   long agport = 0; /*default agport*/
+   long status = CAD_ACCEPT; 
+    
+   printf(" selectWcs\n");
+   
+   *(long*) pCad->vala = 1;  /* Disable wfs switch by default*/ 
    switch (DIRECTIVE)
     {
       case CAD_START:            /* No action required           */
-          strncpy(camera, (char *)pCad->a, MAX_STRING_SIZE-1);
-          strncpy(slit, (char *)pCad->b, MAX_STRING_SIZE-1);
-  
-          /*printf("camera = %s\n",camera); 
-          printf("slit = %s\n",slit); */
+	  printf("WCS file based on selection=%s, camera=%s AGport=%s \n",
+		  pCad->a, pCad->b, pCad->c);
+          strncpy(selectedPort, (char *)pCad->a, MAX_STRING_SIZE-1);
+          strncpy(camera, (char *)pCad->b, MAX_STRING_SIZE-1);
+	  
+	  agport = atoi(pCad->c);
+          printf("selectedPort = %s\n",selectedPort); 
+          printf("camera = %s\n",camera); 
+          printf("agport = %d\n",agport); 
+
+
+	  if ((strstr(camera, "Long") != NULL) || 
+	      (strstr(camera, "Open") != NULL) )
+	  {
+	  	strcpy(wcscamera, "long");
+          }
+	  else if (strstr(camera, "Short") != NULL) {
+	  	strcpy(wcscamera, "short");
+	  }
+	  else {
+
+	        strncpy(pCad->mess, "selectWcsCad: Invalid camera",MAX_STRING_SIZE - 1);
+		printf("ERR: selectWcsCad: Invalid camera\n");
+	        status = CAD_REJECT;
+		break;
+	  }
+
+	  if (overridePort)
+	     sprintf(pCad->valb, "data/p%s%s.wcs", selectedPort, wcscamera); /* set file name*/
+	  else 
+	     sprintf(pCad->valb, "data/p%ld%s.wcs", agport, wcscamera); /* set file name*/
+	  *(long*) pCad->vala = 0; /*enable setting wcsfile*/
+
+
       break;
      }
 
@@ -245,7 +286,7 @@ long selectWcs(struct cadRecord *pCad)
 long copyTCSvalues(struct genSubRecord *pgsub)
 {
 printf ("in copyTCSvalues\n"); 
-printf ("tcsValues.a = %s\n",pgsub->a); 
+printf ("tcsValues.a = %s\n", (char *)pgsub->a); 
 printf ("tcsValues.b = %s\n",pgsub->b); 
 printf ("tcsValues.c = %s\n",pgsub->c); 
  

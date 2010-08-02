@@ -25,6 +25,9 @@ rcsid =
  *
  *INDENT-OFF*
  * $Log$
+ * Revision 1.2  2009/05/27 19:32:22  fkraemer
+ * fkraemer - copied my complete working dir over trunk
+ *
  *INDENT-ON*
  *-
  */
@@ -210,58 +213,58 @@ int InitWcs(int numChips,char *file1, char *file2, char *file3)
  */
 int getWcsPoints(int chip, char *file)
 {
-    int n,
-         count;
-    int c;
-    char buffer[81];
-    char *p;
-    FILE *fp;
+   int n,
+       count;
+   int c;
+   char buffer[81];
+   char *p;
+   FILE *fp;
 
     /*printf("2.... Starting getWcsPoints\n");
     printf("wcs file =  '%s'\n", file); */
-    c = chip - 1;
-    wcsInfo[c].numPoints = 0;
-    if ((strncmp(file, "NONE", 4) == 0) || (*file == '\0')) {
-        sprintf(ErrorMessage,"No wcs data for chip %d", chip);
-        printf("No wcs data for chip %d", chip);
-	DPRINT(1,ErrorMessage);
-        return OK;
-    }
-    fp = fopen(file, "r");
-    if (fp == NULL) {
-        sprintf(ErrorMessage, "Cannot open wcs file '%s'", file);
-        printf("Cannot open wcs file '%s'", file);
-	DPRINT(1,ErrorMessage);
-        return ERROR;
-    }
-    for (n = 0; n < NPOINTS; n++) {
-        p = fgets(buffer, 80, fp);
-        if (p == NULL) {
-            if (feof(fp))
-                break;
-            else {
-                sprintf(ErrorMessage,"Error reading wcs file '%s'", file);
-                printf("Error reading wcs file '%s'", file);
-	DPRINT(1,ErrorMessage);
-                fclose(fp);
-                return ERROR;
-            }
-        }
-        count = sscanf(buffer, "%lf %lf %lf %lf",
-              &(wcsInfo[c].pixij[n][0]), &(wcsInfo[c].pixij[n][1]),
-               &(wcsInfo[c].fpxy[n][0]), &(wcsInfo[c].fpxy[n][1]));
+   c = chip - 1;
+   wcsInfo[c].numPoints = 0;
+   if ((strncmp(file, "NONE", 4) == 0) || (*file == '\0')) {
+      sprintf(ErrorMessage,"No wcs data for chip %d", chip);
+      printf("No wcs data for chip %d", chip);
+      DPRINT(1,ErrorMessage);
+      return OK;
+   }
+   fp = fopen(file, "r");
+   if (fp == NULL) {
+      sprintf(ErrorMessage, "Cannot open wcs file '%s'", file);
+      printf("Cannot open wcs file '%s'", file);
+      DPRINT(1,ErrorMessage);
+      return ERROR;
+   }
+   for (n = 0; n < NPOINTS; n++) {
+      p = fgets(buffer, 80, fp);
+      if (p == NULL) {
+	 if (feof(fp))
+	    break;
+	 else {
+	    sprintf(ErrorMessage,"Error reading wcs file '%s'", file);
+	    printf("Error reading wcs file '%s'", file);
+	    DPRINT(1,ErrorMessage);
+	    fclose(fp);
+	    return ERROR;
+	 }
+      }
+      count = sscanf(buffer, "%lf %lf %lf %lf",
+	    &(wcsInfo[c].pixij[n][0]), &(wcsInfo[c].pixij[n][1]),
+	    &(wcsInfo[c].fpxy[n][0]), &(wcsInfo[c].fpxy[n][1]));
         /*printf("wcs file buffer = %f %f %f %f\n", (wcsInfo[c].pixij[n][0]),(wcsInfo[c].pixij[n][1]),
 						      (wcsInfo[c].fpxy[n][0]), (wcsInfo[c].fpxy[n][1])); */
 
-        if (count != 4) {
-	    n--;
-	    continue;
-        }
-    }
-    fclose(fp);
-    wcsInfo[c].numPoints = n;
-    /*printf("2...... Ending getWcsPoints\n"); */
-    return OK;
+      if (count != 4) {
+	 n--;
+	 continue;
+      }
+   }
+   fclose(fp);
+   wcsInfo[c].numPoints = n;
+   /*printf("2...... Ending getWcsPoints\n"); */
+   return OK;
 }
 
 /*
