@@ -1,7 +1,8 @@
 [schematic2]
-uniq 264
+uniq 265
 [tools]
 [detail]
+w -1126 1355 100 0 n#264 ecalcs.wcsORdisable.FLNK -864 736 -800 736 -800 960 -896 960 -896 1344 -1296 1344 -1296 1920 -1248 1920 embbos.wcsport.SLNK
 w 138 2011 100 0 n#263 elongouts.wcspush.OUT -32 1904 64 1904 64 2000 272 2000 ecad4.setWcs.DIR
 w -950 2027 100 0 DIR inhier.DIR.P -1040 2064 -976 2064 -976 2016 -864 2016 ecad4.selectWcs.DIR
 w -1110 1019 100 0 n#261 ebos.wcsoverride.FLNK -1024 1296 -912 1296 -912 1008 -1248 1008 -1248 512 -1152 512 ecalcs.wcsORdisable.SLNK
