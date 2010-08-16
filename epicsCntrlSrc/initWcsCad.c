@@ -26,6 +26,10 @@ static struct {
  *
  *INDENT-OFF*
  * $Log$
+ * Revision 1.3  2010/08/02 05:16:31  mrippa
+ * New WCS routines look at Camera and AG port
+ * for WCS file definition.
+ *
  * Revision 1.2  2009/05/27 19:32:21  fkraemer
  * fkraemer - copied my complete working dir over trunk
  *
@@ -237,11 +241,23 @@ long selectWcs(struct cadRecord *pCad)
    long agport = 0; /*default agport*/
    long status = CAD_ACCEPT; 
     
-   printf(" selectWcs\n");
-   
    *(long*) pCad->vala = 1;  /* Disable wfs switch by default*/ 
    switch (DIRECTIVE)
     {
+      case CAD_MARK:	       	/* No action required		*/
+	DPRINT(t1, "initWcsCad - MARK directive");
+
+	break;
+
+      case CAD_PRESET:
+	DPRINT(t1, "initWcsCad - PRESET directive");
+
+	
+	break;
+      case CAD_CLEAR:		/* No action required		*/
+	DPRINT(t1, "initWcsCad - CLEAR directive");
+
+	break;
       case CAD_START:            /* No action required           */
 	  printf("WCS file based on selection=%s, camera=%s AGport=%s \n",
 		  pCad->a, pCad->b, pCad->c);
@@ -278,6 +294,12 @@ long selectWcs(struct cadRecord *pCad)
 
 
       break;
+
+      default:		   /* Unknown directive		*/
+	strncpy(MSG, "selectWcsCad: Unrecongized directive",MAX_STRING_SIZE - 1);
+	status = CAD_REJECT;
+	break;
+
      }
 
     return OK;
@@ -287,8 +309,8 @@ long copyTCSvalues(struct genSubRecord *pgsub)
 {
 printf ("in copyTCSvalues\n"); 
 printf ("tcsValues.a = %s\n", (char *)pgsub->a); 
-printf ("tcsValues.b = %s\n",pgsub->b); 
-printf ("tcsValues.c = %s\n",pgsub->c); 
+printf ("tcsValues.b = %s\n", (char *)pgsub->b); 
+printf ("tcsValues.c = %s\n", (char *)pgsub->c); 
  
         pgsub->vala = pgsub->a; 
         pgsub->valb = pgsub->b; 
