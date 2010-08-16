@@ -1,19 +1,23 @@
 [schematic2]
-uniq 196
+uniq 199
 [tools]
 [detail]
-w 546 1563 100 0 n#195 ecalcs.ecalcs#194.VAL 448 1568 480 1568 480 1552 672 1552 eais.achvdBias.INP
+w 482 1611 100 0 n#196 ecalcs.biasCalc.FLNK 448 1600 576 1600 576 1520 672 1520 eais.achvdBias.SLNK
+w 546 1563 100 0 n#195 ecalcs.biasCalc.VAL 448 1568 480 1568 480 1552 672 1552 eais.achvdBias.INP
 w 1010 1323 100 0 n#189 ebis.biasFailed.VAL 928 1312 1152 1312 outhier.{dBiasFailed}.p
 w 994 1515 100 0 n#188 eais.achvdBias.VAL 928 1504 1120 1504 outhier.{achvdBias}.p
 w 930 1091 100 0 n#175 eaos.dBias.OUT 928 1088 992 1088 hwout.hwout#174.outp
+s -368 1648 100 0 Thats (c80_95:a10) - (c80_95:a1)
+s -368 1680 100 0 Bias is VDDUC - VDET
 [cell use]
-use ecalcs 160 1287 100 0 ecalcs#194
+use ecalcs 160 1287 100 0 biasCalc
 xform 0 304 1552
-p 67 1768 100 0 0 CALC:A-B
-p -128 1598 100 0 0 def(INPA):$(top)c80_95:a10
-p -128 1566 100 0 0 def(INPB):$(top)c80_95:a1
-p 128 1760 75 1280 -1 pproc(INPA):PP
-p 128 1728 75 1280 -1 pproc(INPB):PP
+p 208 1264 100 0 1 CALC:A-B
+p 176 1200 100 0 1 SCAN:.5 second
+p -256 1568 100 0 1 def(INPA):$(top)c80_95:a10
+p -256 1520 100 0 1 def(INPB):$(top)c80_95:a1
+p 128 1760 75 1280 -1 pproc(INPA):NPP
+p 128 1728 75 1280 -1 pproc(INPB):NPP
 use hwout 992 1047 100 0 hwout#174
 xform 0 1088 1088
 p 1080 1088 65 1536 -1 val(outp):@Node=2,Var=9,Grp=2,Idx=0
@@ -61,6 +65,6 @@ use eais 736 1576 100 0 achvdBias
 xform 0 800 1520
 p 816 1488 100 0 0 PREC:3
 p 744 1496 65 1536 1 PV:$(top)
-p 416 1518 100 0 0 SCAN:10 second
-p 640 1552 75 1280 -1 pproc(INP):PP
+p 416 1518 100 0 0 SCAN:Passive
+p 640 1552 75 1280 -1 pproc(INP):NPP
 [comments]
