@@ -40,6 +40,11 @@ GNAIIA3R: gnaacBits.h gnAII_1024xA_03_RR.c gnaacWFire.h
 	tcc -e _ns_main gnAII_1024xA_03_RR.trl -m map.map -o gnAII_1024xA_03_RR.tld
 	rm -f *.trl
 
+GNAIII: gnaacBits.h gnAIII_1024xSU01_4u.c gnaacWFire.h
+	sdc -b gnaacBits.h -o gnAIII_1024xSU01_4u gnAIII_1024xSU01_4u.c
+	tcc -e _ns_main gnAIII_1024xSU01_4u.trl -m map.map -o gnAIII_1024xSU01_4u.tld
+	rm -f *.trl
+
 GNTEST: gnaacBits.h gnTest.c gnaacWFire.h
 	sdc -b gnaacBits.h -o gnTest gnTest.c
 	tcc -e _ns_main gnTest.trl -m map.map -o gnTest.tld
