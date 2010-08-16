@@ -17,6 +17,9 @@ static struct {
  *
  *INDENT-OFF*
  * $Log$
+ * Revision 1.2  2009/05/27 19:32:20  fkraemer
+ * fkraemer - copied my complete working dir over trunk
+ *
  * Revision 1.1.1.1  1998/09/30 16:40:28  pruckle
  * Initial Release
  *
@@ -87,6 +90,8 @@ static struct {
 #include <car.h>
 #include "gnDCADefs.h"
 extern char *dbTop;
+
+
 long drRoiChk( struct cadRecord *pCad ) 
 {
     static long collow1,colhigh1,rowlow1,rowhigh1;
@@ -538,6 +543,7 @@ long drRoiChk( struct cadRecord *pCad )
 	  if (lVal != CAR_IDLE)
 	  {
 	      strcpy(MSG,"Cannot start drRoiChk while Observe is busy");
+	      cicsLogMessage( 2, "!!!Cannot start drRoiChk while Observe is busy");
 	      return CAD_REJECT;
 	  }
 	  getDbInfoT(dbTop, ARSETUP_DONE ".VAL", dummy, DBF_ENUM, &usVal);
@@ -553,7 +559,7 @@ long drRoiChk( struct cadRecord *pCad )
 	      strcpy(MSG,"drRoiChk:  observe setup not done");
 	      return CAD_REJECT;
 	  }
-	      status=assignVal( pCad->ftva, &numRoi, pCad->vala, pCad->mess);
+	  status=assignVal( pCad->ftva, &numRoi, pCad->vala, pCad->mess);
 
 	  if ((numRoi>=1)&&(status == CAD_ACCEPT)) 
 	  {
