@@ -21,7 +21,7 @@ typedef struct {
 
 static double timeTAI;
 extern long TCS;
-static gmosChip wcsInfo[NUM_CHIPS];
+extern gmosChip wcsInfo[NUM_CHIPS];
 static SDSU_WCS_INFO wcsHdr[NUM_CHIPS];
 
 long printTel(struct TELP tel);
