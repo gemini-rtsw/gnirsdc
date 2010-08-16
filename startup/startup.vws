@@ -4,7 +4,7 @@
 # First, vxWorks startup issues:
 
 # Make delete key work for backspace
-#tyBackspaceSet 0177
+tyBackspaceSet 0177
 
 # cd to application install directory (beware automounter problems)
 cd "$(iocpath)"
@@ -159,4 +159,5 @@ dbpf "nirs:dc:apply.DIR","0"
 sleep(1,0)
 dbpf "nirs:dc:apply.DIR","3"
 
-# End of startup.vws
+sleep(1,0)
+dbpf "nirs:dc:wcsoverride", "0"
