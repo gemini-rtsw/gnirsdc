@@ -2,7 +2,7 @@
 
 .SUFFIXES: .c .trl .tld
 
-TPBIN =  /home/fkraemer/work/gemini/tptools/bin
+TPBIN =  /home/mrippa/root/src/tptools/bin
 TCC_INCLUDE = $(TPBIN)/../include
 TP_INCLUDE = ../include
 GLOBAL_INCLUDE = ../../include
