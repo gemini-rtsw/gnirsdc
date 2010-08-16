@@ -29,6 +29,11 @@
  *
  *INDENT-OFF*
  * $Log$
+ * Revision 1.3  2010/07/08 21:26:17  mrippa
+ * Bias delay in place for testing. We'll sleep 3.1 seconds here
+ * allowing HK time to scan again. Sleeping here should not
+ * block HK scan.
+ *
  * Revision 1.2  2009/05/27 19:32:21  fkraemer
  * fkraemer - copied my complete working dir over trunk
  *
@@ -146,7 +151,6 @@ void initTasks(void)
    initTask(&semTest,SEM_EMPTY,dbTop,TEST_CAD,60,VX_FP_TASK,4000,doTest);
    initTask(&semInit,SEM_EMPTY,dbTop,INIT_CAD,60,VX_FP_TASK,4000,doInit);
    initTask(&semInitWcs,SEM_EMPTY,dbTop,SETWCS_CAD,60,VX_FP_TASK,10000,initWcsCtrl);
-/*    initTask(&semSetWcs,SEM_EMPTY,dbTop,SETWCS_CAD,60,VX_FP_TASK,4000,doSetWcs); */
    initTask(&semSetDhsInfo,SEM_EMPTY,dbTop,SETDHSINFO_CAD,60,VX_FP_TASK,4000,doSetDhsInfo);
    initTask(&semDhsConnect,SEM_EMPTY,dbTop,DHSCONNECT_CAD,60,VX_FP_TASK,4000,doDhsConnect);
 
@@ -252,303 +256,311 @@ int initTask( SEM_ID *semId, SEM_B_STATE semState, char *recTop, char *recName,
 }
 
 int doArSetup( int n1, int n2, int n3, int n4, int n5, int n6, int n7,
-	       int n8, int n9, int n10)
+		int n8, int n9, int n10)
 {
-    long dlCount;
-    struct cadRecord *pCad;
-    short newCode, reDoDrRoiSet=FALSE;
-    long status = 0;
-    long error;
-    long lVal;
-    int forceDwnLdVal;
-    long numDAvg,numLNRs,arSize;
-      int i;
-    long binFalse = (long)FALSE;
-    long binTrue = (long)TRUE;
+	long dlCount;
+	struct cadRecord *pCad;
+	short newCode, reDoDrRoiSet=FALSE;
+	long status = 0;
+	long error;
+	long lVal;
+	int forceDwnLdVal;
+	long numDAvg,numLNRs,arSize;
+	int i;
+	long binFalse = (long)FALSE;
+	long binTrue = (long)TRUE;
 
-    unsigned short usVal;
-    char errMess[MAX_STRING_SIZE];
-    char dummy[MAX_STRING_SIZE];
-     
-    /* Sleep until there is something to do */
-    while( 1 )
-    {
-	cicsLogMessage(DBG_MIN,"task tDoArSetup sleeping ...");
-	semTake(semArSetup,WAIT_FOREVER); 
-	cicsLogMessage(DBG_MIN, "task tDoArSetup awake");
+	unsigned short usVal;
+	char errMess[MAX_STRING_SIZE];
+	char dummy[MAX_STRING_SIZE];
 
-	/* Get the aaddress of the CAD record so command arguments
-	   are accessible */	
-	pCad = (struct cadRecord *) n1;
-	printCadVals(3, pCad, 9);
-	/* set Car to Busy */
-	setCar(ARSETUP_CAR,CAR_BUSY,OK,"",dummy);
-
-	if ((status = putDbInfoT(dbTop, HKFREEZE ".VAL", dummy, DBF_LONG,
-				 &binTrue)) != OK)
+	/* Sleep until there is something to do */
+	while( 1 )
 	{
-	    cicsLogMessage( 3, "Could not freeze Housekeeping readback");
-	    continue;
+		cicsLogMessage(DBG_MIN,"task tDoArSetup sleeping ...");
+		semTake(semArSetup,WAIT_FOREVER); 
+		cicsLogMessage(DBG_MIN, "task tDoArSetup awake");
+
+		/* Get the aaddress of the CAD record so command arguments
+			are accessible */	
+		pCad = (struct cadRecord *) n1;
+		printCadVals(3, pCad, 9);
+		/* set Car to Busy */
+		setCar(ARSETUP_CAR,CAR_BUSY,OK,"",dummy);
+
+		cicsLogMessage(DBG_MIN, "task tDoArSetup awake 1");
+		if ((status = putDbInfoT(dbTop, HKFREEZE ".VAL", dummy, DBF_LONG,
+						&binTrue)) != OK)
+		{
+			cicsLogMessage( 3, "Could not freeze Housekeeping readback");
+			continue;
+		}
+		cicsLogMessage(DBG_MIN, "task tDoArSetup awake 2");
+
+		/*Dowload ucode if a different one is specified or if download forced*/
+		status = getDbInfoT(dbTop, ARSETUP_CAD ".VALJ", pCad->mess,
+				DBF_LONG, &forceDwnLdVal);
+		newCode = 0;
+		printf("new = %s %s, old = %s %s",(char *)pCad->vala,(char *)pCad->valb,(char *)pCad->olda,(char *)pCad->oldb);
+		if ((strcmp(pCad->vala, pCad->olda) != 0) ||
+				(strcmp(pCad->valb, pCad->oldb) != 0) || 
+				(forceDwnLdVal != 0)) 
+		{
+			newCode = TRUE;
+			reDoDrRoiSet=TRUE;	    
+			putDbInfoT(dbTop, DWNLD_STATE ".VAL", dummy, DBF_LONG, &binFalse);
+			/* 	    sleep(1,0); */
+			cicsLogMessage( DBG_MIN, "Downloading uCode");
+			status = uCodeDwnLd(pCad->vala, pCad->valb, pCad, &error, errMess);
+			/* 	    sleep(1,0); */
+			/* EEE Handle error and correct continue on error code here */
+		}
+
+		cicsLogMessage(DBG_MIN, "task tDoArSetup awake 3");
+		cicsLogMessage(DBG_MIN,"unfreezing hk");
+		putDbInfoT(dbTop, HKFREEZE ".VAL", dummy, DBF_LONG, &binFalse);
+		/* 	sleep(1,0); */
+		/* Invoke setVoltages */
+		if (status == OK)
+		{
+			cicsLogMessage( 2, "Setting voltages");
+			status = setVoltages(pCad, &error, errMess);
+		}
+
+		/* Invoke setBias */
+		if (status == OK)
+		{
+			cicsLogMessage( 2, "Setting array bias");
+			status = setBias(pCad, &error, errMess);
+		}
+
+		cicsLogMessage(DBG_MIN, "task tDoArSetup awake 4");
+
+		/* If status is OK and new ucode was in fact downloaded, then set the status
+			of obsSetup and drRoiSet to UNKNOWN */
+		if ((status == OK) && newCode)
+		{
+			/* NOTE 1 should check if the OBS done record is set to busy 
+				if so there is no need to set this to unknown, the OBS setup
+				task is waiting for us to finish and will imediately reset it
+				anyway */
+
+			getDbInfoT(dbSadTop, DL_COUNT ".VAL", dummy, DBF_LONG, &dlCount);
+			dlCount ++;
+			putDbInfoT(dbSadTop, DL_COUNT ".VAL", dummy, DBF_LONG, &dlCount);
+			usVal = NAAC_UNKNOWN;
+			putDbInfoT(dbTop, OBSSETUP_DONE ".VAL", dummy, DBF_ENUM, &usVal);
+			/* see NOTE 1 the same thing applies to the DRROISET DONE flag */
+			if (reDoDrRoiSet == TRUE)
+			{
+				usVal = NAAC_UNKNOWN;
+				putDbInfoT(dbTop, DRROISET_DONE ".VAL", dummy, DBF_ENUM, &usVal);
+			}
+		}
+
+		cicsLogMessage(DBG_MIN, "task tDoArSetup awake 5");
+
+		/* If status is OK, set CAR to IDLE and DONE record to DONE */
+		if (status == OK)
+		{
+			fprintf(stderr,"****OK in setup**** \n");
+			setCar(ARSETUP_CAR,CAR_IDLE,OK,"",dummy);
+			usVal = NAAC_DONE;
+			putDbInfoT(dbTop, ARSETUP_DONE ".VAL", dummy, DBF_ENUM, &usVal);
+
+			/*	
+			Mark obsSetup CAD record /for processing.
+			*/
+			lVal = CAD_MARK;
+			putDbInfoT(dbTop, OBSSETUP_CAD ".DIR", dummy, DBF_LONG, &lVal);
+		}
+		else  /* Otherwise, set CAR and DONE records to ERROR.  set error code
+					and error message of the CAR record */
+		{
+			sprintf(tmp,"****error in setup**** %s\n", errMess);
+			cicsLogMessage(DBG_NOLOG,tmp);
+			setCar(ARSETUP_CAR,CAR_ERROR,error,errMess,dummy);
+			usVal = NAAC_ERROR;
+			putDbInfoT(dbTop, ARSETUP_DONE ".VAL", dummy, DBF_ENUM, &usVal);
+		}	
+		getDbInfoT(dbTop,OBSSETUP_CAD ".A",dummy,DBF_LONG,&arSize);
+		getDbInfoT(dbTop,OBSSETUP_CAD ".C",dummy,DBF_LONG,&numDAvg);
+		getDbInfoT(dbTop,OBSSETUP_CAD ".D",dummy,DBF_LONG,&numLNRs);
+		if((numDAvg <=0)||(!pow2(numDAvg,&i)))
+			numDAvg = 1;
+		if((numLNRs <=0)||(!pow2(numLNRs,&i)))
+			numLNRs = 1;
+		if((arSize != 1024)&&(arSize != 512)&&(arSize != 256)&&(arSize != 768))
+			arSize = 1024;
+		calcMinInt(arSize,numDAvg,numLNRs);
+		printf("calcminint\n");
 	}
 
-	/*Dowload ucode if a different one is specified or if download forced*/
-	status = getDbInfoT(dbTop, ARSETUP_CAD ".VALJ", pCad->mess,
-			   			DBF_LONG, &forceDwnLdVal);
-	newCode = 0;
-	printf("new = %s %s, old = %s %s",(char *)pCad->vala,(char *)pCad->valb,(char *)pCad->olda,(char *)pCad->oldb);
-	if ((strcmp(pCad->vala, pCad->olda) != 0) ||
-	    	(strcmp(pCad->valb, pCad->oldb) != 0) || 
- 	    		(forceDwnLdVal != 0)) 
-	{
-	    newCode = TRUE;
-	    reDoDrRoiSet=TRUE;	    
-	    putDbInfoT(dbTop, DWNLD_STATE ".VAL", dummy, DBF_LONG, &binFalse);
-/* 	    sleep(1,0); */
-	    cicsLogMessage( 2, "Downloading uCode");
-	    status = uCodeDwnLd(pCad->vala, pCad->valb, pCad, &error, errMess);
-/* 	    sleep(1,0); */
-	    /* EEE Handle error and correct continue on error code here */
-	}
-	cicsLogMessage(DBG_MIN,"unfreezing hk");
-	putDbInfoT(dbTop, HKFREEZE ".VAL", dummy, DBF_LONG, &binFalse);
-/* 	sleep(1,0); */
-	/* Invoke setVoltages */
-	if (status == OK)
-	{
-	  cicsLogMessage( 2, "Setting voltages");
-	  status = setVoltages(pCad, &error, errMess);
-	}
-	
-	/* Invoke setBias */
-	if (status == OK)
-	{
-	  cicsLogMessage( 2, "Setting array bias");
-	  status = setBias(pCad, &error, errMess);
-	}
-	
-
-/* If status is OK and new ucode was in fact downloaded, then set the status
-   of obsSetup and drRoiSet to UNKNOWN */
-	if ((status == OK) && newCode)
-	{
-	    /* NOTE 1 should check if the OBS done record is set to busy 
-	       if so there is no need to set this to unknown, the OBS setup
-	       task is waiting for us to finish and will imediately reset it
-	       anyway */
-	    
-	    getDbInfoT(dbSadTop, DL_COUNT ".VAL", dummy, DBF_LONG, &dlCount);
-	    dlCount ++;
-	    putDbInfoT(dbSadTop, DL_COUNT ".VAL", dummy, DBF_LONG, &dlCount);
-	    usVal = NAAC_UNKNOWN;
-	    putDbInfoT(dbTop, OBSSETUP_DONE ".VAL", dummy, DBF_ENUM, &usVal);
-	    /* see NOTE 1 the same thing applies to the DRROISET DONE flag */
-	    if (reDoDrRoiSet == TRUE)
-	    {
-		usVal = NAAC_UNKNOWN;
-		putDbInfoT(dbTop, DRROISET_DONE ".VAL", dummy, DBF_ENUM, &usVal);
-	    }
-	}
-
-	/* If status is OK, set CAR to IDLE and DONE record to DONE */
-	if (status == OK)
-	{
-	  fprintf(stderr,"****OK in setup**** \n");
-	  setCar(ARSETUP_CAR,CAR_IDLE,OK,"",dummy);
-	  usVal = NAAC_DONE;
-	  putDbInfoT(dbTop, ARSETUP_DONE ".VAL", dummy, DBF_ENUM, &usVal);
-
-	  /*	
-		Mark obsSetup CAD record for processing.
-	  */
-	  lVal = CAD_MARK;
-	  putDbInfoT(dbTop, OBSSETUP_CAD ".DIR", dummy, DBF_LONG, &lVal);
-	}
-	else  /* Otherwise, set CAR and DONE records to ERROR.  set error code
-		 and error message of the CAR record */
-	{
-	  sprintf(tmp,"****error in setup**** %s\n", errMess);
-	  cicsLogMessage(DBG_NOLOG,tmp);
-	  setCar(ARSETUP_CAR,CAR_ERROR,error,errMess,dummy);
-	  usVal = NAAC_ERROR;
-	  putDbInfoT(dbTop, ARSETUP_DONE ".VAL", dummy, DBF_ENUM, &usVal);
-	}	
-	getDbInfoT(dbTop,OBSSETUP_CAD ".A",dummy,DBF_LONG,&arSize);
-	getDbInfoT(dbTop,OBSSETUP_CAD ".C",dummy,DBF_LONG,&numDAvg);
-	getDbInfoT(dbTop,OBSSETUP_CAD ".D",dummy,DBF_LONG,&numLNRs);
-	if((numDAvg <=0)||(!pow2(numDAvg,&i)))
-	  numDAvg = 1;
-	if((numLNRs <=0)||(!pow2(numLNRs,&i)))
-	  numLNRs = 1;
-	if((arSize != 1024)&&(arSize != 512)&&(arSize != 256)&&(arSize != 768))
-	  arSize = 1024;
-	calcMinInt(arSize,numDAvg,numLNRs);
-	printf("calcminint\n");
-    }
-    
-    return status;
+	return status;
 }
 
 
 int doObsSetup( int n1, int n2, int n3, int n4, int n5, int n6, int n7,
 		int n8, int n9, int n10)
 {
-    static int old;
-    struct cadRecord *pCad;
-    short newSeqRoiSize=FALSE;
-    long status = 0;
-    long error;
-    long lVal,numDAvgs,numLNRs,arSize;
-    unsigned short usVal;
-    char dummy[MAX_STRING_SIZE];
-    char errMess[MAX_STRING_SIZE];
-    char name[MAX_STRING_SIZE];	
+	static int old;
+	struct cadRecord *pCad;
+	short newSeqRoiSize=FALSE;
+	long status = 0;
+	long error;
+	long lVal,numDAvgs,numLNRs,arSize;
+	unsigned short usVal;
+	char dummy[MAX_STRING_SIZE];
+	char errMess[MAX_STRING_SIZE];
+	char name[MAX_STRING_SIZE];	
 
-    /* Sleep until there is something to do */
-    while( 1 )
-    {
-	  status = OK;/*8-16-01 pbr*/
-	cicsLogMessage(DBG_MIN,"task tDoObsSetup sleeping ...");
-	/* Wait for semaphore and completion of the arSetup task */
-	semTake(semObsSetup,WAIT_FOREVER);
-	/* EEE we should make some provision to bomb out of here if It is not
-	   set to DONE for some timeout period maybe one minute? */
-	while( naacStatus(dbTop,ARSETUP_DONE) != NAAC_DONE)
-	    taskDelay(sysClkRateGet()/10);
-	cicsLogMessage(DBG_MIN, "task tDoObsSetup awake");
-
-	/* Set the CAR reocrd to BUSY */
-	setCar(OBSSETUP_CAR,CAR_BUSY,OK,"",dummy);
-
-	/* Get the address of CAD record so command arguments are accessible */
-	pCad = (struct cadRecord *) n1;
-	printCadVals(3,pCad,15);
-    
-	/* Set the sequencer ROI size if a different one is specified */
- 	newSeqRoiSize = FALSE; 
-  /*   printf("setup status = %d\n",status); */
- 
-/*  	if ((*((long *)pCad->vala)) != (*((long *)pCad->olda)))  */
-	if (getDbInfoT(dbTop, OBSSETUP_CAD ".VALC", dummy, DBF_LONG, 
-		       &lVal) != OK)
+	/* Sleep until there is something to do */
+	while( 1 )
 	{
-		sprintf(errMess, "Error getting numDavgs value");
-		error = NDAVGS_ERROR;
-	}
-	else
-	if (putDbInfoT(dbTop, NUM_DAVGS ".VAL", dummy, DBF_LONG, &lVal) != OK)
-	{
-		sprintf(errMess, "Error setting numDavgs value");
-		error = NDAVGS_ERROR;
-	}
-	numDAvgs = lVal;
-   /*  printf("setup status = %d\n",status); */
-	if (getDbInfoT(dbTop, OBSSETUP_CAD ".VALD", dummy, DBF_LONG,
-		       &lVal) != OK)
-	{
-		sprintf(errMess, "Error getting LNR value");
-		error = LNR_ERROR;
-	}
-	else
-	if (putDbInfoT(dbTop, NUM_LNRS ".VAL", dummy, DBF_LONG, &lVal) != OK)
-	{
-		sprintf(errMess, "Error setting LNR value");
-		error = LNR_ERROR;
-	}
-	numLNRs = lVal;
-   /*  printf("setup status = %d\n",status); */
- 	if ((*((long *)pCad->vala)) != old) 
- 	{ 
-	    old = *((long *)pCad->vala);
-	    newSeqRoiSize = TRUE;
-	    cicsLogMessage( 2, "Setting seqRoiSize");
-	    status += setSeqROI(pCad, &error, errMess,numDAvgs,numLNRs);
-	    cicsLogMessage( 2, "seqRoiSize is set");
- 	}
+		status = OK;/*8-16-01 pbr*/
+		cicsLogMessage(DBG_MIN,"task tDoObsSetup sleeping ...");
+		/* Wait for semaphore and completion of the arSetup task */
+		semTake(semObsSetup,WAIT_FOREVER);
+		/* EEE we should make some provision to bomb out of here if It is not
+			set to DONE for some timeout period maybe one minute? */
+		while( naacStatus(dbTop,ARSETUP_DONE) != NAAC_DONE)
+			taskDelay(sysClkRateGet()/10);
+		cicsLogMessage(DBG_MIN, "task tDoObsSetup awake");
 
-   /*  printf("setup status = %d\n",status); */
-	if (getDbInfoT(dbTop, OBSSETUP_CAD ".VALE", dummy, DBF_LONG, 
-		       &lVal) != OK)
-	{
-		sprintf(errMess, "Error getting numCoadds");
-		error = COADD_ERROR;
+		/* Set the CAR reocrd to BUSY */
+		setCar(OBSSETUP_CAR,CAR_BUSY,OK,"",dummy);
+
+		/* Get the address of CAD record so command arguments are accessible */
+		pCad = (struct cadRecord *) n1;
+		printCadVals(3,pCad,15);
+
+		/* Set the sequencer ROI size if a different one is specified */
+		newSeqRoiSize = FALSE; 
+		/*   printf("setup status = %d\n",status); */
+
+		/*  	if ((*((long *)pCad->vala)) != (*((long *)pCad->olda)))  */
+		if (getDbInfoT(dbTop, OBSSETUP_CAD ".VALC", dummy, DBF_LONG, 
+					&lVal) != OK)
+		{
+			sprintf(errMess, "Error getting numDavgs value");
+			error = NDAVGS_ERROR;
+		}
+		else
+			if (putDbInfoT(dbTop, NUM_DAVGS ".VAL", dummy, DBF_LONG, &lVal) != OK)
+			{
+				sprintf(errMess, "Error setting numDavgs value");
+				error = NDAVGS_ERROR;
+			}
+		numDAvgs = lVal;
+		/*  printf("setup status = %d\n",status); */
+		if (getDbInfoT(dbTop, OBSSETUP_CAD ".VALD", dummy, DBF_LONG,
+					&lVal) != OK)
+		{
+			sprintf(errMess, "Error getting LNR value");
+			error = LNR_ERROR;
+		}
+		else
+			if (putDbInfoT(dbTop, NUM_LNRS ".VAL", dummy, DBF_LONG, &lVal) != OK)
+			{
+				sprintf(errMess, "Error setting LNR value");
+				error = LNR_ERROR;
+			}
+		numLNRs = lVal;
+		/*  printf("setup status = %d\n",status); */
+		if ((*((long *)pCad->vala)) != old) 
+		{ 
+			old = *((long *)pCad->vala);
+			newSeqRoiSize = TRUE;
+			cicsLogMessage( 2, "Setting seqRoiSize");
+			status += setSeqROI(pCad, &error, errMess,numDAvgs,numLNRs);
+			cicsLogMessage( 2, "seqRoiSize is set");
+		}
+
+		/*  printf("setup status = %d\n",status); */
+		if (getDbInfoT(dbTop, OBSSETUP_CAD ".VALE", dummy, DBF_LONG, 
+					&lVal) != OK)
+		{
+			sprintf(errMess, "Error getting numCoadds");
+			error = COADD_ERROR;
+		}
+		else
+			if (putDbInfoT(dbTop, NUM_COADDS ".VAL", dummy, DBF_LONG, &lVal) != OK)
+			{
+				sprintf(errMess, "Error setting numCoadds");
+				error = COADD_ERROR;
+			}
+
+		/*   printf("setup status = %d\n",status); */
+
+
+		if (getDbInfoT(dbTop, OBSSETUP_CAD ".VALF", dummy, DBF_LONG, 
+					&lVal) != OK)
+		{
+			sprintf(errMess, "Error getting numPics value");
+			error = NPICS_ERROR;
+		}
+		else
+			if (putDbInfoT(dbTop, NUM_PICS ".VAL", dummy, DBF_LONG, &lVal) != OK)
+			{
+				sprintf(errMess, "Error setting numPics value");
+				error = NPICS_ERROR;
+			}
+		/*  printf("setup status = %d\n",status); */
+
+		cicsLogMessage( 2, "Checking array activation");
+		status += chkActiv(pCad, &error, errMess);
+		cicsLogMessage( 2, "Array activation complete");
+
+
+		/*   printf("setup status = %d\n",status); */
+		cicsLogMessage( 2, "Setting int time");
+		status += setIntTime(pCad, &error, errMess);
+		cicsLogMessage( 2, "int time set");
+
+		/*    printf("setup status = %d\n",status); */
+		cicsLogMessage( 2, "Setting header vars");
+		status += setHdrVars(pCad, &error, errMess);
+		cicsLogMessage( 2, "header vars set");
+
+		/*  printf("setup status = %d\n",status); */
+		cicsLogMessage( 2, "Setting obs state");
+		status += setObsState(pCad, &error, errMess);
+		cicsLogMessage( 2, "obs state set");
+
+		/*  printf("setup status = %d\n",status); */
+		arSize =*(long *) pCad->vala;
+		calcMinInt(arSize, numDAvgs, numLNRs);
+		/* If status is OK and new seqRoiSize was in fact set, then
+			set the status of drRoiSet to UNKNOWN EEE see NOTE 1 above the
+			same applies here */
+		/*   printf("setup status = %d\n",status); */
+
+		if((status == OK) && newSeqRoiSize)
+		{
+			usVal = NAAC_UNKNOWN;
+			putDbInfoT(dbTop, DRROISET_DONE ".VAL", dummy, DBF_ENUM, &usVal);
+		}
+
+		/*   printf("setup status = %d\n",status); */
+		/* If status is OK, set CAR to IDLE and DONE record to DONE */
+		if(status == OK)
+		{
+			setCar(OBSSETUP_CAR,CAR_IDLE,OK,"",dummy);
+			sprintf(name,"%s%s.VAL",dbTop,OBSSETUP_DONE);
+			usVal = NAAC_DONE;
+			putDbInfo(name, dummy, DBF_ENUM, &usVal);
+			lVal = CAD_MARK;
+			putDbInfoT(dbTop, DRROISET_CAD ".DIR", dummy, DBF_LONG, &lVal);
+		}
+		else /* Otherwise, set CAR and DONE records to ERROR.  Set error code
+				  and error message of the CAR record 	*/
+		{
+			setCar(OBSSETUP_CAR,CAR_ERROR,error,errMess,dummy);
+			usVal = NAAC_ERROR;
+			putDbInfoT(dbTop, OBSSETUP_DONE ".VAL", dummy, DBF_ENUM, &usVal);
+		}
 	}
-	else
-	if (putDbInfoT(dbTop, NUM_COADDS ".VAL", dummy, DBF_LONG, &lVal) != OK)
-	{
-		sprintf(errMess, "Error setting numCoadds");
-		error = COADD_ERROR;
-	}
-
-  /*   printf("setup status = %d\n",status); */
-
-
-	if (getDbInfoT(dbTop, OBSSETUP_CAD ".VALF", dummy, DBF_LONG, 
-		       &lVal) != OK)
-	{
-		sprintf(errMess, "Error getting numPics value");
-		error = NPICS_ERROR;
-	}
-	else
-	if (putDbInfoT(dbTop, NUM_PICS ".VAL", dummy, DBF_LONG, &lVal) != OK)
-	{
-		sprintf(errMess, "Error setting numPics value");
-		error = NPICS_ERROR;
-	}
-   /*  printf("setup status = %d\n",status); */
-
-	cicsLogMessage( 2, "Checking array activation");
-	status += chkActiv(pCad, &error, errMess);
-	cicsLogMessage( 2, "Array activation complete");
-
-
-  /*   printf("setup status = %d\n",status); */
-	cicsLogMessage( 2, "Setting int time");
-	status += setIntTime(pCad, &error, errMess);
-	cicsLogMessage( 2, "int time set");
-
- /*    printf("setup status = %d\n",status); */
-	cicsLogMessage( 2, "Setting header vars");
-	status += setHdrVars(pCad, &error, errMess);
-	cicsLogMessage( 2, "header vars set");
-
-   /*  printf("setup status = %d\n",status); */
-	cicsLogMessage( 2, "Setting obs state");
-	status += setObsState(pCad, &error, errMess);
-	cicsLogMessage( 2, "obs state set");
-
-   /*  printf("setup status = %d\n",status); */
-	arSize =*(long *) pCad->vala;
-	calcMinInt(arSize, numDAvgs, numLNRs);
-	/* If status is OK and new seqRoiSize was in fact set, then
-	   set the status of drRoiSet to UNKNOWN EEE see NOTE 1 above the
-	   same applies here */
-  /*   printf("setup status = %d\n",status); */
-	
-	if((status == OK) && newSeqRoiSize)
-	{
-	    usVal = NAAC_UNKNOWN;
-	    putDbInfoT(dbTop, DRROISET_DONE ".VAL", dummy, DBF_ENUM, &usVal);
-	}
-  /*   printf("setup status = %d\n",status); */
-	/* If status is OK, set CAR to IDLE and DONE record to DONE */
-	if(status == OK)
-	{
-	    setCar(OBSSETUP_CAR,CAR_IDLE,OK,"",dummy);
-	    sprintf(name,"%s%s.VAL",dbTop,OBSSETUP_DONE);
-	    usVal = NAAC_DONE;
-	    putDbInfo(name, dummy, DBF_ENUM, &usVal); 
-		lVal = CAD_MARK;
-		putDbInfoT(dbTop, DRROISET_CAD ".DIR", dummy, DBF_LONG, &lVal);
-	}
-	else /* Otherwise, set CAR and DONE records to ERROR.  Set error code
-		and error message of the CAR record 	*/
-	{
-	    setCar(OBSSETUP_CAR,CAR_ERROR,error,errMess,dummy);
-	    usVal = NAAC_ERROR;
-	    putDbInfoT(dbTop, OBSSETUP_DONE ".VAL", dummy, DBF_ENUM, &usVal);
-	}
-    }
-    return status;
+	return status;
 }
 
 
@@ -611,216 +623,216 @@ int doDrRoiSet( int n1, int n2, int n3, int n4, int n5, int n6, int n7,
 }
 
 long uCodeDwnLd(char* path, char* name, struct cadRecord* cadPtr, 
-			 long *errNo, char* errText   )
+		long *errNo, char* errText   )
 {
-    /* These are variables so that pointers can be passed */
-    long binFalse = (long)FALSE;
-    long binTrue = (long)TRUE;
-    char buf[80];
-    char biState[80], biFailed[80], dummy[80];
-    char sPath[256], sName[256];
+	/* These are variables so that pointers can be passed */
+	long binFalse = (long)FALSE;
+	long binTrue = (long)TRUE;
+	char buf[80];
+	char biState[80], biFailed[80], dummy[80];
+	char sPath[256], sName[256];
 
-    long status = (long)OK;
+	long status = (long)OK;
 
-    sprintf(biState, "%s%s.VAL", dbTop, DWNLD_STATE);
-    sprintf(biFailed, "%s%s.VAL", dbTop, DWNLD_FAILED);
-    strcpy (sPath,path);
-    if(sPath[strlen(sPath) - 1] != '/') 
-	strcat(sPath,"/");
-    strcpy (sName,name);
+	sprintf(biState, "%s%s.VAL", dbTop, DWNLD_STATE);
+	sprintf(biFailed, "%s%s.VAL", dbTop, DWNLD_FAILED);
+	strcpy (sPath,path);
+	if(sPath[strlen(sPath) - 1] != '/') 
+		strcat(sPath,"/");
+	strcpy (sName,name);
 	sprintf (tmp,"ucode: Path=<%s>, Name=<%s>",sPath,name);
 	cicsLogMessage(DBG_NONE,tmp);
-    status = ldWaveFormGen(sPath, sName , sPath);
+	status = ldWaveFormGen(sPath, sName , sPath);
 
-    strcpy (sName,sPath);
-    strncat (sName,name,strcspn (name,"."));
-    strcat (sName,".cmd");
-    sprintf (tmp,"ucode: command file = %s\n",sName);
+	strcpy (sName,sPath);
+	strncat (sName,name,strcspn (name,"."));
+	strcat (sName,".cmd");
+	sprintf (tmp,"ucode: command file = %s\n",sName);
 	cicsLogMessage(DBG_NONE,tmp);
-  
 
-    if ( status == 0 )/* we only want to parse command file on success?*/
-    {
-/* 	status = parseCmd( sName, cadPtr ); */
-      sprintf(buf,"top=%s,sadtop=%s",dbTop,dbSadTop);
-      printf("%s\n",buf);
-	status = pvload(sName, buf);
-    }
 
-    if ( status != 0 )
-    {	/* EEE do we need a CICS log message here ??*/
-	/* set dwnLdState.VAL true to indicate that the ucode is downloaded  */
-	putDbInfo(biState, dummy, DBF_LONG, &binFalse);
-	putDbInfo(biFailed, dummy, DBF_LONG, &binTrue);
-	*errNo = 1;
-	sprintf(errText, "Download failed");
-    }
-    else
-    {
-	putDbInfo(biState, dummy, DBF_LONG, &binTrue);
-	putDbInfo(biFailed, dummy, DBF_LONG, &binFalse);
-/* 	putDbInfoT(dbTop, "arSetup.I", dummy, DBF_LONG, &binFalse); */
-	putDbInfoT(dbTop, FORCE_DWN_LD ".VAL", dummy, DBF_LONG, &binFalse);
-	*errNo = 0;
-    }
+	if ( status == 0 )/* we only want to parse command file on success?*/
+	{
+		/* 	status = parseCmd( sName, cadPtr ); */
+		sprintf(buf,"top=%s,sadtop=%s",dbTop,dbSadTop);
+		printf("%s\n",buf);
+		status = pvload(sName, buf);
+	}
 
-    return status;
+	if ( status != 0 )
+	{	/* EEE do we need a CICS log message here ??*/
+		/* set dwnLdState.VAL true to indicate that the ucode is downloaded  */
+		putDbInfo(biState, dummy, DBF_LONG, &binFalse);
+		putDbInfo(biFailed, dummy, DBF_LONG, &binTrue);
+		*errNo = 1;
+		sprintf(errText, "Download failed");
+	}
+	else
+	{
+		putDbInfo(biState, dummy, DBF_LONG, &binTrue);
+		putDbInfo(biFailed, dummy, DBF_LONG, &binFalse);
+		/* 	putDbInfoT(dbTop, "arSetup.I", dummy, DBF_LONG, &binFalse); */
+		putDbInfoT(dbTop, FORCE_DWN_LD ".VAL", dummy, DBF_LONG, &binFalse);
+		*errNo = 0;
+	}
+
+	return status;
 }
 
 
 long setVoltages( struct cadRecord* cadPtr, long *errNo, char* errText )
 {
-    int success = TRUE;
-    double vSetVal, vdd1Val, vdd2Val, vgg1Val, vgg2Val;
-    long status;
-    double val;
+	int success = TRUE;
+	double vSetVal, vdd1Val, vdd2Val, vgg1Val, vgg2Val;
+	long status;
+	double val;
 
-    /* TRUE and FALSE variables to be used as parameters to db functions    */
-    long binFalse = (long)FALSE;
-    long binTrue = (long)TRUE;
-    long *tfval;
-   
-    /* Set vSet voltage */
-    status = getDbInfoT(dbTop, ARSETUP_CAD ".VALC", cadPtr->mess, DBF_DOUBLE, &vSetVal);
-    if (status == OK)    {
-	success &= (getDbInfoT(dbTop, HK_VSET ".VAL", cadPtr->mess, DBF_DOUBLE, &val) == OK);
-	if (fabs(fabs(val) - fabs(vSetVal))>  VOLTS_TOLERANCE)
-	{
-	   
-	    success &= setHWVoltsT(dbTop, VSET ".VAL",  HK_VSET ".VAL",
-				   cadPtr, vSetVal);
+	/* TRUE and FALSE variables to be used as parameters to db functions    */
+	long binFalse = (long)FALSE;
+	long binTrue = (long)TRUE;
+	long *tfval;
+
+	/* Set vSet voltage */
+	status = getDbInfoT(dbTop, ARSETUP_CAD ".VALC", cadPtr->mess, DBF_DOUBLE, &vSetVal);
+	if (status == OK)    {
+		success &= (getDbInfoT(dbTop, HK_VSET ".VAL", cadPtr->mess, DBF_DOUBLE, &val) == OK);
+		if (fabs(fabs(val) - fabs(vSetVal))>  VOLTS_TOLERANCE)
+		{
+
+			success &= setHWVoltsT(dbTop, VSET ".VAL",  HK_VSET ".VAL",
+					cadPtr, vSetVal);
+		}
 	}
-    }
-    else
-	success = FALSE;
-    
-    /* Set Vdd1 voltage */
-    status = getDbInfoT(dbTop, ARSETUP_CAD ".VALD", cadPtr->mess, 
+	else
+		success = FALSE;
+
+	/* Set Vdd1 voltage */
+	status = getDbInfoT(dbTop, ARSETUP_CAD ".VALD", cadPtr->mess, 
 			DBF_DOUBLE, &vdd1Val);
-    if (status == OK)
-    {
-	success &= (getDbInfoT(dbTop, HK_VDDCL1 ".VAL", cadPtr->mess, 
-			       DBF_DOUBLE, &val) == OK);
-	if (fabs(fabs(val) - fabs(vdd1Val))>  VOLTS_TOLERANCE)
+	if (status == OK)
 	{
-	  
-	    success &= setHWVoltsT(dbTop, VDDCL1 ".VAL",  HK_VDDCL1 ".VAL",
-				   cadPtr, vdd1Val);
-	}
-    }
-    else
-	success = FALSE;
+		success &= (getDbInfoT(dbTop, HK_VDDCL1 ".VAL", cadPtr->mess, 
+					DBF_DOUBLE, &val) == OK);
+		if (fabs(fabs(val) - fabs(vdd1Val))>  VOLTS_TOLERANCE)
+		{
 
-    /* Set Vdd2 voltage */
-    status = getDbInfoT(dbTop, ARSETUP_CAD ".VALE", cadPtr->mess, 
+			success &= setHWVoltsT(dbTop, VDDCL1 ".VAL",  HK_VDDCL1 ".VAL",
+					cadPtr, vdd1Val);
+		}
+	}
+	else
+		success = FALSE;
+
+	/* Set Vdd2 voltage */
+	status = getDbInfoT(dbTop, ARSETUP_CAD ".VALE", cadPtr->mess, 
 			DBF_DOUBLE, &vdd2Val);
-    if (status == OK)
-    {
-	success &= (getDbInfoT(dbTop, HK_VDDCL2 ".VAL", cadPtr->mess,
-			       DBF_DOUBLE, &val) == OK);
-	if (fabs(fabs(val) - fabs(vdd2Val))>  VOLTS_TOLERANCE)
+	if (status == OK)
 	{
-	    /* Temporarily commented for eventual removal...see above
-	       success &= (putDbInfoT(dbTop, VDDCL2 ".VAL", cadPtr->mess, DBF_DOUBLE, &vdd2Val) == 0);
-	    */
-	    success &= setHWVoltsT(dbTop, VDDCL2 ".VAL",  HK_VDDCL2 ".VAL", 
-				   cadPtr, vdd2Val);
+		success &= (getDbInfoT(dbTop, HK_VDDCL2 ".VAL", cadPtr->mess,
+					DBF_DOUBLE, &val) == OK);
+		if (fabs(fabs(val) - fabs(vdd2Val))>  VOLTS_TOLERANCE)
+		{
+			/* Temporarily commented for eventual removal...see above
+				success &= (putDbInfoT(dbTop, VDDCL2 ".VAL", cadPtr->mess, DBF_DOUBLE, &vdd2Val) == 0);
+				*/
+			success &= setHWVoltsT(dbTop, VDDCL2 ".VAL",  HK_VDDCL2 ".VAL", 
+					cadPtr, vdd2Val);
+		}
 	}
-    }
-    else
-	success = FALSE;
+	else
+		success = FALSE;
 
-    /* Set Vgg1 voltage */
-    status = getDbInfoT(dbTop, ARSETUP_CAD ".VALF", cadPtr->mess, DBF_DOUBLE, 
+	/* Set Vgg1 voltage */
+	status = getDbInfoT(dbTop, ARSETUP_CAD ".VALF", cadPtr->mess, DBF_DOUBLE, 
 			&vgg1Val);
-    if (status == OK)
-    {
-	success &= (getDbInfoT(dbTop, HK_VGGCL1 ".VAL", cadPtr->mess, 
-			       DBF_DOUBLE, &val) == OK);
-	if (fabs(fabs(val) - fabs(vgg1Val))>  VOLTS_TOLERANCE)
+	if (status == OK)
 	{
-	  
-	    success &= setHWVoltsT(dbTop, VGGCL1 ".VAL",  HK_VGGCL1 ".VAL",
-				   cadPtr, vgg1Val);
-	}
-    }
-    else
-	success = FALSE;
+		success &= (getDbInfoT(dbTop, HK_VGGCL1 ".VAL", cadPtr->mess, 
+					DBF_DOUBLE, &val) == OK);
+		if (fabs(fabs(val) - fabs(vgg1Val))>  VOLTS_TOLERANCE)
+		{
 
-    /* Set Vgg2 voltage */
-    status = getDbInfoT(dbTop, ARSETUP_CAD ".VALG", cadPtr->mess, DBF_DOUBLE,
+			success &= setHWVoltsT(dbTop, VGGCL1 ".VAL",  HK_VGGCL1 ".VAL",
+					cadPtr, vgg1Val);
+		}
+	}
+	else
+		success = FALSE;
+
+	/* Set Vgg2 voltage */
+	status = getDbInfoT(dbTop, ARSETUP_CAD ".VALG", cadPtr->mess, DBF_DOUBLE,
 			&vgg2Val);
-    if (status == OK)
-    {
-	success &= (getDbInfoT(dbTop, HK_VGGCL2 ".VAL", cadPtr->mess,
-			       DBF_DOUBLE, &val) == OK);
-	if (fabs(fabs(val) - fabs(vgg2Val))>  VOLTS_TOLERANCE)
+	if (status == OK)
 	{
-	   
-	    success &= setHWVoltsT(dbTop, VGGCL2 ".VAL",  HK_VGGCL2 ".VAL", 
-				   cadPtr, vgg2Val);
-	}
-    }
-    else
-	success = FALSE;
+		success &= (getDbInfoT(dbTop, HK_VGGCL2 ".VAL", cadPtr->mess,
+					DBF_DOUBLE, &val) == OK);
+		if (fabs(fabs(val) - fabs(vgg2Val))>  VOLTS_TOLERANCE)
+		{
 
-    if (success == FALSE)
-    {
-        status = ERROR;
-      	*errNo = VOLT_SET_FAILED;
-	sprintf(errText, "Error setting voltages");
-	tfval = &binTrue;
-    }
-    else
-    {
-        status = GNAAC_OK;
-	*errNo = GNAAC_OK;
-	sprintf(errText, "All OK");
-	tfval = &binFalse;
-    }
-    putDbInfoT(dbTop, DACS_FAILED ".VAL", cadPtr->mess, DBF_DOUBLE, tfval);
-   
-    return status;
-    
+			success &= setHWVoltsT(dbTop, VGGCL2 ".VAL",  HK_VGGCL2 ".VAL", 
+					cadPtr, vgg2Val);
+		}
+	}
+	else
+		success = FALSE;
+
+	if (success == FALSE)
+	{
+		status = ERROR;
+		*errNo = VOLT_SET_FAILED;
+		sprintf(errText, "Error setting voltages");
+		tfval = &binTrue;
+	}
+	else
+	{
+		status = GNAAC_OK;
+		*errNo = GNAAC_OK;
+		sprintf(errText, "All OK");
+		tfval = &binFalse;
+	}
+	putDbInfoT(dbTop, DACS_FAILED ".VAL", cadPtr->mess, DBF_DOUBLE, tfval);
+
+	return status;
+
 }
 
 long setSeqROI( struct cadRecord* cadPtr, long *errNo, char* errText,long numDAvgs,long numLNRs)
 {
 
-/*	char strings to hold names of EPICS records to be manipulated	*/
-    char rowHigh[80], colHigh[80], is1024[80], is768[80];
-    char is512[80], is384[80], is256[80], is128[80];
-    char curMaxCol[80], curMaxRow[80], drROIDone[80];
+	/*	char strings to hold names of EPICS records to be manipulated	*/
+	char rowHigh[80], colHigh[80], is1024[80], is768[80];
+	char is512[80], is384[80], is256[80], is128[80];
+	char curMaxCol[80], curMaxRow[80], drROIDone[80];
 
-    long arSizeVal;		/* holds chosen ROI size*/
-    long status, sizeOK, colCnt;
+	long arSizeVal;		/* holds chosen ROI size*/
+	long status, sizeOK, colCnt;
 
-/*	TRUE and FALSE variables to be used as parameters to db functions	*/
-    long binFalse = FALSE;
-    long binTrue = TRUE;
+	/*	TRUE and FALSE variables to be used as parameters to db functions	*/
+	long binFalse = FALSE;
+	long binTrue = TRUE;
 
-/*	long pointers for putDbInfo() parameters */
+	/*	long pointers for putDbInfo() parameters */
 	long *is256Val, *is512Val, *is768Val, *is1024Val;
 
-    /* 	Set up EPICS records names */
-    sprintf(rowHigh, "%s%s.VAL", dbTop, ROW_HI);
-    sprintf(colHigh, "%s%s.VAL", dbTop, COL_HI);
-    sprintf(is1024, "%s%s.VAL", dbTop, IS1024);
-    sprintf(is768, "%s%s.VAL", dbTop, IS768);
-    sprintf(is512, "%s%s.VAL", dbTop, IS512);
-    sprintf(is384, "%s%s.VAL", dbTop, IS384);
-    sprintf(is256, "%s%s.VAL", dbTop, IS256);
-    sprintf(is128, "%s%s.VAL", dbTop, IS128);
-    sprintf(curMaxCol, "%s%s.VAL", dbTop, CUR_MAX_COL);
-    sprintf(curMaxRow, "%s%s.VAL", dbTop, CUR_MAX_ROW);
-    sprintf(drROIDone, "%s%s.VAL", dbTop, DRROISET_DONE);
+	/* 	Set up EPICS records names */
+	sprintf(rowHigh, "%s%s.VAL", dbTop, ROW_HI);
+	sprintf(colHigh, "%s%s.VAL", dbTop, COL_HI);
+	sprintf(is1024, "%s%s.VAL", dbTop, IS1024);
+	sprintf(is768, "%s%s.VAL", dbTop, IS768);
+	sprintf(is512, "%s%s.VAL", dbTop, IS512);
+	sprintf(is384, "%s%s.VAL", dbTop, IS384);
+	sprintf(is256, "%s%s.VAL", dbTop, IS256);
+	sprintf(is128, "%s%s.VAL", dbTop, IS128);
+	sprintf(curMaxCol, "%s%s.VAL", dbTop, CUR_MAX_COL);
+	sprintf(curMaxRow, "%s%s.VAL", dbTop, CUR_MAX_ROW);
+	sprintf(drROIDone, "%s%s.VAL", dbTop, DRROISET_DONE);
 
-    /* Get array size value from CAD record */
-    status = getDbInfoT(dbTop, OBSSETUP_CAD ".VALA", cadPtr->mess,
-		       				DBF_LONG, &arSizeVal);
+	/* Get array size value from CAD record */
+	status = getDbInfoT(dbTop, OBSSETUP_CAD ".VALA", cadPtr->mess,
+			DBF_LONG, &arSizeVal);
 
-    if (status == 0)
-    {
+	if (status == 0)
+	{
 	switch (arSizeVal)
 	{
 	  case 256:	
@@ -1101,14 +1113,8 @@ long setBias(struct cadRecord* cadPtr, long *errNo, char* errText)
     status += getDbInfoT(dbTop, HK_VDET ".VAL", cadPtr->mess, DBF_DOUBLE,
 			 &chanVdetVal);
 
-    printf("DC: setBias delay to 3.1 seconds, giving HK SCAN time to run\n");
-    sleep(3,100000000);	/* Give bias time to settle then read the housekeeping */
-    printf("DC: end setBias delay 3.1 seconds \n");
-
     actBias = fabs(fabs(vdducVal) - fabs(chanVdetVal));
 
-    status += putDbInfoT(dbTop, ACHVD_BIAS ".VAL", cadPtr->mess, DBF_DOUBLE, 
-			 &actBias);
     if (status != GNAAC_OK)
     {
 	sprintf(errText, "Bias set failed %d", status);
