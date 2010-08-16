@@ -25,6 +25,9 @@ static struct {
  *
  *INDENT-OFF*
  * $Log$
+ * Revision 1.2  2009/05/27 19:32:21  fkraemer
+ * fkraemer - copied my complete working dir over trunk
+ *
  * Revision 1.2  1998/11/20 17:13:51  pruckle
  * speed up saver, log messages
  *
@@ -489,113 +492,113 @@ long obsSetupChk( struct cadRecord *pCad)
 	  /* CAD START directive detected. Do nothing. The directive is being
 	     monitored by the sequence code, which will start the appropriate
 	     action.       */
-      case CAD_START:
+		case CAD_START:
 	cicsLogMessage( 2, "obsSetupChk - START directive.");
 	getDbInfoT(dbTop, OBSERVE_CAR ".VAL", dummy,DBF_LONG,&lVal);
 	if (lVal != CAR_IDLE)
 	{
-	    sprintf(pCad->mess,"Can't start observeChk command while observing");
-	    return CAD_REJECT;
+	  sprintf(pCad->mess,"Can't start observeChk command while observing");
+	  return CAD_REJECT;
 	}
 
 
 	getDbInfoT(dbTop, ARSETUP_DONE ".VAL", dummy, DBF_ENUM, &usVal);
 	if (usVal != NAAC_DONE)
 	{
-	    printf("arSetupDone = %d\n",usVal);
-	    sprintf(pCad->mess,"Array setup is not done yet.");
-	    return  CAD_REJECT;
+	  printf("arSetupDone = %d\n",usVal);
+	  sprintf(pCad->mess,"Array setup is not done yet.");
+	  return  CAD_REJECT;
 	}
 	if(status == CAD_ACCEPT)
 	{
-	    status = assignVal(pCad->ftva, &seqRoiSize, pCad->vala,pCad->mess);
-	    if(status == CAD_ACCEPT) 
-		status = assignVal(pCad->ftvb,&detState, pCad->valb, 
-				   pCad->mess);
-	    if(status == CAD_ACCEPT) 
-		status = assignVal(pCad->ftvc,&numDAvgs, pCad->valc, 
-				   pCad->mess);
-	    if(status == CAD_ACCEPT) 
-		status =  assignVal(pCad->ftvd, &numLNRs, pCad->vald, 
-				    pCad->mess);
-	    if(status == CAD_ACCEPT) 
-		status = assignVal(pCad->ftve,&numcoAdds, pCad->vale, 
-				   pCad->mess);
-	    if(status == CAD_ACCEPT) 
-		status = assignVal(pCad->ftvf,&numPics, pCad->valf, 
-				   pCad->mess);
-	    if(status == CAD_ACCEPT)
-		status = assignVal(pCad->ftvg,&seqIntTime, pCad->valg, 
-				   pCad->mess);
-	    if(status == CAD_ACCEPT)
-		status = assignVal(pCad->ftvh,&hdrDetail, pCad->valh, 
-				   pCad->mess);
-	    if(status == CAD_ACCEPT) 
-		status = assignVal(pCad->ftvi,pCad->i, pCad->vali, 
-				   pCad->mess);
-	    if(status == CAD_ACCEPT) 
-		status = assignVal(pCad->ftvj,&seqNum, pCad->valj, 
-				   pCad->mess);
-	    if(status == CAD_ACCEPT)
-		status = assignVal(pCad->ftvk,pCad->k, pCad->valk, 
-				   pCad->mess);
-	    if(status == CAD_ACCEPT)
-		status = assignVal(pCad->ftvl,&hkState, pCad->vall, 
-				   pCad->mess);
-	    if(status == CAD_ACCEPT) 
-		status = assignVal(pCad->ftvm,&procMode, pCad->valm, 
-				   pCad->mess);
-	    if(status == CAD_ACCEPT) 
-		status = assignVal(pCad->ftvn,&hdrTiming, pCad->valn, 
-				   pCad->mess);
-	    if(status == CAD_ACCEPT) 
-		status = assignVal(pCad->ftvo,&seqFDly, pCad->valo, 
-				   pCad->mess);
+	  status = assignVal(pCad->ftva, &seqRoiSize, pCad->vala,pCad->mess);
+	  if(status == CAD_ACCEPT) 
+		 status = assignVal(pCad->ftvb,&detState, pCad->valb, 
+			  pCad->mess);
+	  if(status == CAD_ACCEPT) 
+		 status = assignVal(pCad->ftvc,&numDAvgs, pCad->valc, 
+			  pCad->mess);
+	  if(status == CAD_ACCEPT) 
+		 status =  assignVal(pCad->ftvd, &numLNRs, pCad->vald, 
+			  pCad->mess);
+	  if(status == CAD_ACCEPT) 
+		 status = assignVal(pCad->ftve,&numcoAdds, pCad->vale, 
+			  pCad->mess);
+	  if(status == CAD_ACCEPT) 
+		 status = assignVal(pCad->ftvf,&numPics, pCad->valf, 
+			  pCad->mess);
+	  if(status == CAD_ACCEPT)
+		 status = assignVal(pCad->ftvg,&seqIntTime, pCad->valg, 
+			  pCad->mess);
+	  if(status == CAD_ACCEPT)
+		 status = assignVal(pCad->ftvh,&hdrDetail, pCad->valh, 
+			  pCad->mess);
+	  if(status == CAD_ACCEPT) 
+		 status = assignVal(pCad->ftvi,pCad->i, pCad->vali, 
+			  pCad->mess);
+	  if(status == CAD_ACCEPT) 
+		 status = assignVal(pCad->ftvj,&seqNum, pCad->valj, 
+			  pCad->mess);
+	  if(status == CAD_ACCEPT)
+		 status = assignVal(pCad->ftvk,pCad->k, pCad->valk, 
+			  pCad->mess);
+	  if(status == CAD_ACCEPT)
+		 status = assignVal(pCad->ftvl,&hkState, pCad->vall, 
+			  pCad->mess);
+	  if(status == CAD_ACCEPT) 
+		 status = assignVal(pCad->ftvm,&procMode, pCad->valm, 
+			  pCad->mess);
+	  if(status == CAD_ACCEPT) 
+		 status = assignVal(pCad->ftvn,&hdrTiming, pCad->valn, 
+			  pCad->mess);
+	  if(status == CAD_ACCEPT) 
+		 status = assignVal(pCad->ftvo,&seqFDly, pCad->valo, 
+			  pCad->mess);
 	}
-   
-  
+
+
 	/* Check the status of the arSetup command */
 	flag = naacStatus(dbTop,ARSETUP_DONE);
-	
+
 	/* If it has been started or is done, then set the DONE record
-	     to BUSY and start this task 	  */
+		to BUSY and start this task 	  */
 	if((flag == NAAC_BUSY) || (flag == NAAC_DONE))
 	{
-	  
-	    sprintf(name,"%s%s.VAL",dbTop,OBSSETUP_DONE);
-	    usVal = NAAC_BUSY;
-	    status = putDbInfo(name, pCad->mess, DBF_ENUM, &usVal);
-	    if(status == OK)
-		semGive(semObsSetup);
-	    else
-		status = CAD_REJECT;
+
+	  sprintf(name,"%s%s.VAL",dbTop,OBSSETUP_DONE);
+	  usVal = NAAC_BUSY;
+	  status = putDbInfo(name, pCad->mess, DBF_ENUM, &usVal);
+	  if(status == OK)
+		 semGive(semObsSetup);
+	  else
+		 status = CAD_REJECT;
 	}
 
 	/* Otherwise, reject the start */
 	else
 	{
-	    strcpy(pCad->mess,"obsSetupChk: arSetup must be started or done first");
-	    cicsLogMessage(1,pCad->mess);
-	    cicsLogLong(1,"obsSetupChk: arSetupDone = ", (long) flag);
-	    status = CAD_REJECT;
+	  strcpy(pCad->mess,"obsSetupChk: arSetup must be started or done first");
+	  cicsLogMessage(1,pCad->mess);
+	  cicsLogLong(1,"obsSetupChk: arSetupDone = ", (long) flag);
+	  status = CAD_REJECT;
 	}
 
 	break;
 	/* CAD STOP directive detected.      */
-      case CAD_STOP:
+		case CAD_STOP:
 	cicsLogMessage( 1, "obsSetupChk - STOP directive. Cannot be stopped.");
 	strcpy(pCad->mess,"obsSetupChk: Cannot be stopped");
 	status = CAD_REJECT;
 	break;
 
-	  /* Unrecognised CAD directive detected. This is regarded 
-	     as an error. */
-      default:
+	/* Unrecognised CAD directive detected. This is regarded 
+		as an error. */
+		default:
 	sprintf( pCad->mess, "obsSetupChk:  Unrecognized CAD directive" );
 	status = CAD_REJECT;
 	break;
-    }
-  
+	 }
+
     return status;
 }
 
