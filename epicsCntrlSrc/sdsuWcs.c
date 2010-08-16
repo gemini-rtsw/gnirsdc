@@ -25,6 +25,10 @@ rcsid =
  *
  *INDENT-OFF*
  * $Log$
+ * Revision 1.3  2010/08/02 05:20:06  mrippa
+ * New WCS routines look at Camera and AG port
+ * for WCS file definition.
+ *
  * Revision 1.2  2009/05/27 19:32:22  fkraemer
  * fkraemer - copied my complete working dir over trunk
  *
@@ -219,9 +223,9 @@ int getWcsPoints(int chip, char *file)
    char buffer[81];
    char *p;
    FILE *fp;
+   char MyDebugMessage[120];
 
-    /*printf("2.... Starting getWcsPoints\n");
-    printf("wcs file =  '%s'\n", file); */
+   /*printf("2.... Starting getWcsPoints\n");*/
    c = chip - 1;
    wcsInfo[c].numPoints = 0;
    if ((strncmp(file, "NONE", 4) == 0) || (*file == '\0')) {
@@ -237,6 +241,8 @@ int getWcsPoints(int chip, char *file)
       DPRINT(1,ErrorMessage);
       return ERROR;
    }
+
+   printf("Found wcs file =  '%s'\n", file);
    for (n = 0; n < NPOINTS; n++) {
       p = fgets(buffer, 80, fp);
       if (p == NULL) {
@@ -253,14 +259,17 @@ int getWcsPoints(int chip, char *file)
       count = sscanf(buffer, "%lf %lf %lf %lf",
 	    &(wcsInfo[c].pixij[n][0]), &(wcsInfo[c].pixij[n][1]),
 	    &(wcsInfo[c].fpxy[n][0]), &(wcsInfo[c].fpxy[n][1]));
-        /*printf("wcs file buffer = %f %f %f %f\n", (wcsInfo[c].pixij[n][0]),(wcsInfo[c].pixij[n][1]),
-						      (wcsInfo[c].fpxy[n][0]), (wcsInfo[c].fpxy[n][1])); */
+
+      sprintf(MyDebugMessage, "wcs file buffer = %f %f %f %f\n",
+	    (wcsInfo[c].pixij[n][0]),(wcsInfo[c].pixij[n][1]),
+	    (wcsInfo[c].fpxy[n][0]), (wcsInfo[c].fpxy[n][1]));
+      DPRINT(1, MyDebugMessage);
 
       if (count != 4) {
 	 n--;
 	 continue;
       }
-   }
+   } 
    fclose(fp);
    wcsInfo[c].numPoints = n;
    /*printf("2...... Ending getWcsPoints\n"); */
@@ -410,68 +419,68 @@ int WcsContext(struct WCS *wp, int f, struct EPOCH *ep, double t)
  */
 int wcsCalibrate(int chip, int ibin, int jbin, int iskip, int jskip)
 {
-    char buffer[120];
-    /* Detector i and j binning factors: ibin, jbin
-     * Detector will skip this number of pixels: iskip, jskip    
-     */
+   char buffer[120];
+   /* Detector i and j binning factors: ibin, jbin
+    * Detector will skip this number of pixels: iskip, jskip    
+    */
 
-    int wcsStat;                /* WCS status.    */
-    int p;                      /* Point counter. */
-
-
-    double pixis;               /* x to i scale factor.     */
-    double pixjs;               /* y to j scale factor.     */
-    double perp;                /* Non-perpendicularity of i and j axes in
-                                 * radians.
-                                 */
-    double orient;              /* Orientation of (i,j) axes with respect to
-                                 *  (x,y) in radians.
-                                 */
-    gmosChip *wp;
-
-/*printf("#### Starting wcsCalibrate\n"); */
-    wp = &wcsInfo[chip];
-    /*printf("bin = %d, %d, skip = %d, %d\n",ibin,jbin,iskip,jskip); */
-    for (p = 0; p < wp->numPoints; p++) {
-        wp->detij[p][0] = ((wp->pixij[p][0] - 0.5 - (double) iskip) /
-                           (double) ibin) + 0.5;
-
-        wp->detij[p][1] = ((wp->pixij[p][1] - 0.5 - (double) jskip) /
-                           (double) jbin) + 0.5;
- 	/*printf("det[%d][0] = %f, det[%d][1] = %f\n",p,wp->detij[p][0],p,wp->detij[p][1]); */
-    }
+   int wcsStat;                /* WCS status.    */
+   int p;                      /* Point counter. */
 
 
-    /*
-     * Define the (i,j) to (X,Y) transformation. The transformation is written
-     * to matrix cij.
-     */
-    /*printf("numPoints = %d\n",wp->numPoints); */
+   double pixis;               /* x to i scale factor.     */
+   double pixjs;               /* y to j scale factor.     */
+   double perp;                /* Non-perpendicularity of i and j axes in
+				* radians.
+				*/
+   double orient;              /* Orientation of (i,j) axes with respect to
+				*  (x,y) in radians.
+				*/
+   gmosChip *wp;
 
-    wcsStat = astFitij(wp->numPoints, wp->fpxy, wp->detij, wp->cij,
-                       &pixis, &pixjs, &perp, &orient);
-    if (wcsStat != 0) {
-        sprintf(buffer,
-               "astFitij: Failed to define transformation: %d", wcsStat);
-	DPRINT(1,buffer);
-        return ERROR;
-    }
-    /*
-     * printf ("Best fit scale is %f X units per i pixel and "
-     * "%f Y units per j pixel\n", pixis, pixjs);
-     * printf ("i/j non-perpendicularity is %f radians.\n", perp);
-     * printf ("i/j is rotated by %f radians with respect to x/y axis.\n",
-     * orient);
-     */
+   /*printf("#### Starting wcsCalibrate\n"); */
+   wp = &wcsInfo[chip];
+   /*printf("bin = %d, %d, skip = %d, %d\n",ibin,jbin,iskip,jskip); */
+   for (p = 0; p < wp->numPoints; p++) {
+      wp->detij[p][0] = ((wp->pixij[p][0] - 0.5 - (double) iskip) /
+	    (double) ibin) + 0.5;
 
-    sprintf(buffer, "Cij matrix contains %f %f %f %f %f %f\n",
-                   wp->cij[0], wp->cij[1], wp->cij[2], wp->cij[3], wp->cij[4], wp->cij[5]);
-    /*printf("Cij matrix contains %f %f %f %f %f %f\n",
-                   wp->cij[0], wp->cij[1], wp->cij[2], wp->cij[3], wp->cij[4], wp->cij[5]);*/
-/*	DPRINT(1,buffer); */
+      wp->detij[p][1] = ((wp->pixij[p][1] - 0.5 - (double) jskip) /
+	    (double) jbin) + 0.5;
+      /*printf("det[%d][0] = %f, det[%d][1] = %f\n",p,wp->detij[p][0],p,wp->detij[p][1]); */
+   }
 
-/*printf("##### Ending wcsCalibrate\n");*/
-    return OK;
+
+   /*
+    * Define the (i,j) to (X,Y) transformation. The transformation is written
+    * to matrix cij.
+    */
+   /*printf("numPoints = %d\n",wp->numPoints); */
+
+   wcsStat = astFitij(wp->numPoints, wp->fpxy, wp->detij, wp->cij,
+	 &pixis, &pixjs, &perp, &orient);
+   if (wcsStat != 0) {
+      sprintf(buffer,
+	    "astFitij: Failed to define transformation: %d", wcsStat);
+      DPRINT(1,buffer);
+      return ERROR;
+   }
+   /*
+    * printf ("Best fit scale is %f X units per i pixel and "
+    * "%f Y units per j pixel\n", pixis, pixjs);
+    * printf ("i/j non-perpendicularity is %f radians.\n", perp);
+    * printf ("i/j is rotated by %f radians with respect to x/y axis.\n",
+    * orient);
+    */
+
+   sprintf(buffer, "Cij matrix contains %f %f %f %f %f %f\n",
+	 wp->cij[0], wp->cij[1], wp->cij[2], wp->cij[3], wp->cij[4], wp->cij[5]);
+   /*printf("Cij matrix contains %f %f %f %f %f %f\n",
+     wp->cij[0], wp->cij[1], wp->cij[2], wp->cij[3], wp->cij[4], wp->cij[5]);*/
+   /*	DPRINT(1,buffer); */
+
+   /*printf("##### Ending wcsCalibrate\n");*/
+   return OK;
 }
 
 STATUS getROI(roiParams *proi)
@@ -547,146 +556,126 @@ STATUS getROI(roiParams *proi)
  *
  *-
  */
-int CalcWcs(int chip, int roiNum)
-{
+int CalcWcs(int chip, int roiNum) {
 #ifdef DEBUG
-    int t1 = 1;
+   int t1 = 1;
 #endif
-    char dummy[80];
-    char name[80];
-    int wcsStat;                /* WCS status.                         */
-    struct WCS wcsij;           /* World Coordinate System transformed
-                                 * into detector frame of reference.     */
-    roiParams roi;
-    int xbin=1,ybin=1;
-    tRect *p;
-    char buffer[80];
+   char dummy[80];
+   char name[80];
+   int wcsStat;                /* WCS status.                         */
+   struct WCS wcsij;           /* World Coordinate System transformed
+				* into detector frame of reference.     */
+   roiParams roi;
+   int xbin=1,ybin=1;
+   tRect *p;
+   char buffer[80];
 
-    /*printf("IN CALCWCS !!!\n"); */
-    /* if no wcs data, return */
-    if (wcsInfo[chip].numPoints == 0)
-    {
-	DPRINT(t1,"CalcWcs: no points \n");
-        return OK;
-    }
+   /*printf("IN CALCWCS !!!\n"); */
+   /* if no wcs data, return */
+   if (wcsInfo[chip].numPoints == 0)
+   {
+      DPRINT(t1,"CalcWcs: no points \n");
+      return OK;
+   }
 
 
-    /*printf("timeTAI = %f\n",timeTAI);   */ 
-    /*printf("To getWcsParams \n");   */ 
-    wcsStat = getWcsParams();
-    /*printf("from getWcsParams \n");    
-    printf("timeTAI after getWcsParams = %f\n",timeTAI); */
+   /*printf("timeTAI = %f\n",timeTAI);   */ 
+   /*printf("To getWcsParams \n");   */ 
+   wcsStat = getWcsParams();
+   /*printf("from getWcsParams \n");    
+     printf("timeTAI after getWcsParams = %f\n",timeTAI); */
 
-    
-    getROI(&roi);
-    p = &roi.roi[roiNum];       /* requested row values, unmodified */
 
-    /*printf("1. In CALCWCS lowx = %d, lowy = %d\n",p->lowX,p->lowY);
-    printf("1. In CALCWCS hiX = %d, hiY = %d\n",p->hiX,p->hiY);
-    printf("1. In CALCWCS rows = %d, cols = %d\n",p->rows,p->cols);
-    printf("!!!. In CALCWCS chip = %d xbin = %d, ybin = %d\n",chip,xbin,ybin);
-    printf("to wcsCalibrate \n");*/
-    wcsStat = wcsCalibrate(chip, xbin, ybin, p->lowX, p->lowY );
-    /*printf("from wcsCalibrate \n");*/
-    if (wcsStat != OK)
-    {
-	DPRINT(t1,"CalcWcs: wcscalibrate error \n");
-        return wcsStat;
-    }
+   getROI(&roi);
+   p = &roi.roi[roiNum];       /* requested row values, unmodified */
 
-    /*printf("4. to astXtndtr \n"); */
-    wcsStat = astXtndtr(wcsInfo[chip].cij, wcs, &wcsij);
-    if (wcsStat != 0) {
-        sprintf(buffer, "astXtndtr failed : %d", wcsStat);
-	DPRINT(1,buffer);
-	DPRINT(t1,"CalcWcs: astxtndtr error \n");
-        return (ERROR);
-    }
-    /*
-     * Calculate the FITS header values.
-     *
-     */
+   /*printf("1. In CALCWCS lowx = %d, lowy = %d\n",p->lowX,p->lowY);
+     printf("1. In CALCWCS hiX = %d, hiY = %d\n",p->hiX,p->hiY);
+     printf("1. In CALCWCS rows = %d, cols = %d\n",p->rows,p->cols);
+     printf("!!!. In CALCWCS chip = %d xbin = %d, ybin = %d\n",chip,xbin,ybin);
+     printf("to wcsCalibrate \n");*/
+   wcsStat = wcsCalibrate(chip, xbin, ybin, p->lowX, p->lowY );
+   /*printf("from wcsCalibrate \n");*/
+   if (wcsStat != OK)
+   {
+      DPRINT(t1,"CalcWcs: wcscalibrate error \n");
+      return wcsStat;
+   }
 
-    /*printf("to astFITSv\n");*/
-    /*printf("ab0[0] = %f \n",wcsij.ab0[0]);
-    printf("ab0[1] = %f \n",wcsij.ab0[1]);
-    printf("coeffs[0] = %f \n",wcsij.coeffs[0]);
-    printf("coeffs[1] = %f \n",wcsij.coeffs[1]);
-    printf("coeffs[2] = %f \n",wcsij.coeffs[2]);
-    printf("coeffs[3] = %f \n",wcsij.coeffs[3]);
-    printf("coeffs[4] = %f \n",wcsij.coeffs[4]);
-    printf("coeffs[5] = %f \n",wcsij.coeffs[5]);
-    printf("trackFrame = %d \n",trackFrame);
-    printf("trackEquinox YEAR = %f \n",trackEquinox.year);
-    printf("trackEquinox TYPE = %c \n",trackEquinox.type);
-    printf("timeTAI = %f \n",timeTAI); */
+   /*printf("4. to astXtndtr \n"); */
+   wcsStat = astXtndtr(wcsInfo[chip].cij, wcs, &wcsij);
+   if (wcsStat != 0) {
+      sprintf(buffer, "astXtndtr failed : %d", wcsStat);
+      DPRINT(1,buffer);
+      DPRINT(t1,"CalcWcs: astxtndtr error \n");
+      return (ERROR);
+   }
+   /*
+    * Calculate the FITS header values.
+    *
+    */
 
-    wcsStat = astFITSv(wcsij, trackFrame, trackEquinox, timeTAI,
-                       ctype1, &crpix1, &crval1,
-                       ctype2, &crpix2, &crval2,
-                       &cd1_1, &cd1_2, &cd2_1, &cd2_2,
-                       radecsys, &equinox, &mjdobs);
-    if (wcsStat != 0) {
-        sprintf(buffer,
-                "astFITSv failed to calculate FITS header: %d", wcsStat);
-	DPRINT(1,buffer);
-        return (ERROR);
-    }
-    
-	/*printf("CalcWcs: setting values \n");*/
-	DPRINT(t1,"CalcWcs: setting values \n");
-    sprintf(name,"%s%s.VAL",dbTop,WCS_CTYPE1);
-	/*DPRINT(t1,name); */
-    putDbInfo(name,dummy,DBF_STRING,ctype1);
-    sprintf(name,"%s%s.VAL",dbTop,WCS_CRPIX1);
-    putDbInfo(name,dummy,DBF_DOUBLE,&crpix1);
-    sprintf(name,"%s%s.VAL",dbTop,WCS_CRVAL1);
-    putDbInfo(name,dummy,DBF_DOUBLE,&crval1);
-    sprintf(name,"%s%s.VAL",dbTop,WCS_CTYPE2);
-    putDbInfo(name,dummy,DBF_STRING,ctype2);
-    sprintf(name,"%s%s.VAL",dbTop,WCS_CRPIX2);
-    putDbInfo(name,dummy,DBF_DOUBLE,&crpix2);
-    sprintf(name,"%s%s.VAL",dbTop,WCS_CRVAL2);
-    putDbInfo(name,dummy,DBF_DOUBLE,&crval2);
-    sprintf(name,"%s%s.VAL",dbTop,WCS_CD1_1);
-    putDbInfo(name,dummy,DBF_DOUBLE,&cd1_1);
-    sprintf(name,"%s%s.VAL",dbTop,WCS_CD1_2);
-    putDbInfo(name,dummy,DBF_DOUBLE,&cd1_2);
-    sprintf(name,"%s%s.VAL",dbTop,WCS_CD2_1);
-    putDbInfo(name,dummy,DBF_DOUBLE,&cd2_1);
-    sprintf(name,"%s%s.VAL",dbTop,WCS_CD2_2);
-    putDbInfo(name,dummy,DBF_DOUBLE,&cd2_2);
-    sprintf(name,"%s%s.VAL",dbTop,WCS_RADECSYS);
-    putDbInfo(name,dummy,DBF_STRING,radecsys);
-    sprintf(name,"%s%s.VAL",dbTop,WCS_EQUINOX);
-    putDbInfo(name,dummy,DBF_DOUBLE,&equinox);
-    sprintf(name,"%s%s.VAL",dbTop,WCS_MJDOBS);
-    putDbInfo(name,dummy,DBF_DOUBLE,&mjdobs);
-/*#if 0 */
-    /*printf("World Coordinate System Header\n");
-    printf("------------------------------\n");
-    printf("ctype1   = %s\n", ctype1);
-    printf("crpix1   = %f pixels\n", crpix1);
-    printf("crval1   = %f degrees = %f hours\n", crval1,
-           (crval1 / (double) 15.0));
-    printf("ctype2   = %s\n", ctype2);
-    printf("crpix2   = %f pixels\n", crpix2);
-    printf("crval2   = %f degrees\n", crval2);
-    printf("cd1_1    = %f\n", cd1_1);
-    printf("cd1_2    = %f\n", cd1_2);
-    printf("cd2_1    = %f\n", cd2_1);
-    printf("cd2_2    = %f\n", cd2_2);
-    printf("radecsys = %s\n", radecsys);
-    printf("equinox  = %f\n", equinox);
-    printf("mjd-obs  = %f\n", mjdobs); */
-    
-/*#endif */
-    /* write out the values into the headers */
- /*    if (D.dataOp != DOWRITE) */
-/*         return OK; */
-   
-      
-    return (OK);
+   /*printf("to astFITSv\n");*/
+   /*printf("ab0[0] = %f \n",wcsij.ab0[0]);
+     printf("ab0[1] = %f \n",wcsij.ab0[1]);
+     printf("coeffs[0] = %f \n",wcsij.coeffs[0]);
+     printf("coeffs[1] = %f \n",wcsij.coeffs[1]);
+     printf("coeffs[2] = %f \n",wcsij.coeffs[2]);
+     printf("coeffs[3] = %f \n",wcsij.coeffs[3]);
+     printf("coeffs[4] = %f \n",wcsij.coeffs[4]);
+     printf("coeffs[5] = %f \n",wcsij.coeffs[5]);
+     printf("trackFrame = %d \n",trackFrame);
+     printf("trackEquinox YEAR = %f \n",trackEquinox.year);
+     printf("trackEquinox TYPE = %c \n",trackEquinox.type);
+     printf("timeTAI = %f \n",timeTAI); */
+
+   wcsStat = astFITSv(wcsij, trackFrame, trackEquinox, timeTAI,
+	 ctype1, &crpix1, &crval1,
+	 ctype2, &crpix2, &crval2,
+	 &cd1_1, &cd1_2, &cd2_1, &cd2_2,
+	 radecsys, &equinox, &mjdobs);
+   if (wcsStat != 0) {
+      sprintf(buffer,
+	    "astFITSv failed to calculate FITS header: %d", wcsStat);
+      DPRINT(1,buffer);
+      return (ERROR);
+   }
+
+   /*printf("CalcWcs: setting values \n");*/
+   DPRINT(t1,"CalcWcs: setting values \n");
+   sprintf(name,"%s%s.VAL",dbTop,WCS_CTYPE1);
+   /*DPRINT(t1,name); */
+   putDbInfo(name,dummy,DBF_STRING,ctype1);
+   sprintf(name,"%s%s.VAL",dbTop,WCS_CRPIX1);
+   putDbInfo(name,dummy,DBF_DOUBLE,&crpix1);
+   sprintf(name,"%s%s.VAL",dbTop,WCS_CRVAL1);
+   putDbInfo(name,dummy,DBF_DOUBLE,&crval1);
+   sprintf(name,"%s%s.VAL",dbTop,WCS_CTYPE2);
+   putDbInfo(name,dummy,DBF_STRING,ctype2);
+   sprintf(name,"%s%s.VAL",dbTop,WCS_CRPIX2);
+   putDbInfo(name,dummy,DBF_DOUBLE,&crpix2);
+   sprintf(name,"%s%s.VAL",dbTop,WCS_CRVAL2);
+   putDbInfo(name,dummy,DBF_DOUBLE,&crval2);
+   sprintf(name,"%s%s.VAL",dbTop,WCS_CD1_1);
+   putDbInfo(name,dummy,DBF_DOUBLE,&cd1_1);
+   sprintf(name,"%s%s.VAL",dbTop,WCS_CD1_2);
+   putDbInfo(name,dummy,DBF_DOUBLE,&cd1_2);
+   sprintf(name,"%s%s.VAL",dbTop,WCS_CD2_1);
+   putDbInfo(name,dummy,DBF_DOUBLE,&cd2_1);
+   sprintf(name,"%s%s.VAL",dbTop,WCS_CD2_2);
+   putDbInfo(name,dummy,DBF_DOUBLE,&cd2_2);
+   sprintf(name,"%s%s.VAL",dbTop,WCS_RADECSYS);
+   putDbInfo(name,dummy,DBF_STRING,radecsys);
+   sprintf(name,"%s%s.VAL",dbTop,WCS_EQUINOX);
+   putDbInfo(name,dummy,DBF_DOUBLE,&equinox);
+   sprintf(name,"%s%s.VAL",dbTop,WCS_MJDOBS);
+   putDbInfo(name,dummy,DBF_DOUBLE,&mjdobs);
+   /* write out the values into the headers */
+   /*    if (D.dataOp != DOWRITE) */
+   /*         return OK; */
+
+
+   return (OK);
 }
 
 /*
@@ -740,270 +729,269 @@ ometry" to simulate
 
 long getWcsParams()
 {     
-    char equinox[30];
-    int n = 0;
-    double m2xy[3][2] = {{0.0,0.0},
-                          {0.0,0.0},
-                          {0.0,0.0}
-    };
-    char err[80];
-    char buf[80];
-    double timeTAI;
-    struct WCS wcs;
-    struct WCS_CTX ctx;
-    double pai = 270.0*D2R;
-    double aia;
-    struct TELP tel;
-    double track_ra, track_dec, trackWavelength;
-    FRAMETYPE trackFrame;
-    struct EPOCH trackEquinox;
-    double rawTime, timeStamp;
-    double tai,dleap,dat,dut,elongm,phim,hm,xp,yp,tdk,pmb,rh;
-    double tlr,elong,phi,daz;
-    int j;
-    static void  *ch1=NULL,*wlCh = NULL,*eqCh = NULL;
-    
+   char equinox[30];
+   int n = 0;
+   double m2xy[3][2] = {{0.0,0.0},
+      {0.0,0.0},
+      {0.0,0.0}
+   };
+   char err[80];
+   char buf[80];
+   double timeTAI;
+   struct WCS wcs;
+   struct WCS_CTX ctx;
+   double pai = 270.0*D2R;
+   double aia;
+   struct TELP tel;
+   double track_ra, track_dec, trackWavelength;
+   FRAMETYPE trackFrame;
+   struct EPOCH trackEquinox;
+   double rawTime, timeStamp;
+   double tai,dleap,dat,dut,elongm,phim,hm,xp,yp,tdk,pmb,rh;
+   double tlr,elong,phi,daz;
+   int j;
+   static void  *ch1=NULL,*wlCh = NULL,*eqCh = NULL;
 
-    /* default or test values*/
-     dleap = 50083.0;
-    dat = 29.0;
-    dut = .0746;
-    
-    elongm = -2.71349248271422;
-    phim = 0.346040618846507;
-    hm = 4145.0;
-    xp = 0.25*AS2R;
-    yp = .4 * AS2R;
-    tdk = 275.0;
-    pmb = 605.0;
-    rh = 0.8;
-    tlr = 0.0065;
-    slaPolmo (elongm,phim,xp,yp,&elong,&phi,&daz);
 
-    tel.fl = 128000.0;;
-    tel.rma = 30.0*D2R;
-    tel.an = -12.0*AS2R;
-    tel.aw = -5.0*AS2R;
-    tel.pnpae = 8.0*AS2R;
-    tel.ca = -110.0*AS2R;
-    tel.ce = 22.0*AS2R;
-    track_ra = 36.0 * D2R;
-    track_dec = 45.0 * D2R;
+   /* default or test values*/
+   dleap = 50083.0;
+   dat = 29.0;
+   dut = .0746;
 
-  if(TCS)
-    {
-    /* get time from tcs and convert it to TAI */
-    /*printf("*** 1. in getWcsparams \n Getting time from TCS\n");*/
-        if(timeNow(&timeStamp) != OK)
-        {
-            DPRINT(1,"Failed to get time stamp\n");
-            return ERROR;
-        }
-/*        bc635_read(&timeStamp); */
-        
-/*        printf("en getWcsParams: timeStamp = %f\n",timeStamp); */
-    }
-    else /* fake time if tcs not available */
-    {  
-        DPRINT(1,"TCS disconntected\n");
-        printf("TCS disconntected\n");
-        tai = 49560.643391203703;
-        if(j = mytimeOffline(tai,elong,phi,hm,dleap,dat,dut)) 
-	{ 
-            printf("bad status from time Offline: %d\n",j); 
-            return -1; 
-        } 
+   elongm = -2.71349248271422;
+   phim = 0.346040618846507;
+   hm = 4145.0;
+   xp = 0.25*AS2R;
+   yp = .4 * AS2R;
+   tdk = 275.0;
+   pmb = 605.0;
+   rh = 0.8;
+   tlr = 0.0065;
+   slaPolmo (elongm,phim,xp,yp,&elong,&phi,&daz);
 
-        timeStamp = timeTai2raw(tai);
-    }
-    
-    DPRINT(1,"getWcsParams got time\n");
-    /*printf("2. getWcsParams got time\n");*/
-    if(timeThenD(timeStamp,TT,&timeTAI) != OK)
-    {
-        DPRINT(1,"Failed to convert time stamp to TAI\n");
-        printf("Failed to convert time stamp to TAI\n");
-        return ERROR;
-    } 
-    
-    /*printf("TimeTAI en WCS  = %f\n",timeTAI); */
+   tel.fl = 128000.0;;
+   tel.rma = 30.0*D2R;
+   tel.an = -12.0*AS2R;
+   tel.aw = -5.0*AS2R;
+   tel.pnpae = 8.0*AS2R;
+   tel.ca = -110.0*AS2R;
+   tel.ce = 22.0*AS2R;
+   track_ra = 36.0 * D2R;
+   track_dec = 45.0 * D2R;
 
-    /*DPRINT(1,"getWcsParams convert time\n"); */
-    /*printf("getWcsParams convert time\n"); */
+   if(TCS)
+   {
+      /* get time from tcs and convert it to TAI */
+      /*printf("*** 1. in getWcsparams \n Getting time from TCS\n");*/
+      if(timeNow(&timeStamp) != OK)
+      {
+	 DPRINT(1,"Failed to get time stamp\n");
+	 return ERROR;
+      }
+      /*        bc635_read(&timeStamp); */
 
-    /* these need to be tested when there is a tcs available*/
-    /* get values from tcs sad database*/
-    if(TCS)
-    {
-        if(getEpics(CURRENT_FRAME,buf,1,&ch1) != OK)
-        {
-            printf("name = %s, buf = %s\n",CURRENT_FRAME,buf);
-            DPRINT(1,"Error getting trackFrame from tcs\n");
-            return ERROR;
-        }
-        if(strcmp(buf,"FK4") == 0)
-            trackFrame = FK4;
-        else if(strcmp(buf,"FK5") == 0)
-            trackFrame = FK5;
-        else if(strcmp(buf,"Apparent") == 0)
-            trackFrame = APPT;
-        else if(strcmp(buf,"Observer Altaz") == 0)
-            trackFrame = AZEL_TOPO;
-        else if(strcmp(buf,"Mount Altaz") == 0)
-            trackFrame = AZEL_MNT;
-        else
-       {
-            sprintf(err,"Error %s value = %s ",CURRENT_FRAME, buf);
-            
-            DPRINT(1,err);
-            return ERROR;
-        }
-        if(getEpics(CURRENT_WAVELENGTH,&trackWavelength,1,&wlCh) != OK)
-        {
-            DPRINT(1,"Error getting trackWavelength from tcs\n");
-            return ERROR;
-        }
-        /* convert wavelength from angstroms to microns*/
-        trackWavelength = trackWavelength * 10000;
-        if(getEpics(CURRENT_EQUINOX,&equinox,1,&eqCh) != OK)
-        {
-            return ERROR;
-            DPRINT(1,"Error getting trackEquinox from tcs\n");
-        }
-        trackEquinox.year = atof(&(equinox[1]));
-        trackEquinox.type = equinox[0]; 
+      /*        printf("en getWcsParams: timeStamp = %f\n",timeStamp); */
+   }
+   else /* fake time if tcs not available */
+   {  
+      DPRINT(1,"TCS disconntected\n");
+      tai = 49560.643391203703;
+      if(j = mytimeOffline(tai,elong,phi,hm,dleap,dat,dut)) 
+      { 
+	 printf("bad status from time Offline: %d\n",j); 
+	 return -1; 
+      } 
 
-    }
-    else
-    {
-        trackWavelength = .55; 
-        trackFrame = FK5; 
-        trackEquinox.type = 'J'; 
-        trackEquinox.year = 2000.0;
-    }
+      timeStamp = timeTai2raw(tai);
+   }
 
-    /*DPRINT(1,"getWcsParams set defaults\n"); */
-    /*printf("getWcsParams set defaults\n"); */
-    /* get ctx context from tcs or simulate it it with astSimctx_r*/
-    if(TCS)
-    {
-        /*printf("@@@@@@@@@@@@@@@@ to astGetctx\n");*/
-        if(astGetctx(&ctx) != OK)
-        {
-            DPRINT(1,"Failed to get current wcs context\n");
-            printf("Failed to get current wcs context\n");
-            return ERROR;
-        }
-    }
-    else /* simulate wcs context*/
-    { 
-        /*printf("SIMULATING PIXIJ with wcs_short parameters...\n");*/
-        wcsInfo[n].pixij[0][0] = 513.710000;
-        wcsInfo[n].pixij[0][1] = 458.070000;
-        wcsInfo[n].fpxy[0][0] = 2.916646;
-        wcsInfo[n].fpxy[0][1] = -0.80052624;
-        wcsInfo[n].pixij[1][0] = 758.47;
-        wcsInfo[n].pixij[1][1] = 443.46;
-        wcsInfo[n].fpxy[1][0] = 25.995383;
-        wcsInfo[n].fpxy[1][1] = -2.0912972;
-        wcsInfo[n].pixij[2][0] = 600.76;
-        wcsInfo[n].pixij[2][1] = 461.34;
-        wcsInfo[n].fpxy[2][0] =  11.157722;
-        wcsInfo[n].fpxy[2][1] =  -0.45301097;
-        wcsInfo[n].pixij[3][0] = 513.44;
-        wcsInfo[n].pixij[3][1] = 457.19;
-        wcsInfo[n].fpxy[3][0] =  2.916646;
-        wcsInfo[n].fpxy[3][1] =  -0.80052624;
-        wcsInfo[n].pixij[4][0] = 480.47;
-        wcsInfo[n].pixij[4][1] = 468.50;
-        wcsInfo[n].fpxy[4][0] =  -0.21719704;
-        wcsInfo[n].fpxy[4][1] =  0.19858015;
-        wcsInfo[n].pixij[5][0] = 663.12;
-        wcsInfo[n].pixij[5][1] = 454.07;
-        wcsInfo[n].fpxy[5][0] =  17.009631;
-        wcsInfo[n].fpxy[5][1] =  -1.0735739;
-        wcsInfo[n].pixij[6][0] = 513.93;
-        wcsInfo[n].pixij[6][1] = 457.29;
-        wcsInfo[n].fpxy[6][0] =  2.916646;
-        wcsInfo[n].fpxy[6][1] =  -0.80052624;
-        wcsInfo[n].pixij[7][0] = 714.49;
-        wcsInfo[n].pixij[7][1] = 471.93;
-        wcsInfo[n].fpxy[7][0] =  21.8252;
-        wcsInfo[n].fpxy[7][1] =  0.57712357;
-        wcsInfo[n].pixij[8][0] = 403.46;
-        wcsInfo[n].pixij[8][1] = 468.79;
-        wcsInfo[n].fpxy[8][0] =  -7.4777838;
-        wcsInfo[n].fpxy[8][1] =  0.26063645;
-        wcsInfo[n].pixij[9][0] = 747.48;
-        wcsInfo[n].pixij[9][1] = 459.67;
-        wcsInfo[n].fpxy[9][0] =  24.940426;
-        wcsInfo[n].fpxy[9][1] =  -0.53368416;
-        wcsInfo[n].pixij[10][0] = 513.79;
-        wcsInfo[n].pixij[10][1] = 457.28;
-        wcsInfo[n].fpxy[10][0] =  2.916646;
-        wcsInfo[n].fpxy[10][1] =  -0.80052624;
-        wcsInfo[n].numPoints =  11;
+   DPRINT(1,"getWcsParams got time\n");
+   /*printf("2. getWcsParams got time\n");*/
+   if(timeThenD(timeStamp,TT,&timeTAI) != OK)
+   {
+      DPRINT(1,"Failed to convert time stamp to TAI\n");
+      printf("Failed to convert time stamp to TAI\n");
+      return ERROR;
+   } 
 
-        wcsCalibrate(n,1,1,0,0);   
-/* 	for (i=0;i< 6;i++) */
-/* 	{ */
-/* 	    printf("cij[%d] = %f   ",i,wcsInfo[n].cij[i]); */
-/* 	} */
-/* 	printf("\n"); */
+   /*printf("TimeTAI en WCS  = %f\n",timeTAI); */
 
-        aia = slaDranrm (wcsInfo[n].orient -90.0*D2R);
+   /*DPRINT(1,"getWcsParams convert time\n"); */
+   /*printf("getWcsParams convert time\n"); */
 
-        slaXy2xy((IPIX+1.0)/2.0,(JPIX+1.0)/2.0,wcsInfo[n].cij,&tel.pox,&tel.poy); 
-/* 	printf("tai = %f, elongm = %f, phim = %f\n",tai,elongm,phim); */
-/* 	printf("hm = %f, xp = %f yp = %f, tdk = %f\n",hm,xp,yp,tdk); */
-/* 	printf("pmb = %f,rh = %f, tlr = %f, trackWavelength = %f\n",pmb,rh,tlr,trackWavelength); 
- 	printf("aia = %f,pai = %f,trackFrame = %d\n",aia,pai,trackFrame); 
- 	printf("year = %f, type = %c\n",trackEquinox.year,trackEquinox.type); */
-/* 	printTel(tel); */
-/* 	printf("trackRA = %f, trackDec = %f\n",track_ra,track_dec); */
+   /* these need to be tested when there is a tcs available*/
+   /* get values from tcs sad database*/
+   if(TCS)
+   {
+      if(getEpics(CURRENT_FRAME,buf,1,&ch1) != OK)
+      {
+	 printf("name = %s, buf = %s\n",CURRENT_FRAME,buf);
+	 DPRINT(1,"Error getting trackFrame from tcs\n");
+	 return ERROR;
+      }
+      if(strcmp(buf,"FK4") == 0)
+	 trackFrame = FK4;
+      else if(strcmp(buf,"FK5") == 0)
+	 trackFrame = FK5;
+      else if(strcmp(buf,"Apparent") == 0)
+	 trackFrame = APPT;
+      else if(strcmp(buf,"Observer Altaz") == 0)
+	 trackFrame = AZEL_TOPO;
+      else if(strcmp(buf,"Mount Altaz") == 0)
+	 trackFrame = AZEL_MNT;
+      else
+      {
+	 sprintf(err,"Error %s value = %s ",CURRENT_FRAME, buf);
 
-        if((j = astSimctx_r(tai, elongm, phim, hm, xp, yp, tdk, pmb, rh, 
-                           tlr, trackWavelength, tel, m2xy, track_ra, track_dec, 
-                           trackFrame, trackEquinox, aia, pai,trackFrame,
-                           trackEquinox, &ctx) != OK))    
-        {
-            DPRINT(1,"bad status from astSimctx_r: \n");
-            return ERROR;
-        } 
+	 DPRINT(1,err);
+	 return ERROR;
+      }
+      if(getEpics(CURRENT_WAVELENGTH,&trackWavelength,1,&wlCh) != OK)
+      {
+	 DPRINT(1,"Error getting trackWavelength from tcs\n");
+	 return ERROR;
+      }
+      /* convert wavelength from angstroms to microns*/
+      trackWavelength = trackWavelength * 10000;
+      if(getEpics(CURRENT_EQUINOX,&equinox,1,&eqCh) != OK)
+      {
+	 return ERROR;
+	 DPRINT(1,"Error getting trackEquinox from tcs\n");
+      }
+      trackEquinox.year = atof(&(equinox[1]));
+      trackEquinox.type = equinox[0]; 
 
-/* 	printf("getwcsparams 4\n"); */
-/* 	sleep(1,0); */
+   }
+   else
+   {
+      trackWavelength = .55; 
+      trackFrame = FK5; 
+      trackEquinox.type = 'J'; 
+      trackEquinox.year = 2000.0;
+   }
 
-    }
-/*     printctx(ctx); */
-/*     DPRINT(1,"getWcsParams got context\n"); */
-/*     sleep(3,0); */
-    /*extract the current focal plane to sky WCS transformationfrom the tcs cont
-ext*/
-    if ( (j=astCtx2tr(ctx, trackFrame, trackEquinox,
-                      trackWavelength, 0, &wcs, &rawTime))!= OK)
-    {
-        DPRINT(1,"bad status from astCtx2tr: \n");
-        return ERROR;
-    }
-  
-    /*printf("WCS information extracted from TCS context is valid at time %f\n",rawTime);*/ 
-/*     DPRINT(1,"getWcsParams got wcs\n"); */
-       /*printf("getWcsParams got wcs\n"); */
-/*     sleep(1,0); */
+   /*DPRINT(1,"getWcsParams set defaults\n"); */
+   /*printf("getWcsParams set defaults\n"); */
+   /* get ctx context from tcs or simulate it it with astSimctx_r*/
+   if(TCS)
+   {
+      /*printf("@@@@@@@@@@@@@@@@ to astGetctx\n");*/
+      if(astGetctx(&ctx) != OK)
+      {
+	 DPRINT(1,"Failed to get current wcs context\n");
+	 printf("Failed to get current wcs context\n");
+	 return ERROR;
+      }
+   }
+   else /* simulate wcs context*/
+   { 
+      /*printf("SIMULATING PIXIJ with wcs_short parameters...\n");*/
+      wcsInfo[n].pixij[0][0] = 513.710000;
+      wcsInfo[n].pixij[0][1] = 458.070000;
+      wcsInfo[n].fpxy[0][0] = 2.916646;
+      wcsInfo[n].fpxy[0][1] = -0.80052624;
+      wcsInfo[n].pixij[1][0] = 758.47;
+      wcsInfo[n].pixij[1][1] = 443.46;
+      wcsInfo[n].fpxy[1][0] = 25.995383;
+      wcsInfo[n].fpxy[1][1] = -2.0912972;
+      wcsInfo[n].pixij[2][0] = 600.76;
+      wcsInfo[n].pixij[2][1] = 461.34;
+      wcsInfo[n].fpxy[2][0] =  11.157722;
+      wcsInfo[n].fpxy[2][1] =  -0.45301097;
+      wcsInfo[n].pixij[3][0] = 513.44;
+      wcsInfo[n].pixij[3][1] = 457.19;
+      wcsInfo[n].fpxy[3][0] =  2.916646;
+      wcsInfo[n].fpxy[3][1] =  -0.80052624;
+      wcsInfo[n].pixij[4][0] = 480.47;
+      wcsInfo[n].pixij[4][1] = 468.50;
+      wcsInfo[n].fpxy[4][0] =  -0.21719704;
+      wcsInfo[n].fpxy[4][1] =  0.19858015;
+      wcsInfo[n].pixij[5][0] = 663.12;
+      wcsInfo[n].pixij[5][1] = 454.07;
+      wcsInfo[n].fpxy[5][0] =  17.009631;
+      wcsInfo[n].fpxy[5][1] =  -1.0735739;
+      wcsInfo[n].pixij[6][0] = 513.93;
+      wcsInfo[n].pixij[6][1] = 457.29;
+      wcsInfo[n].fpxy[6][0] =  2.916646;
+      wcsInfo[n].fpxy[6][1] =  -0.80052624;
+      wcsInfo[n].pixij[7][0] = 714.49;
+      wcsInfo[n].pixij[7][1] = 471.93;
+      wcsInfo[n].fpxy[7][0] =  21.8252;
+      wcsInfo[n].fpxy[7][1] =  0.57712357;
+      wcsInfo[n].pixij[8][0] = 403.46;
+      wcsInfo[n].pixij[8][1] = 468.79;
+      wcsInfo[n].fpxy[8][0] =  -7.4777838;
+      wcsInfo[n].fpxy[8][1] =  0.26063645;
+      wcsInfo[n].pixij[9][0] = 747.48;
+      wcsInfo[n].pixij[9][1] = 459.67;
+      wcsInfo[n].fpxy[9][0] =  24.940426;
+      wcsInfo[n].fpxy[9][1] =  -0.53368416;
+      wcsInfo[n].pixij[10][0] = 513.79;
+      wcsInfo[n].pixij[10][1] = 457.28;
+      wcsInfo[n].fpxy[10][0] =  2.916646;
+      wcsInfo[n].fpxy[10][1] =  -0.80052624;
+      wcsInfo[n].numPoints =  11;
 
-    /* send values to controller*/
-    if(WcsContext(&wcs, trackFrame,&trackEquinox,timeTAI) != OK)
-    {   
-	/*         ErrorMessage[39]= 0; */
-	/*      	   DPRINT(1,ErrorMessage); */
-	printf("Error in WcsContext\n");
-        return ERROR;
-    }
+      wcsCalibrate(n,1,1,0,0);   
+      /* 	for (i=0;i< 6;i++) */
+      /* 	{ */
+      /* 	    printf("cij[%d] = %f   ",i,wcsInfo[n].cij[i]); */
+      /* 	} */
+      /* 	printf("\n"); */
 
-    DPRINT(1,"getWcsParams done\n");
-    /*printf("getWcsParams done\n");*/
-    return OK;
+      aia = slaDranrm (wcsInfo[n].orient -90.0*D2R);
+
+      slaXy2xy((IPIX+1.0)/2.0,(JPIX+1.0)/2.0,wcsInfo[n].cij,&tel.pox,&tel.poy); 
+      /* 	printf("tai = %f, elongm = %f, phim = %f\n",tai,elongm,phim); */
+      /* 	printf("hm = %f, xp = %f yp = %f, tdk = %f\n",hm,xp,yp,tdk); */
+      /* 	printf("pmb = %f,rh = %f, tlr = %f, trackWavelength = %f\n",pmb,rh,tlr,trackWavelength); 
+		printf("aia = %f,pai = %f,trackFrame = %d\n",aia,pai,trackFrame); 
+		printf("year = %f, type = %c\n",trackEquinox.year,trackEquinox.type); */
+      /* 	printTel(tel); */
+      /* 	printf("trackRA = %f, trackDec = %f\n",track_ra,track_dec); */
+
+      if((j = astSimctx_r(tai, elongm, phim, hm, xp, yp, tdk, pmb, rh, 
+		  tlr, trackWavelength, tel, m2xy, track_ra, track_dec, 
+		  trackFrame, trackEquinox, aia, pai,trackFrame,
+		  trackEquinox, &ctx) != OK))    
+      {
+	 DPRINT(1,"bad status from astSimctx_r: \n");
+	 return ERROR;
+      } 
+
+      /* 	printf("getwcsparams 4\n"); */
+      /* 	sleep(1,0); */
+
+   }
+   /*     printctx(ctx); */
+   /*     DPRINT(1,"getWcsParams got context\n"); */
+   /*     sleep(3,0); */
+   /*extract the current focal plane to sky WCS transformationfrom the tcs cont
+     ext*/
+   if ( (j=astCtx2tr(ctx, trackFrame, trackEquinox,
+	       trackWavelength, 0, &wcs, &rawTime))!= OK)
+   {
+      DPRINT(1,"bad status from astCtx2tr: \n");
+      return ERROR;
+   }
+
+   /*printf("WCS information extracted from TCS context is valid at time %f\n",rawTime);*/ 
+   /*     DPRINT(1,"getWcsParams got wcs\n"); */
+   /*printf("getWcsParams got wcs\n"); */
+   /*     sleep(1,0); */
+
+   /* send values to controller*/
+   if(WcsContext(&wcs, trackFrame,&trackEquinox,timeTAI) != OK)
+   {   
+      /*         ErrorMessage[39]= 0; */
+      /*      	   DPRINT(1,ErrorMessage); */
+      printf("Error in WcsContext\n");
+      return ERROR;
+   }
+
+   DPRINT(1,"getWcsParams done\n");
+   /*printf("getWcsParams done\n");*/
+   return OK;
 } 
 
 long printctx(struct WCS_CTX ctx)
@@ -1037,3 +1025,44 @@ long printTel(struct TELP tel)
 return OK;
 }
 
+
+void showwcsxform(void) {
+
+int n=0;
+
+   int points = 0;
+   points = wcsInfo[0].numPoints;
+
+   if (points <= 0)  {
+	printf("showwcsxform error: wcsInfo not populated. Re-initialize WCS selection?\n");
+	return;
+   }
+
+   for (n=0; n<points; n++) {
+      printf("wcs file buffer = %f %f %f %f\n",
+	    (wcsInfo[0].pixij[n][0]),(wcsInfo[0].pixij[n][1]),
+	    (wcsInfo[0].fpxy[n][0]), (wcsInfo[0].fpxy[n][1]));
+   }
+}
+
+void showwcsheader(void) {
+int status;
+
+    status = CalcWcs(0,0);
+
+     printf("------------------------------\n");
+     printf("ctype1   = %s\n", ctype1);
+     printf("crpix1   = %f pixels\n", crpix1);
+     printf("crval1   = %f degrees = %f hours\n", crval1, (crval1 / (double) 15.0));
+     printf("ctype2   = %s\n", ctype2);
+     printf("crpix2   = %f pixels\n", crpix2);
+     printf("crval2   = %f degrees\n", crval2);
+     printf("cd1_1    = %f\n", cd1_1);
+     printf("cd1_2    = %f\n", cd1_2);
+     printf("cd2_1    = %f\n", cd2_1);
+     printf("cd2_2    = %f\n", cd2_2);
+     printf("radecsys = %s\n", radecsys);
+     printf("equinox  = %f\n", equinox);
+     printf("mjd-obs  = %f\n", mjdobs);
+
+}
