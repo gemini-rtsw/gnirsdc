@@ -25,6 +25,9 @@ static struct {
  *
  *INDENT-OFF*
  * $Log$
+ * Revision 1.3  2010/08/16 20:51:01  mrippa
+ * formatting
+ *
  * Revision 1.2  2009/05/27 19:32:21  fkraemer
  * fkraemer - copied my complete working dir over trunk
  *
@@ -467,15 +470,15 @@ long obsSetupChk( struct cadRecord *pCad)
 		  cicsLogMessage(2,"obsSetupChk: Expecting: BEFORE, AFTER or BOTH");
 	      }	  
 	  }
-#if 1
+#if 0
 	  if (status != CAD_ACCEPT)
 	  {
-	    /*   setCar(); */
-/* 	      lVal = CAR_ERROR;  */
-/* 	      putDbInfoT(dbTop, OBSSETUP_CAR ".IVAL", dummy, DBF_LONG, &lVal); */
+	      setCar();
+ 	      lVal = CAR_ERROR;
+ 	      putDbInfoT(dbTop, OBSSETUP_CAR ".IVAL", dummy, DBF_LONG, &lVal);
 
-/* 	      lVal = CAR_ERROR; */
-/* 	      putDbInfoT(dbTop, OBSSETUP_CAR ".IERR", dummy, DBF_LONG, &lVal); */
+ 	      lVal = CAR_ERROR;
+ 	      putDbInfoT(dbTop, OBSSETUP_CAR ".IERR", dummy, DBF_LONG, &lVal);
 		      
 
 	      usVal = NAAC_ERROR;
@@ -564,7 +567,6 @@ long obsSetupChk( struct cadRecord *pCad)
 		to BUSY and start this task 	  */
 	if((flag == NAAC_BUSY) || (flag == NAAC_DONE))
 	{
-
 	  sprintf(name,"%s%s.VAL",dbTop,OBSSETUP_DONE);
 	  usVal = NAAC_BUSY;
 	  status = putDbInfo(name, pCad->mess, DBF_ENUM, &usVal);
