@@ -26,6 +26,9 @@ static struct {
  *
  *INDENT-OFF*
  * $Log$
+ * Revision 1.3  2010/08/16 20:27:08  mrippa
+ * More debug level statements for array setup
+ *
  * Revision 1.2  2009/05/27 19:32:19  fkraemer
  * fkraemer - copied my complete working dir over trunk
  *
@@ -116,7 +119,7 @@ long parseCmd(char *filename, struct cadRecord *pCad)
    else if((fp = fopen(filename,"r")) == NULL)
    {
       printf("arSetupChk: fopen rtn NULL, errno=%d\n",errno);
-      strcpy(pCad->mess,"Could not open uCode file, errno=%d", errno);
+      strcpy(pCad->mess,"Error opening uCode file. errno at console");
       cicsLogString(1, pCad->mess, filename);
       status = CAD_REJECT;
    }
