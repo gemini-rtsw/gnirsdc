@@ -43,8 +43,12 @@ DOCS	=
 
 # DATA are installed in INSTALL_DATA
 #DATA	= ../gnirsConfig ../gnirsFilters ../gnirsMechanisms
-DATA	= ../chip ../p0long.wcs ../p0short.wcs
-DATA	+= ../p1long.wcs ../p1short.wcs
+DATA	= ../chip ../p1long.wcs ../p1short.wcs
+DATA	+= ../p3long.wcs ../p3short.wcs
+DATA	+= ../p5long.wcs ../p5short.wcs
+DATA	+= ../p1aolong.wcs ../p1aoshort.wcs
+DATA	+= ../p3aolong.wcs ../p3aoshort.wcs
+DATA	+= ../p5aolong.wcs ../p5aoshort.wcs
 
 # Any extra targets can be placed in a TARGETS macro (the build target
 # builds only pre_build, LIBNAME, TARGETS and PROD, not SCRIPTS, INC etc)
