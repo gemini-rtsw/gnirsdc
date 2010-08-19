@@ -84,6 +84,9 @@ timeClockInit(0,0,60,1,0)
 ld < $(version)/bin/$(arch)/eprpc.o
 setRPCServer("ngnirsdc1");
 
+#
+ld < ./bin/$(arch)/gemLogMsg.o
+
 #epics cad routines
 ld < $(version)/bin/$(arch)/cadTasks.o
 
@@ -135,7 +138,6 @@ cicsInitLogging
 
 coAdSim = 1
 
-
 # Load and Initialize VxWorks Tasks
 initTasks
 
@@ -161,3 +163,11 @@ dbpf "nirs:dc:apply.DIR","3"
 
 sleep(1,0)
 dbpf "nirs:dc:wcsoverride", "0"
+
+#gemLog related settings
+gemSetUseiocLog(0)
+gemSetLogLevel(7)
+
+# Start the dcSetup sequencer
+seq &dcSetup, "dctop=nirs:dc"
+
