@@ -26,6 +26,9 @@ static struct {
  *
  *INDENT-OFF*
  * $Log$
+ * Revision 1.4  2010/08/16 20:33:52  mrippa
+ * Print statement added to CAD directive state
+ *
  * Revision 1.3  2010/08/02 05:16:31  mrippa
  * New WCS routines look at Camera and AG port
  * for WCS file definition.
@@ -189,25 +192,30 @@ int initWcsCad(struct cadRecord *pCad)
  */
 long updateAstCtx(struct genSubRecord *pgsub)
 {
-/*printf ("wfsUpdateAstCtx: pgsub->sevr = %s\n", &pgsub->sevr); */
- 
-    if(pgsub->sevr != INVALID_ALARM)
-    { 
-        /*printf("TCS = 1 !!!!!, to astSetctx\n"); */
-        TCS = 1; 
-        astSetctx(pgsub->a); 
-        printf("From astSetctx\n"); 
-    } 
-    else 
-    { 
-        /*printf("TCS = 0 ??????\n"); */
-        TCS = 0 ;
-        return ERROR; 
-    } 
+   printf ("wfsUpdateAstCtx: pgsub->sevr = %d\n", pgsub->sevr); 
 
- 
+   if(pgsub->sevr != INVALID_ALARM)
+   { 
+      printf("TCS = 1 !!!!!, to astSetctx\n");
+      TCS = 1;
 
-    return OK;
+      strcpy(pgsub->valb,pgsub->b);                  /* tcs:sad:sourceATrackFrame */
+      strcpy(pgsub->valc,pgsub->c);                  /* tcs:sad:sourceATrackEq */
+      *(double*)pgsub->vald = *(double*)pgsub->d;    /* tcs:sad:sourceAWavelength */
+
+      astSetctx(pgsub->a); 
+      printf("From astSetctx\n"); 
+   } 
+   else 
+   { 
+      printf("TCS = 0 ??????\n");
+      TCS = 0 ;
+      return ERROR; 
+   } 
+
+
+
+   return OK;
 }
 
 /*
@@ -236,10 +244,13 @@ int overridePort = 0;
 long selectWcs(struct cadRecord *pCad)
 {
    char camera[MAX_STRING_SIZE] = "unknown";
+   char aoInstr[MAX_STRING_SIZE] = "unknown";
    char selectedPort[MAX_STRING_SIZE] = "unknown";
    char wcscamera[MAX_STRING_SIZE] = "unknown";
+   char selectedAoname[MAX_STRING_SIZE] = "unknown";
    long agport = 0; /*default agport*/
    long status = CAD_ACCEPT; 
+   long aoIn = 0;
     
    *(long*) pCad->vala = 1;  /* Disable wfs switch by default*/ 
    switch (DIRECTIVE)
@@ -259,17 +270,23 @@ long selectWcs(struct cadRecord *pCad)
 
 	break;
       case CAD_START:            /* No action required           */
-	  printf("WCS file based on selection=%s, camera=%s AGport=%s \n",
-		  pCad->a, pCad->b, pCad->c);
+   	  printf ("selectWcs: pCad->sevr = %d\n", pCad->sevr); 
+	  printf("WCS file based on issmanualSelect=%s, camera=%s, AGport=%s, setWcs.VALA=%s, aoName=%s, aomanualSelect=%s\n",
+		  pCad->a, pCad->b, pCad->c, pCad->d, pCad->e, pCad->f);
           strncpy(selectedPort, (char *)pCad->a, MAX_STRING_SIZE-1);
           strncpy(camera, (char *)pCad->b, MAX_STRING_SIZE-1);
+          strncpy(aoInstr, (char *)pCad->e, MAX_STRING_SIZE-1);
+          strncpy(selectedAoname, (char *)pCad->f, MAX_STRING_SIZE-1);
 	  
 	  agport = atoi(pCad->c);
           printf("selectedPort = %s\n",selectedPort); 
           printf("camera = %s\n",camera); 
           printf("agport = %d\n",agport); 
+          printf("aoName = %s\n",aoInstr); 
+          printf("selectedAoname = %s\n",selectedAoname); 
 
 
+	  /*Camera selection*/
 	  if ((strstr(camera, "Long") != NULL) || 
 	      (strstr(camera, "Open") != NULL) )
 	  {
@@ -285,15 +302,43 @@ long selectWcs(struct cadRecord *pCad)
 	        status = CAD_REJECT;
 		break;
 	  }
+	  
+	  /*aoName selection*/ 
+	  if (overridePort) {
 
-	  if (overridePort)
-	     sprintf(pCad->valb, "data/p%s%s.wcs", selectedPort, wcscamera); /* set file name*/
-	  else 
-	     sprintf(pCad->valb, "data/p%ld%s.wcs", agport, wcscamera); /* set file name*/
-	  *(long*) pCad->vala = 0; /*enable setting wcsfile*/
+	     if (!strcmp(selectedAoname, "IN")) {
+		aoIn = 1;
+	     }
+	  } else {
+	     if (!strcmp(aoInstr, "IN")) {
+		aoIn = 1;
+	     }
+	  }
 
+	  /* set file name*/
+	  if (overridePort) {
+	     if(aoIn){ 
+	       sprintf(pCad->valb, "data/p%sao%s.wcs", selectedPort, wcscamera);
+	     } else {
+	       sprintf(pCad->valb, "data/p%s%s.wcs", selectedPort, wcscamera);
+	     }
+	  }
+	  else {
+	     if(aoIn){ 
+	       sprintf(pCad->valb, "data/p%ldao%s.wcs", agport, wcscamera);
+	     } else {
+	       sprintf(pCad->valb, "data/p%ld%s.wcs", agport, wcscamera); 
+	     }
+	  }
 
-      break;
+	  if (!strcmp(pCad->valb,pCad->d)) {
+	     *(long *) pCad->vala=1;      /* disable */
+	  }
+	  else {
+	     *(long *) pCad->vala=0;      /* enable */
+	  }
+
+	  break;
 
       default:		   /* Unknown directive		*/
 	strncpy(MSG, "selectWcsCad: Unrecongized directive",MAX_STRING_SIZE - 1);
