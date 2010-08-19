@@ -5,24 +5,24 @@ uniq 73
 w 798 3435 100 0 n#6 ecad20.drRoiSet.VAL 640 3328 736 3328 736 3424 896 3424 outhier.VAL.p
 w 750 3307 100 0 n#5 ecad20.drRoiSet.MESS 640 3296 896 3296 outhier.MESS.p
 w 110 3435 100 0 n#2 inhier.DIR.P 32 3424 224 3424 224 3328 320 3328 ecad20.drRoiSet.DIR
-s 1080 2584 150 0 drRoiSet
-s 224 3136 100 0 (numROIs)
-s 224 3072 100 0 (lowRow1)
-s 224 3008 100 0 (lowCol1)
-s 224 2944 100 0 (hiRow1)
-s 224 2880 100 0 (hiCol1)
-s 224 2624 100 0 (hiCol2)
-s 224 2688 100 0 (hiRow2)
-s 224 2752 100 0 (lowCol2)
-s 224 2816 100 0 (lowRow2)
-s 224 2568 100 0 (lowRow3)
-s 224 2504 100 0 (lowCol3)
-s 224 2440 100 0 (hiRow3)
-s 224 2376 100 0 (hiCol3)
-s 224 2120 100 0 (hiCol4)
-s 224 2184 100 0 (hiRow4)
-s 224 2248 100 0 (lowCol4)
 s 224 2312 100 0 (lowRow4)
+s 224 2248 100 0 (lowCol4)
+s 224 2184 100 0 (hiRow4)
+s 224 2120 100 0 (hiCol4)
+s 224 2376 100 0 (hiCol3)
+s 224 2440 100 0 (hiRow3)
+s 224 2504 100 0 (lowCol3)
+s 224 2568 100 0 (lowRow3)
+s 224 2816 100 0 (lowRow2)
+s 224 2752 100 0 (lowCol2)
+s 224 2688 100 0 (hiRow2)
+s 224 2624 100 0 (hiCol2)
+s 224 2880 100 0 (hiCol1)
+s 224 2944 100 0 (hiRow1)
+s 224 3008 100 0 (lowCol1)
+s 224 3072 100 0 (lowRow1)
+s 224 3136 100 0 (numROIs)
+s 1080 2584 150 0 drRoiSet
 [cell use]
 use task 864 2475 100 0 task#72
 xform 0 1160 2644
@@ -45,25 +45,25 @@ use ecars 1700 3500 100 0 drRoiSetC
 xform 0 1760 3344
 p 1716 3212 65 0 1 PV:$(top)
 p 1948 3232 65 0 1 def(FLNK):$(top)combCars1.VAL
-p 1388 3444 65 0 1 def(ICID):$(top)apply.CLID
-use setDrRoi 1600 1575 100 0 setDrRoi#13
-xform 0 1712 1728
-p 1700 1572 65 1536 1 set2:ROInum 4
-p 1700 1556 65 1536 1 set3:var 19
-use setDrRoi 1600 1927 100 0 setDrRoi#12
-xform 0 1712 2080
-p 1700 1924 65 1536 1 set2:ROInum 3
-p 1700 1908 65 1536 1 set3:var 18
+p 1388 3444 65 0 0 def(ICID):0.0
+use setDrRoi 1600 2791 100 0 setDrRoi#10
+xform 0 1712 2944
 use setDrRoi 1600 2439 100 0 setDrRoi#11
 xform 0 1712 2592
 p 1700 2436 65 1536 1 set2:ROInum 2
 p 1700 2420 65 1536 1 set3:var 17
-use setDrRoi 1600 2791 100 0 setDrRoi#10
-xform 0 1712 2944
-use outhier 864 3255 100 0 MESS
-xform 0 880 3296
+use setDrRoi 1600 1927 100 0 setDrRoi#12
+xform 0 1712 2080
+p 1700 1924 65 1536 1 set2:ROInum 3
+p 1700 1908 65 1536 1 set3:var 18
+use setDrRoi 1600 1575 100 0 setDrRoi#13
+xform 0 1712 1728
+p 1700 1572 65 1536 1 set2:ROInum 4
+p 1700 1556 65 1536 1 set3:var 19
 use outhier 864 3383 100 0 VAL
 xform 0 880 3424
+use outhier 864 3255 100 0 MESS
+xform 0 880 3296
 use inhier 16 3383 100 0 DIR
 xform 0 32 3424
 use ecad20 392 3376 100 0 drRoiSet
