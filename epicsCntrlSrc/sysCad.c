@@ -51,6 +51,9 @@ static struct {
  *
  *INDENT-OFF*
  * $Log$
+ * Revision 1.2  2009/05/27 19:32:22  fkraemer
+ * fkraemer - copied my complete working dir over trunk
+ *
  * Revision 1.1.1.1  1998/12/15 16:18:50  buchholz
  * Imported gnaacSrc into CVS
  *
@@ -803,80 +806,6 @@ error. */
    }
    return status;
 }
-#if 0
-long setDhsInfoProc( struct cadRecord *pCad ) 
-{
-   long status;         /* return status */
-
-   /* Initialise CAD status */
-   status = CAD_ACCEPT;
-
-   /* Switch according to the CAD directive in DIR field */
-   switch (pCad->dir)
-   {
-      /* CAD MARK directive detected. Nothing needs to be done.*/
-      case CAD_MARK:
-         cicsLogMessage( 2, "setDhsInfo - MARK directive.");
-         break;
-
-      /* CAD PRESET directive detected.  Check the input argument. 
-         If it is acceptable then copy it to the output. 
-      */
-      case CAD_PRESET:
-         cicsLogMessage( 2, "setDhsInfo - PRESET directive.");
-
-	 /*QLSstream */
-	 strcpy (pCad->vala, pCad->a);
-
-	 cicsLogString( 3, "setDhsInfo: QLSstream  =", pCad->vala);
-         break;
-
-      /* CAD CLEAR directive detected. Nothing needs to be done. */
-      case CAD_CLEAR:
-         cicsLogMessage( 2, "setDhsInfo - CLEAR directive.");
-         break;
-
-      /* CAD START directive detected.  Reject the command if an observation
-	 is in progress.  Otherwise, set the CAR to BUSY and invoke the
-	 control task.
-      */
-      case CAD_START:
-         cicsLogMessage( 2, "setDhsInfo - START directive.");
-	 if(carStatus(pCad->b) == CAR_IDLE)
-	 {
-	     status = setCar(GSYS_CAR,CAR_BUSY,OK,"",dummy);
-	    
-	     if(status == OK)
-		 semGive(semSetDhsInfo);
-	     else
-		 status = CAD_REJECT;
-	 }
-	 else
-	 {
-	     status = CAD_REJECT;
-	     strcpy(pCad->mess,"setDhsInfo - cannot be done during observe");
-	     cicsLogMessage(1, pCad->mess);
-	 }
-         break;
-
-      /* CAD STOP directive detected.
-      */
-      case CAD_STOP:
-         cicsLogMessage( 1, "setDhsInfo - STOP directive. Cannot be stopped.");
-         strcpy( pCad->mess, "Cannot be stopped");
-         status = CAD_REJECT;
-         break;
-
-      /* Unrecognised CAD directive detected. This is regarded as an error. */
-      default:
-         strcpy( pCad->mess, "Unrecognized CAD directive" );
-         status = CAD_REJECT;
-         break;
-   }
-   return status;
-}
-
-#endif
 
 /*
  *+
