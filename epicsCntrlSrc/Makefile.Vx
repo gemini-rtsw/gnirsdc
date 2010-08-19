@@ -11,7 +11,7 @@ include .applTop/config/CONFIG
 # SNC_FLAGS    =
  USR_CFLAGS   = -DVXWORKS 
 # -DCOADD_TEST
-  USR_INCLUDES = -I../../../include
+  USR_INCLUDES = -I../../include
 # USR_LDFLAGS  =
 # USR_LDLIBS   =
 
