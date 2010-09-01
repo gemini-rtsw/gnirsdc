@@ -26,6 +26,9 @@ static struct {
  *
  *INDENT-OFF*
  * $Log$
+ * Revision 1.5  2010/08/19 04:05:40  mrippa
+ * Added aoName to selectWcs routine
+ *
  * Revision 1.4  2010/08/16 20:33:52  mrippa
  * Print statement added to CAD directive state
  *
@@ -285,21 +288,20 @@ long selectWcs(struct cadRecord *pCad)
           printf("aoName = %s\n",aoInstr); 
           printf("selectedAoname = %s\n",selectedAoname); 
 
-
+	  
 	  /*Camera selection*/
 	  if ((strstr(camera, "Long") != NULL) || 
 	      (strstr(camera, "Open") != NULL) )
 	  {
 	  	strcpy(wcscamera, "long");
-          }
+      }
 	  else if (strstr(camera, "Short") != NULL) {
 	  	strcpy(wcscamera, "short");
 	  }
 	  else {
-
-	        strncpy(pCad->mess, "selectWcsCad: Invalid camera",MAX_STRING_SIZE - 1);
+	    strncpy(pCad->mess, "selectWcsCad: Invalid camera",MAX_STRING_SIZE - 1);
 		printf("ERR: selectWcsCad: Invalid camera\n");
-	        status = CAD_REJECT;
+	    status = CAD_REJECT;
 		break;
 	  }
 	  
