@@ -25,6 +25,9 @@ rcsid =
  *
  *INDENT-OFF*
  * $Log$
+ * Revision 1.4  2010/08/16 20:55:56  mrippa
+ * New util routines to show WCS xform and header.
+ *
  * Revision 1.3  2010/08/02 05:20:06  mrippa
  * New WCS routines look at Camera and AG port
  * for WCS file definition.
@@ -726,6 +729,7 @@ ometry" to simulate
 #define JPIX 1280.0
 #define AS2R 4.84813681109536e-6
 #define D2R  0.0174532925199433
+int myDisableTCS=0;
 
 long getWcsParams()
 {     
@@ -779,6 +783,8 @@ long getWcsParams()
    track_ra = 36.0 * D2R;
    track_dec = 45.0 * D2R;
 
+   /*Test CAC failures to TCS which result in total Channel Access crash*/
+	TCS = myDisableTCS;
    if(TCS)
    {
       /* get time from tcs and convert it to TAI */
@@ -816,7 +822,7 @@ long getWcsParams()
 
    /*printf("TimeTAI en WCS  = %f\n",timeTAI); */
 
-   /*DPRINT(1,"getWcsParams convert time\n"); */
+   DPRINT(1,"getWcsParams convert time\n");
    /*printf("getWcsParams convert time\n"); */
 
    /* these need to be tested when there is a tcs available*/
@@ -870,12 +876,12 @@ long getWcsParams()
       trackEquinox.year = 2000.0;
    }
 
-   /*DPRINT(1,"getWcsParams set defaults\n"); */
+   DPRINT(1,"getWcsParams set defaults\n");
    /*printf("getWcsParams set defaults\n"); */
    /* get ctx context from tcs or simulate it it with astSimctx_r*/
    if(TCS)
    {
-      /*printf("@@@@@@@@@@@@@@@@ to astGetctx\n");*/
+      printf("@@@@@@@@@@@@@@@@ to astGetctx\n");
       if(astGetctx(&ctx) != OK)
       {
 	 DPRINT(1,"Failed to get current wcs context\n");
