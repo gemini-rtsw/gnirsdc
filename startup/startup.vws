@@ -148,7 +148,6 @@ pvload "$(version)/data/doInit.pv","top=nirs:dc:,sadtop=nirs:sad:dc:"
 
 seq &timeSeq, "sys=nirs:dc:"
 dbpf "nirs:sad:dc:instrument","gnirs"
-#dbpf "nirs:dc:setWcs.A","data/wcs"
 dbpf "nirs:dc:selectWcs.DIR","0"
 dbpf "nirs:dc:selectWcs.DIR","3"
 sleep(8,0)
@@ -162,6 +161,7 @@ sleep(1,0)
 dbpf "nirs:dc:apply.DIR","3"
 
 sleep(1,0)
+dbpf "nirs:dc:wcsport", "1"
 dbpf "nirs:dc:wcsoverride", "0"
 
 #gemLog related settings
