@@ -40,6 +40,9 @@ static struct {
  *
  *INDENT-OFF*
  * $Log$
+ * Revision 1.2  2009/05/27 19:32:20  fkraemer
+ * fkraemer - copied my complete working dir over trunk
+ *
  * Revision 1.1.1.1  1998/12/15 16:18:50  buchholz
  * Imported gnaacSrc into CVS
  *
@@ -62,6 +65,7 @@ static struct {
 /*extern globals*/
 extern char *dbTop;
 extern char *dbSadTop;
+extern long getDbCaInfo (char *pvname, char *errMess, unsigned short type, void *outVal);
 
 /*globals*/
 char tmp[80];
@@ -147,35 +151,52 @@ long getDbInfoT(char *top,char *fieldName, char *errMess, unsigned short type, v
 }
 long getDbInfo(char *fieldName, char *errMess, unsigned short type, void *outVal)
 {
-    struct dbAddr addr;
-    long ret, options=0L, nRq = 1L;
-    long status;
-    
-    status = OK;
+   struct dbAddr addr;
+   long ret, options=0L, nRq = 1L;
+   long status;
+
+   status = OK;
 
 
-    /* Get the address of the data structure  and handle any errors */
-    if( (ret = dbNameToAddr (fieldName,&addr)) != 0L)
-    {
-	status = ERROR_EPICS;
-	sprintf(errMess, "ERR dNTA >%s< %ld", fieldName, ret);
-	cicsLogMessage(2, errMess);
-	cicsLogString(2, "dbName = ", fieldName);
-    }
+   /* Get the address of the data structure  and handle any errors */
+   if( (ret = dbNameToAddr (fieldName,&addr)) != 0L)
+   {
+      /* try channel access (needed for FRAME tcs:sad:sourceAInputFrame" */
+      if( (ret = getDbCaInfo(fieldName,errMess,type,outVal)) != 0) {
+         status = ERROR_EPICS;
+         sprintf(errMess, "ERR ca_search >%s< %ld", fieldName, ret);
+         cicsLogMessage(2, errMess);
+         cicsLogString(2, "dbName = ", fieldName);
 
-    /* If address found, get the data.  Handle any errors. */
-    if( status == OK )
-    {
-       if( (ret = dbGetField(&addr, type, outVal, &options, &nRq, NULL)) != 0L)
-       {
-	   status = ERROR_EPICS;
-           sprintf(errMess, "getDbInfo error = %ld", ret);
-	   cicsLogMessage(2, errMess);
-       }
-    }
+         printf("read %s failed internally and from channel access\n",fieldName);
 
-    /* Return error status */
-    return status;
+         return status;
+      }
+      else {
+         status = OK;
+
+         return status;
+      }
+
+      status = ERROR_EPICS;
+      printf("read %s from channel access\n",fieldName);
+      return status;
+   }
+
+   /* If address found, get the data.  Handle any errors. */
+   if( status == OK )
+   {
+      if( (ret = dbGetField(&addr, type, outVal, &options, &nRq, NULL)) != 0L)
+      {
+         status = ERROR_EPICS;
+         sprintf(errMess, "dbGet error = %ld", ret);
+         cicsLogMessage(2, errMess);
+         printf("read %s failed internally\n",fieldName);
+      }
+   }
+
+   /* Return error status */
+   return status;
 }
 
 /*
