@@ -25,6 +25,11 @@ rcsid =
  *
  *INDENT-OFF*
  * $Log$
+ * Revision 1.5  2010/09/02 00:38:00  mrippa
+ * Current version disables TCS which was causing CAC to
+ * crash. Test by setting myDisableTCS=1 on the DC console,
+ * then running getWcsParams().
+ *
  * Revision 1.4  2010/08/16 20:55:56  mrippa
  * New util routines to show WCS xform and header.
  *
@@ -266,7 +271,7 @@ int getWcsPoints(int chip, char *file)
       sprintf(MyDebugMessage, "wcs file buffer = %f %f %f %f\n",
 	    (wcsInfo[c].pixij[n][0]),(wcsInfo[c].pixij[n][1]),
 	    (wcsInfo[c].fpxy[n][0]), (wcsInfo[c].fpxy[n][1]));
-      DPRINT(1, MyDebugMessage);
+      DPRINT(0, MyDebugMessage);
 
       if (count != 4) {
 	 n--;
@@ -465,7 +470,7 @@ int wcsCalibrate(int chip, int ibin, int jbin, int iskip, int jskip)
    if (wcsStat != 0) {
       sprintf(buffer,
 	    "astFitij: Failed to define transformation: %d", wcsStat);
-      DPRINT(1,buffer);
+      DPRINT(0,buffer);
       return ERROR;
    }
    /*
@@ -729,7 +734,7 @@ ometry" to simulate
 #define JPIX 1280.0
 #define AS2R 4.84813681109536e-6
 #define D2R  0.0174532925199433
-int myDisableTCS=0;
+int myEnableTCS=1;
 
 long getWcsParams()
 {     
@@ -741,6 +746,7 @@ long getWcsParams()
    };
    char err[80];
    char buf[80];
+   char errMess[80];
    double timeTAI;
    struct WCS wcs;
    struct WCS_CTX ctx;
@@ -784,7 +790,7 @@ long getWcsParams()
    track_dec = 45.0 * D2R;
 
    /*Test CAC failures to TCS which result in total Channel Access crash*/
-	TCS = myDisableTCS;
+   TCS = myEnableTCS;
    if(TCS)
    {
       /* get time from tcs and convert it to TAI */
@@ -794,10 +800,8 @@ long getWcsParams()
 	 DPRINT(1,"Failed to get time stamp\n");
 	 return ERROR;
       }
-      /*        bc635_read(&timeStamp); */
-
-      /*        printf("en getWcsParams: timeStamp = %f\n",timeStamp); */
    }
+
    else /* fake time if tcs not available */
    {  
       DPRINT(1,"TCS disconntected\n");
@@ -820,68 +824,53 @@ long getWcsParams()
       return ERROR;
    } 
 
-   /*printf("TimeTAI en WCS  = %f\n",timeTAI); */
-
+   printf("TimeTAI in WCS  = %f\n",timeTAI);
    DPRINT(1,"getWcsParams convert time\n");
-   /*printf("getWcsParams convert time\n"); */
 
-   /* these need to be tested when there is a tcs available*/
-   /* get values from tcs sad database*/
-   if(TCS)
-   {
-      if(getEpics(CURRENT_FRAME,buf,1,&ch1) != OK)
-      {
-	 printf("name = %s, buf = %s\n",CURRENT_FRAME,buf);
-	 DPRINT(1,"Error getting trackFrame from tcs\n");
-	 return ERROR;
-      }
-      if(strcmp(buf,"FK4") == 0)
-	 trackFrame = FK4;
-      else if(strcmp(buf,"FK5") == 0)
-	 trackFrame = FK5;
-      else if(strcmp(buf,"Apparent") == 0)
-	 trackFrame = APPT;
-      else if(strcmp(buf,"Observer Altaz") == 0)
-	 trackFrame = AZEL_TOPO;
-      else if(strcmp(buf,"Mount Altaz") == 0)
-	 trackFrame = AZEL_MNT;
-      else
-      {
-	 sprintf(err,"Error %s value = %s ",CURRENT_FRAME, buf);
-
-	 DPRINT(1,err);
-	 return ERROR;
-      }
-      if(getEpics(CURRENT_WAVELENGTH,&trackWavelength,1,&wlCh) != OK)
-      {
-	 DPRINT(1,"Error getting trackWavelength from tcs\n");
-	 return ERROR;
-      }
-      /* convert wavelength from angstroms to microns*/
-      trackWavelength = trackWavelength * 10000;
-      if(getEpics(CURRENT_EQUINOX,&equinox,1,&eqCh) != OK)
-      {
-	 return ERROR;
-	 DPRINT(1,"Error getting trackEquinox from tcs\n");
-      }
-      trackEquinox.year = atof(&(equinox[1]));
-      trackEquinox.type = equinox[0]; 
-
+   if(getDbInfo(CURRENT_FRAME,errMess,DBR_STRING,buf) != OK) {
+      printf("name = %s, buf = %s\n",CURRENT_FRAME,buf);
+      DPRINT(1,"Error getting trackFrame from tcs\n");
+      return ERROR;
    }
+   if(strcmp(buf,"FK4") == 0)
+      trackFrame = FK4;
+   else if(strcmp(buf,"FK5") == 0)
+      trackFrame = FK5;
+   else if(strcmp(buf,"Apparent") == 0)
+      trackFrame = APPT;
+   else if(strcmp(buf,"Observer Altaz") == 0)
+      trackFrame = AZEL_TOPO;
+   else if(strcmp(buf,"Mount Altaz") == 0)
+      trackFrame = AZEL_MNT;
    else
    {
-      trackWavelength = .55; 
-      trackFrame = FK5; 
-      trackEquinox.type = 'J'; 
-      trackEquinox.year = 2000.0;
+      sprintf(err,"Error %s value = %s ",CURRENT_FRAME, buf);
+      DPRINT(1,err);
+      return ERROR;
    }
 
+   if(getDbInfo(CURRENT_WAVELENGTH,errMess,DBR_DOUBLE,&trackWavelength) != OK) {
+      DPRINT(1,"Error getting trackWavelength from tcs\n");
+      return ERROR;
+   }
+
+   /* convert wavelength from angstroms to microns*/
+   trackWavelength = trackWavelength / 10000.0;
+
+   if(getDbInfo(CURRENT_EQUINOX,errMess,DBR_STRING,equinox) != OK) {
+      printf("Error getting trackEquinox from tcs\n");
+      return ERROR;
+   }
+
+   trackEquinox.year = atof(&(equinox[1]));
+   trackEquinox.type = equinox[0]; 
+
    DPRINT(1,"getWcsParams set defaults\n");
-   /*printf("getWcsParams set defaults\n"); */
    /* get ctx context from tcs or simulate it it with astSimctx_r*/
-   if(TCS)
-   {
-      printf("@@@@@@@@@@@@@@@@ to astGetctx\n");
+
+   if (TCS) {
+
+      printf("@@@@@@@@@@@@@@@@ astGetctx\n");
       if(astGetctx(&ctx) != OK)
       {
 	 DPRINT(1,"Failed to get current wcs context\n");
@@ -937,7 +926,6 @@ long getWcsParams()
       wcsInfo[n].fpxy[10][0] =  2.916646;
       wcsInfo[n].fpxy[10][1] =  -0.80052624;
       wcsInfo[n].numPoints =  11;
-
       wcsCalibrate(n,1,1,0,0);   
       /* 	for (i=0;i< 6;i++) */
       /* 	{ */
@@ -968,12 +956,13 @@ long getWcsParams()
       /* 	printf("getwcsparams 4\n"); */
       /* 	sleep(1,0); */
 
-   }
+   } /*end sim: TCS=0 */
    /*     printctx(ctx); */
    /*     DPRINT(1,"getWcsParams got context\n"); */
    /*     sleep(3,0); */
    /*extract the current focal plane to sky WCS transformationfrom the tcs cont
      ext*/
+
    if ( (j=astCtx2tr(ctx, trackFrame, trackEquinox,
 	       trackWavelength, 0, &wcs, &rawTime))!= OK)
    {
@@ -998,7 +987,7 @@ long getWcsParams()
    DPRINT(1,"getWcsParams done\n");
    /*printf("getWcsParams done\n");*/
    return OK;
-} 
+}
 
 long printctx(struct WCS_CTX ctx)
 {
