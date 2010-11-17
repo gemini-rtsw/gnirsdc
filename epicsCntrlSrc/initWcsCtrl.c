@@ -30,6 +30,9 @@ static struct {
  *
  *INDENT-OFF*
  * $Log$
+ * Revision 1.2  2009/05/27 19:32:21  fkraemer
+ * fkraemer - copied my complete working dir over trunk
+ *
  *INDENT-ON* 
  */
 
@@ -132,7 +135,9 @@ int initWcsCtrl( int n1, int n2, int n3, int n4, int n5, int n6, int n7, int n8,
 	if(InitWcs(NUM_CHIPS,pCad->vala ,pCad->valb ,pCad->valc ) == OK)
 		 
 	{   /* set car back to idle*/
-	    getWcsParams();
+
+	    CalcWcs(0, 0);
+	    /*getWcsParams();*/
 	    status = OK; 
 		   
 	    lVal = GNAAC_DONE;
