@@ -26,6 +26,10 @@ static struct {
  *
  *INDENT-OFF*
  * $Log$
+ * Revision 1.7  2010/11/17 00:51:52  mrippa
+ * Update checks for valid AG port and AO position
+ * as required by WCS ICD.
+ *
  * Revision 1.6  2010/09/01 23:51:14  mrippa
  * Formatting only
  *
@@ -257,20 +261,20 @@ long selectWcs(struct cadRecord *pCad)
    long agport = 1; /*default agport*/
    long status = CAD_ACCEPT; 
    long aoIn = 0;
+   long  mywcsPoints = 0;
     
    *(long*) pCad->vala = 1;  /* Disable wfs switch by default*/ 
+
    switch (DIRECTIVE)
     {
       case CAD_MARK:	       	/* No action required		*/
 	DPRINT(t1, "initWcsCad - MARK directive");
-
 	break;
 
       case CAD_PRESET:
-	DPRINT(t1, "initWcsCad - PRESET directive");
-
-	
+	DPRINT(t1, "initWcsCad - PRESET directive");	
 	break;
+
       case CAD_CLEAR:		/* No action required		*/
 	DPRINT(t1, "initWcsCad - CLEAR directive");
         status = CAD_ACCEPT;
@@ -278,19 +282,22 @@ long selectWcs(struct cadRecord *pCad)
 
       case CAD_START:            /* No action required           */
    	  printf ("selectWcs: pCad->sevr = %d\n", pCad->sevr); 
-	  printf("WCS file based on issmanualPort=%s, camera=%s, AGport=%s, setWcs.VALA=%s, aoName=%s, aomanualSelect=%s\n",
-            pCad->a, pCad->b, pCad->c, pCad->d, pCad->e, pCad->f);
+	  /*printf("WCS file based on AGmanualPort=%s\n camera=%s\n AGport=%s\n setWcs.VALA=%s\n aoName=%s\n aomanualSelect=%s\n", pCad->a, pCad->b, pCad->c, pCad->d, pCad->e, pCad->f); */
 
           strncpy(selectedPort, (char *)pCad->a, MAX_STRING_SIZE-1);            /* Input A */
           strncpy(camera, (char *)pCad->b, MAX_STRING_SIZE-1);                  /* Input B */
 	  agport = atoi(pCad->c);                                               /* Input C */
+										/* Input D */	
           strncpy(aoInstr, (char *)pCad->e, MAX_STRING_SIZE-1);                 /* Input E */
           strncpy(selectedAoname, (char *)pCad->f, MAX_STRING_SIZE-1);          /* Input F */
-	  
+	  mywcsPoints = atoi(pCad->g);                                          /* Input G */
+	  									/* Input H RESERVED: It's accessed externally.*/
           printf("selectedPort = %s\n",selectedPort); 
           printf("camera = %s\n",camera); 
           printf("agport = %d\n",agport); 
+          printf("wcspoints = %d\n",mywcsPoints); 
           printf("aoName = %s\n",aoInstr); 
+          printf("matchFile = >>%s<<\n",pCad->d); 
           printf("selectedAoname = %s\n",selectedAoname); 
 
  
@@ -330,7 +337,7 @@ long selectWcs(struct cadRecord *pCad)
 
           /* Validate AGport: test for NOT 1,3, or 5*/
           if ( !((agport == 1) || (agport == 3) || (agport == 5)) ) {
-             strncpy(pCad->mess, "wcs: agport only 1,3,or 5",MAX_STRING_SIZE - 1);
+             strncpy(pCad->mess, "gnirsWcs:agport!=1,3,5",MAX_STRING_SIZE - 1);
              printf("selectWcsCad: Manual agport only 1,3,or 5\n");
              status = CAD_REJECT;
              break;
@@ -343,14 +350,14 @@ long selectWcs(struct cadRecord *pCad)
 	    sprintf(pCad->valb, "data/gnirs_%ld_%s.wcs", agport, wcscamera); 
 	  }
 
-          /*If current filename matches new filename: DISABLE*/
-	  if (!strcmp(pCad->valb,pCad->d)) {
+
+          /*If wcsInfo array is defined && current filename matches new filename: DISABLE*/
+	  if ((mywcsPoints > 0) && !strcmp(pCad->valb,pCad->d)) {
 	     *(long *) pCad->vala=1;
 	  }
 	  else {
 	     *(long *) pCad->vala=0;
 	  }
-
 	  break;
 
       default:		   /* Unknown directive		*/
