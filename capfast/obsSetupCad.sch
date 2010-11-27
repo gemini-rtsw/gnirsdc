@@ -1,5 +1,5 @@
 [schematic2]
-uniq 174
+uniq 178
 [tools]
 [detail]
 w 458 3307 100 0 n#172 ebos.active.OUT 48 3296 928 3296 928 2976 1152 2976 ecad20.obsSetup.B
@@ -74,12 +74,9 @@ s 1036 2220 100 0 (hdrTiming)
 s 1468 2220 100 0 (hdrTiming)
 s 1736 2032 150 0 obsSetup
 [cell use]
-use eaos 1392 3399 100 0 intOK
-xform 0 1520 3488
-use ebos -128 3392 100 0 active
-xform 0 -80 3328
-p -528 3182 100 0 0 ONAM:Activate
-p -528 3214 100 0 0 ZNAM:Deactivate
+use hwin 1024 1383 100 0 hwin#158
+xform 0 1120 1424
+p 1027 1416 100 0 -1 val(in):$(sadtop)detID
 use estringouts 1216 1319 100 0 detID
 xform 0 1344 1392
 use estringouts 1856 1319 100 0 detType
@@ -136,6 +133,12 @@ p 400 1968 100 0 1 OMSL:closed_loop
 use estringouts 736 3472 100 0 activstr
 xform 0 784 3408
 p 720 3328 100 0 1 OMSL:closed_loop
+use eaos 1392 3399 100 0 intOK
+xform 0 1520 3488
+use ebos -128 3392 100 0 active
+xform 0 -80 3328
+p -528 3182 100 0 0 ONAM:Activate
+p -528 3214 100 0 0 ZNAM:Deactivate
 use embbis -104 1456 100 0 hdTime
 xform 0 -48 1392
 p -240 1182 100 0 0 EIVL:
@@ -258,9 +261,6 @@ p -368 3646 100 0 0 ONST:Active
 p -560 3646 100 0 0 ONVL:1
 p -368 3678 100 0 0 ZRST:inActive
 p -560 3678 100 0 0 ZRVL:0
-use hwin 1024 1383 100 0 hwin#158
-xform 0 1120 1424
-p 1027 1416 100 0 -1 val(in):$(sadtop)detID
 use estringins -112 2216 100 0 titleStr
 xform 0 -48 2160
 use eais -112 2736 100 0 numberPics
@@ -343,4 +343,5 @@ p 1248 2368 100 0 0 FTVT:LONG
 p 1248 2240 100 0 0 PREC:3
 p 1248 3128 65 1536 1 PV:$(top)
 p 1248 3112 65 1536 1 SNAM:obsSetupChk
+p 1504 1728 100 0 0 def(FLNK):0.0
 [comments]
