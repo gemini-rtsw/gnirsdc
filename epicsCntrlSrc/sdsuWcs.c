@@ -25,6 +25,9 @@ rcsid =
  *
  *INDENT-OFF*
  * $Log$
+ * Revision 1.6  2010/11/17 00:57:53  mrippa
+ * Remove some verbose debug statements.
+ *
  * Revision 1.5  2010/09/02 00:38:00  mrippa
  * Current version disables TCS which was causing CAC to
  * crash. Test by setting myDisableTCS=1 on the DC console,
@@ -111,6 +114,7 @@ static char radecsys[81];            /* Type of RA/Dec (for celestial       */
 static double equinox;               /* Epoch of mean equator & equinox     */
                                      /* (celestial  coords).                */
 static double mjdobs;                /* Modified Julian Date.               */
+long globalWcsnPts = 0;
 
 /* external variables*/
 extern char *dbTop;
@@ -122,11 +126,11 @@ long printctx(struct WCS_CTX ctx);
 STATUS getROI(roiParams *roi);
 int InitWcs(int, char *, char *, char *);
 int WcsContext(struct WCS *, int, struct EPOCH *, double);
-int CalcWcs(int, int);
+/*int CalcWcs(int, int);*/
 int getWcsPoints(int, char *);
 int wcsCalibrate(int, int, int, int, int);
 long printTel(struct TELP tel);
-long getWcsParams();
+/*long getWcsParams();*/
 int mytimeOffline ( double tai,
                   double elong, double phi, double hm,
                   double dleap, double dat, double dut );
@@ -235,7 +239,7 @@ int getWcsPoints(int chip, char *file)
 
    /*printf("2.... Starting getWcsPoints\n");*/
    c = chip - 1;
-   wcsInfo[c].numPoints = 0;
+   wcsInfo[c].numPoints = globalWcsnPts = 0;
    if ((strncmp(file, "NONE", 4) == 0) || (*file == '\0')) {
       sprintf(ErrorMessage,"No wcs data for chip %d", chip);
       printf("No wcs data for chip %d", chip);
@@ -279,7 +283,7 @@ int getWcsPoints(int chip, char *file)
       }
    } 
    fclose(fp);
-   wcsInfo[c].numPoints = n;
+   wcsInfo[c].numPoints = globalWcsnPts = n;
    /*printf("2...... Ending getWcsPoints\n"); */
    return OK;
 }
@@ -925,7 +929,7 @@ long getWcsParams()
       wcsInfo[n].pixij[10][1] = 457.28;
       wcsInfo[n].fpxy[10][0] =  2.916646;
       wcsInfo[n].fpxy[10][1] =  -0.80052624;
-      wcsInfo[n].numPoints =  11;
+      wcsInfo[n].numPoints =  globalWcsnPts = 11;
       wcsCalibrate(n,1,1,0,0);   
       /* 	for (i=0;i< 6;i++) */
       /* 	{ */
@@ -1052,10 +1056,10 @@ int status;
      printf("ctype2   = %s\n", ctype2);
      printf("crpix2   = %f pixels\n", crpix2);
      printf("crval2   = %f degrees\n", crval2);
-     printf("cd1_1    = %f\n", cd1_1);
-     printf("cd1_2    = %f\n", cd1_2);
-     printf("cd2_1    = %f\n", cd2_1);
-     printf("cd2_2    = %f\n", cd2_2);
+     printf("cd1_1    = %g\n", cd1_1);
+     printf("cd1_2    = %g\n", cd1_2);
+     printf("cd2_1    = %g\n", cd2_1);
+     printf("cd2_2    = %g\n", cd2_2);
      printf("radecsys = %s\n", radecsys);
      printf("equinox  = %f\n", equinox);
      printf("mjd-obs  = %f\n", mjdobs);
