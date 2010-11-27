@@ -35,7 +35,7 @@ typedef struct
 
 }gmosChip;
 
-long CalcWcs();
+int CalcWcs(int, int);
 long getWcsParams();
 STATUS wcsCalculate(int);
 int sdsuInitWcs(int numChips, char *file1, char *file2, char *file3);
