@@ -1,1 +1,6 @@
+*************************************************************
+*V1-8:
+- WCS automated loading for input files depending on camera,
+  AO-fold and ISS port. Adheres to new WCS ICD as of November 2010.
+
 --Starting GNIRS north DC RELEASE.NOTES
