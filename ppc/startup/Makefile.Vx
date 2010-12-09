@@ -5,8 +5,8 @@ include $(APPLIC_TOP)/config/CONFIG
 # The *.vws scripts will be edited and put in the bin/$(T_A) directory
 PROD    = $(patsubst ../%.vws, %, $(wildcard ../*.vws))
 
-PROD    += ../IMP_Startup.ngnirsdc1
-PROD    += ../calist
+DATA    += ../IMP_Startup.ngnirsdc1
+#PROD    += ../calist
 
 # We're loading the IOC via NFS so build Distfile
 TARGETS += Distfile.$(T_A)
