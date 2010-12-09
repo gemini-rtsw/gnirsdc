@@ -11,6 +11,9 @@
  * 
  *INDENT-OFF*
  * $Log$
+ * Revision 1.2  2009/05/27 19:32:41  fkraemer
+ * fkraemer - copied my complete working dir over trunk
+ *
  * Revision 1.1.1.1  2001/10/30 21:15:25  mbec
  * checking in
  *
@@ -98,8 +101,8 @@
 /* EPICS record name definitions for string construction in 'C' code after
  * TOP and SADTOP Put new names in alphabetical order in the list
  */
-#define TOP "nirs:dc:"
-#define SADTOP "nirs:sad:dc:"
+#define TOP "nirsg:dc:"
+#define SADTOP "nirsg:sad:dc:"
 
 #define ABORT_CAD	"abort"
 #define ADCGFCI		"c208_223:a15"

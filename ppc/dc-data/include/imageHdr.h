@@ -55,7 +55,8 @@ STATUS setHeaderDEBUG(int captBuf,unsigned int xstart1,unsigned int xstart2 ,uns
  *============================================================================*/
 
 #define DB_TOP "nirs:"
-#define DC_TOP DB_TOP "dc:"
+#define DB_GATEWAY_TOP "nirsg:" /* All DC side channels go thru gateway*/
+#define DC_TOP DB_GATEWAY_TOP "dc:"
 #define CC_TOP DB_TOP "cc:"
 #define TCS_SAD_TOP "tcs:sad:"
 #define TCS_TOP "tcs:"
@@ -107,24 +108,24 @@ dhsHeadersDef dhsDsHeader[] =
     {"INTEGRITY",DCASTRING,  AFTER,   HDR_DC,    NULL,  	     sethdrINTEGRITY,  11},
     {"FRAME",    DCASTRING,  AFTER,   HDR_DC,    TCS_SAD_TOP "sourceAInputFrame",NULL, 12},/* here it's NOW or NEVER - so NOW */	 
     {"FRAME",  	 DCASTRING,  NOW,     HDR_DC,    TCS_SAD_TOP "sourceAInputFrame", NULL,13},/* here it's NOW or NEVER - so NOW */
-    {"UCODEPTH", DCASTRING,  BEFORE,  HDR_DC,   "nirs:dc:arSetup.A",	        NULL, 14},
-    {"UCODENAM", DCASTRING,  BEFORE,  HDR_DC,   "nirs:dc:arSetup.B",	        NULL, 15},
-    {"COADDS",   DCALONG,    BEFORE,  HDR_DC,   "nirs:dc:obsSetup.VALE",	NULL, 16},
-    {"LNRS",     DCALONG,    BEFORE,  HDR_DC,   "nirs:dc:obsSetup.VALD",	NULL, 17},
-    {"NDAVGS",   DCALONG,    BEFORE,  HDR_DC,   "nirs:dc:obsSetup.VALC",        NULL, 18},
-    {"ROWS",     DCALONG,    BEFORE,  HDR_DC,   "nirs:dc:curMaxRow.VAL",	NULL, 19},
-    {"P_MODE",   DCASTRING,  BEFORE,  HDR_DC,   "nirs:sad:dc:procMode.VAL",	NULL, 20},
-    {"COLS",     DCALONG,    BEFORE,  HDR_DC,   "nirs:dc:curMaxCol.VAL",	NULL, 21},
-    {"EXPTIME",	 DCADOUBLE,  BEFORE,  HDR_DC,   "nirs:dc:integTime.VAL",	NULL, 22},
-    {"MIN_INT",	 DCADOUBLE,  BEFORE,  HDR_DC,   "nirs:dc:minInt.VAL",	        NULL, 23},
-    {"FRMS_EXP", DCALONG,    BEFORE,  HDR_DC,   "nirs:dc:ucFrmsPCycle.VAL",	NULL, 24},
-    {"DSRDTEMP", DCADOUBLE,  BEFORE,  HDR_DC,   "nirs:dc:C1.SETP",	        NULL, 27},
-    {"DETTEMP",  DCADOUBLE,  BEFORE,  HDR_DC,   "nirs:dc:C1Tmp",	        NULL, 28},
-    {"TMP_ERROR",DCADOUBLE,  NEVER,   HDR_DC,   "nirs:dc:rdFootHGain",	        NULL, 29},
-    {"FOOT_PWR", DCADOUBLE,  BEFORE,  HDR_DC,   "nirs:dc:C1Heat",	        NULL, 30},
-    {"MNT_PWR",  DCADOUBLE,  NEVER,   HDR_DC,   "nirs:dc:mntHtrFB",	        NULL, 31},
-    {"IMG_NAME", DCASTRING,  NEVER,  HDR_DC,   "nirs:dc:imName.VAL",	        NULL, 32},
-    {"IMG_NUM",  DCALONG,    NEVER,  HDR_DC,   "nirs:dc:imNum.VAL",	        NULL, 33}, 
+    {"UCODEPTH", DCASTRING,  BEFORE,  HDR_DC,   "nirsg:dc:arSetup.A",	        NULL, 14},
+    {"UCODENAM", DCASTRING,  BEFORE,  HDR_DC,   "nirsg:dc:arSetup.B",	        NULL, 15},
+    {"COADDS",   DCALONG,    BEFORE,  HDR_DC,   "nirsg:dc:obsSetup.VALE",	NULL, 16},
+    {"LNRS",     DCALONG,    BEFORE,  HDR_DC,   "nirsg:dc:obsSetup.VALD",	NULL, 17},
+    {"NDAVGS",   DCALONG,    BEFORE,  HDR_DC,   "nirsg:dc:obsSetup.VALC",        NULL, 18},
+    {"ROWS",     DCALONG,    BEFORE,  HDR_DC,   "nirsg:dc:curMaxRow.VAL",	NULL, 19},
+    {"P_MODE",   DCASTRING,  BEFORE,  HDR_DC,   "nirsg:sad:dc:procMode.VAL",	NULL, 20},
+    {"COLS",     DCALONG,    BEFORE,  HDR_DC,   "nirsg:dc:curMaxCol.VAL",	NULL, 21},
+    {"EXPTIME",	 DCADOUBLE,  BEFORE,  HDR_DC,   "nirsg:dc:integTime.VAL",	NULL, 22},
+    {"MIN_INT",	 DCADOUBLE,  BEFORE,  HDR_DC,   "nirsg:dc:minInt.VAL",	        NULL, 23},
+    {"FRMS_EXP", DCALONG,    BEFORE,  HDR_DC,   "nirsg:dc:ucFrmsPCycle.VAL",	NULL, 24},
+    {"DSRDTEMP", DCADOUBLE,  BEFORE,  HDR_DC,   "nirsg:dc:C1.SETP",	        NULL, 27},
+    {"DETTEMP",  DCADOUBLE,  BEFORE,  HDR_DC,   "nirsg:dc:C1Tmp",	        NULL, 28},
+    {"TMP_ERROR",DCADOUBLE,  NEVER,   HDR_DC,   "nirsg:dc:rdFootHGain",	        NULL, 29},
+    {"FOOT_PWR", DCADOUBLE,  BEFORE,  HDR_DC,   "nirsg:dc:C1Heat",	        NULL, 30},
+    {"MNT_PWR",  DCADOUBLE,  NEVER,   HDR_DC,   "nirsg:dc:mntHtrFB",	        NULL, 31},
+    {"IMG_NAME", DCASTRING,  NEVER,  HDR_DC,   "nirsg:dc:imName.VAL",	        NULL, 32},
+    {"IMG_NUM",  DCALONG,    NEVER,  HDR_DC,   "nirsg:dc:imNum.VAL",	        NULL, 33}, 
     {NULL,  	 DCASTRING, BEFORE,  HDR_DC,   NULL,	NULL, 34}
   };
 
