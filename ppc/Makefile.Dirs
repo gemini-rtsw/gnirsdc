@@ -1,3 +1,2 @@
-DIRS += startup 
 DIRS += dc-data
 DIRS += startup 
