@@ -100,7 +100,7 @@ sp gnDCASocketIntrfc
 #ld < /gemini/epics3.13.4/gnirs/gnirs/DC/bin/mv162/epicsDev.o
 
 #database prefix
-setTop("nirs:dc:","nirs:sad:dc:");
+setTop("nirsg:dc:","nirsg:sad:dc:");
 
 # load seq and icon
 # cd "$(iocpath)/bin/tp/nifs"
@@ -144,30 +144,30 @@ initTasks
 #sp logtemps,30,1,"/data0/tempTest/templog"
 
 #initialize the database
-pvload "$(version)/data/doInit.pv","top=nirs:dc:,sadtop=nirs:sad:dc:"
+pvload "$(version)/data/doInit.pv","top=nirsg:dc:,sadtop=nirsg:sad:dc:"
 
-seq &timeSeq, "sys=nirs:dc:"
-dbpf "nirs:sad:dc:instrument","gnirs"
-dbpf "nirs:dc:selectWcs.DIR","0"
-dbpf "nirs:dc:selectWcs.DIR","3"
+seq &timeSeq, "sys=nirsg:dc:"
+dbpf "nirsg:sad:dc:instrument","gnirs"
+dbpf "nirsg:dc:selectWcs.DIR","0"
+dbpf "nirsg:dc:selectWcs.DIR","3"
 sleep(8,0)
-#dbpf "nirs:dc:masterEnable","1"
-dbpf "nirs:dc:setWcs.DIR","0"
+#dbpf "nirsg:dc:masterEnable","1"
+dbpf "nirsg:dc:setWcs.DIR","0"
 sleep(1,0)
-dbpf "nirs:dc:setWcs.DIR","3"
+dbpf "nirsg:dc:setWcs.DIR","3"
 sleep(5,0)
-dbpf "nirs:dc:apply.DIR","0"
+dbpf "nirsg:dc:apply.DIR","0"
 sleep(1,0)
-dbpf "nirs:dc:apply.DIR","3"
+dbpf "nirsg:dc:apply.DIR","3"
 
 sleep(1,0)
-dbpf "nirs:dc:wcsport", "1"
-dbpf "nirs:dc:wcsoverride", "0"
+dbpf "nirsg:dc:wcsport", "1"
+dbpf "nirsg:dc:wcsoverride", "0"
 
 #gemLog related settings
 gemSetUseiocLog(0)
 gemSetLogLevel(7)
 
 # Start the dcSetup sequencer
-seq &dcSetup, "dctop=nirs:dc"
+seq &dcSetup, "dctop=nirsg:dc"
 
