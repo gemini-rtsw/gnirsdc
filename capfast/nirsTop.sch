@@ -11,14 +11,14 @@ p 1960 112 300 1792 -1 Dnumber:
 p 2088 96 150 1536 -1 Title:naacTop.sch
 use hdwrNEngFuncs 384 535 100 0 hdwrNEngFuncs#158
 xform 0 592 768
-p 496 512 100 0 1 set1:top nirs:dc:
-p 496 496 100 0 1 set2:sadtop nirs:sad:dc:
+p 496 512 100 0 1 set1:top nirsg:dc:
+p 496 496 100 0 1 set2:sadtop nirsg:sad:dc:
 use naacDc 112 1123 100 0 naacDc#157
 xform 0 592 1404
-p 132 1096 100 0 1 set1:top nirs:dc:
-p 128 1056 100 0 1 set2:sadtop nirs:sad:dc:
+p 132 1096 100 0 1 set1:top nirsg:dc:
+p 128 1056 100 0 1 set2:sadtop nirsg:sad:dc:
 p 128 1024 100 0 1 set3:agtop ag:
-p 128 1008 100 0 1 set4:cctop nirs:cc:
+p 128 1008 100 0 1 set4:cctop nirsg:cc:
 use notes 1608 1843 100 0 notes#155
 xform 0 1864 2028
 p 1636 2154 100 0 -1 COMMENT1:This is the top level schematic for the

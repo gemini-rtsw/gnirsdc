@@ -5,8 +5,8 @@ uniq 161
 [cell use]
 use naacSad 240 1095 100 0 naacSad#160
 xform 0 720 1376
-p 256 1168 100 0 1 set1:top nirs:dc:
-p 256 1136 100 0 1 set2:sadtop nirs:sad:dc:
+p 256 1168 100 0 1 set1:top nirsg:dc:
+p 256 1136 100 0 1 set2:sadtop nirsg:sad:dc:
 use CBorder -712 -120 -100 0 frame
 xform 0 968 1184
 p 2360 12 75 1536 -1 Author:Steven M. Beard

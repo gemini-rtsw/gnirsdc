@@ -26,22 +26,22 @@ xform 0 0 1408
 p 112 1408 100 0 -1 val(outp):$(top)astCtx
 use hwout -96 1719 100 0 hwout#200
 xform 0 0 1760
-p 112 1760 100 0 -1 val(outp):nirs:sad:dc:obsepoch.VAL .PP
+p 112 1760 100 0 -1 val(outp):nirsg:sad:dc:obsepoch.VAL .PP
 use hwout -192 343 100 0 hwout#180
 xform 0 -96 384
-p -96 416 100 0 -1 val(outp):nirs:sad:dc:utend.VAL
+p -96 416 100 0 -1 val(outp):nirsg:sad:dc:utend.VAL
 use hwout -192 535 100 0 hwout#177
 xform 0 -96 576
-p -96 608 100 0 -1 val(outp):nirs:sad:dc:utnow.VAL
+p -96 608 100 0 -1 val(outp):nirsg:sad:dc:utnow.VAL
 use hwout -96 1783 100 0 hwout#196
 xform 0 0 1824
-p 112 1824 100 0 -1 val(outp):nirs:sad:dc:datestart.VAL .PP
+p 112 1824 100 0 -1 val(outp):nirsg:sad:dc:datestart.VAL .PP
 use hwout -128 1975 100 0 hwout#197
 xform 0 -32 2016
 p -32 2007 100 0 -1 val(outp):$(sadtop)dataLabel.VAL PP MS
 use hwout -96 1847 100 0 hwout#198
 xform 0 0 1888
-p 112 1888 100 0 -1 val(outp):nirs:sad:dc:utstart.VAL .PP
+p 112 1888 100 0 -1 val(outp):nirsg:sad:dc:utstart.VAL .PP
 use ecalcs 1216 775 100 0 ecalcs#203
 xform 0 1360 1040
 p 1216 1312 100 0 1 CALC:(A>0)?(A-1):0
