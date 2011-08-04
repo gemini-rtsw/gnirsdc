@@ -49,5 +49,12 @@ long getDbCaInfo (char *pvname, char *errMess, unsigned short type, void *outVal
 			return -1;
 			break;
 		}
+	/* 
+	 * AWE: we must free the connection formed by ca_search or leave a permanent tcp connection
+	 *       This was causing us to tie up TCS resources.
+	 */
+	if ( (status = ca_clear_channel(chid)) != ECA_NORMAL) {
+	  return -1;
+	}
 	return 0;
 	}
