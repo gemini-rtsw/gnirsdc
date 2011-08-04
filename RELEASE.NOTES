@@ -1,5 +1,15 @@
 *************************************************************
-*V1-91
+*V1-10 AWE
+- Some stability improvements and remove the "channel access leak" 
+  which caused the GNIRS DC2 to tie up TCS Channel Access Resources.
+This includes:
+- fix the cctop name in nirsTop.sch so that the camera can be correctly read from the cc.
+- for the astCtx genSub, set the type for VALB and VALC to STRING so that the Track Frame 
+  and Equinox values read from the TCS can be used internally
+- fix getDbCaInfo.c such that it releases Channel Access connections after using them
+- changed epCommon.h to retrieve Current Frame Wavelength and Equinox internally (rather than from the TCS)
+
+*V1-91 AWE
 - This is the head of the repository before development work on V1-10.
 - V1-9 was released (see CR-10 0813) but not tagged
 - I think that this is consistent with the release directory V1-9.
