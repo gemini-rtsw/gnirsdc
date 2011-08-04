@@ -108,11 +108,6 @@ extern char *dummy;
 #define STOP_CAD		"stop"
 #define STOP_CAR		"observeC"  
 
-/*tcs records*/
-#define CURRENT_FRAME		"tcs:sad:sourceATrackFrame"
-#define CURRENT_WAVELENGTH	"tcs:sad:sourceAWavelength"
-#define CURRENT_EQUINOX		"tcs:sad:sourceATrackEq"
-
 #define TEST_CAD		"test"
 #define TEST_CAR		"testC"	
 
