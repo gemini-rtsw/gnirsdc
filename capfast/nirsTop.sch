@@ -18,7 +18,7 @@ xform 0 592 1404
 p 132 1096 100 0 1 set1:top nirsg:dc:
 p 128 1056 100 0 1 set2:sadtop nirsg:sad:dc:
 p 128 1024 100 0 1 set3:agtop ag:
-p 128 1008 100 0 1 set4:cctop nirsg:cc:
+p 128 1008 100 0 1 set4:cctop nirs:cc:
 use notes 1608 1843 100 0 notes#155
 xform 0 1864 2028
 p 1636 2154 100 0 -1 COMMENT1:This is the top level schematic for the
