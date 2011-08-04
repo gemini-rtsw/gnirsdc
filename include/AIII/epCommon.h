@@ -11,6 +11,9 @@
  * 
  *INDENT-OFF*
  * $Log$
+ * Revision 1.2  2009/05/27 19:32:29  fkraemer
+ * fkraemer - copied my complete working dir over trunk
+ *
  * Revision 1.1.1.1  1998/12/15 16:18:19  buchholz
  * Imported gnaacSrc into CVS
  *
@@ -111,10 +114,10 @@
 #define CUR_MAX_COL 	"curMaxCol"
 #define CUR_MAX_ROW 	"curMaxRow"
 #define CUR_ROW 	"curRow" /* pr 2-27 */
-#define CURRENT_FRAME            "tcs:sad:sourceATrackFrame"
-#define CURRENT_WAVELENGTH       "tcs:sad:sourceAWavelength"
-#define CURRENT_EQUINOX          "tcs:sad:sourceATrackEq"
- 
+#define CURRENT_FRAME            "nirsg:dc:astCtx.VALB"
+#define CURRENT_WAVELENGTH       "nirsg:dc:astCtx.VALD"
+#define CURRENT_EQUINOX          "nirsg:dc:astCtx.VALC"
+
 
 #define DACS_FAILED	"DACsFailed"
 #define DATUM_CAR       "datumC"
