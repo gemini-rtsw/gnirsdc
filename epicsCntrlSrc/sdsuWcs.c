@@ -25,6 +25,9 @@ rcsid =
  *
  *INDENT-OFF*
  * $Log$
+ * Revision 1.7  2010/11/27 03:25:01  mrippa
+ * Added globalWcsnpoints to be used in selectWcs cad.
+ *
  * Revision 1.6  2010/11/17 00:57:53  mrippa
  * Remove some verbose debug statements.
  *
@@ -764,7 +767,6 @@ long getWcsParams()
    double tai,dleap,dat,dut,elongm,phim,hm,xp,yp,tdk,pmb,rh;
    double tlr,elong,phi,daz;
    int j;
-   static void  *ch1=NULL,*wlCh = NULL,*eqCh = NULL;
 
 
    /* default or test values*/
