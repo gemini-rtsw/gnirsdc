@@ -135,6 +135,7 @@ iocInit "$(version)/data/resource.def"
 initHkArray "$(version)/data/hkChanInfo.pv"
 # Initialize the CICS logging routines
 cicsInitLogging
+#cicsSetDebug(2)
 
 coAdSim = 1
 
@@ -148,20 +149,8 @@ pvload "$(version)/data/doInit.pv","top=nirsg:dc:,sadtop=nirsg:sad:dc:"
 
 seq &timeSeq, "sys=nirsg:dc:"
 dbpf "nirsg:sad:dc:instrument","gnirs"
-dbpf "nirsg:dc:selectWcs.DIR","0"
-dbpf "nirsg:dc:selectWcs.DIR","3"
-sleep(8,0)
-#dbpf "nirsg:dc:masterEnable","1"
-dbpf "nirsg:dc:setWcs.DIR","0"
-sleep(1,0)
-dbpf "nirsg:dc:setWcs.DIR","3"
-sleep(5,0)
-dbpf "nirsg:dc:apply.DIR","0"
-sleep(1,0)
-dbpf "nirsg:dc:apply.DIR","3"
 
-sleep(1,0)
-dbpf "nirsg:dc:wcsport", "1"
+dbpf "nirsg:dc:wcsport", "3"
 dbpf "nirsg:dc:wcsoverride", "0"
 
 #gemLog related settings
