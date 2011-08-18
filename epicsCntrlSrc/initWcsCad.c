@@ -26,6 +26,10 @@ static struct {
  *
  *INDENT-OFF*
  * $Log$
+ * Revision 1.8  2010/11/27 03:29:16  mrippa
+ * Prevent disabling the wcs input file processing when
+ * the wcsInfo array is undefined.
+ *
  * Revision 1.7  2010/11/17 00:51:52  mrippa
  * Update checks for valid AG port and AO position
  * as required by WCS ICD.
@@ -71,6 +75,8 @@ static struct {
 
 extern SEM_ID semInitWcs;
 extern long TCS;
+
+
 /* Forward declarations of the functions in this file */
 
 /*
@@ -220,11 +226,8 @@ long updateAstCtx(struct genSubRecord *pgsub)
    { 
       printf("TCS = 0 ??????\n");
       TCS = 0 ;
-      return ERROR; 
-   } 
-
-
-
+      return ERROR;
+   }
    return OK;
 }
 
@@ -258,6 +261,7 @@ long selectWcs(struct cadRecord *pCad)
    char selectedPort[MAX_STRING_SIZE] = "unknown";
    char wcscamera[MAX_STRING_SIZE] = "unknown";
    char selectedAoname[MAX_STRING_SIZE] = "unknown";
+   char errMess[80];
    long agport = 1; /*default agport*/
    long status = CAD_ACCEPT; 
    long aoIn = 0;
@@ -284,22 +288,30 @@ long selectWcs(struct cadRecord *pCad)
    	  printf ("selectWcs: pCad->sevr = %d\n", pCad->sevr); 
 	  /*printf("WCS file based on AGmanualPort=%s\n camera=%s\n AGport=%s\n setWcs.VALA=%s\n aoName=%s\n aomanualSelect=%s\n", pCad->a, pCad->b, pCad->c, pCad->d, pCad->e, pCad->f); */
 
-          strncpy(selectedPort, (char *)pCad->a, MAX_STRING_SIZE-1);            /* Input A */
-          strncpy(camera, (char *)pCad->b, MAX_STRING_SIZE-1);                  /* Input B */
-	  agport = atoi(pCad->c);                                               /* Input C */
-										/* Input D */	
-          strncpy(aoInstr, (char *)pCad->e, MAX_STRING_SIZE-1);                 /* Input E */
-          strncpy(selectedAoname, (char *)pCad->f, MAX_STRING_SIZE-1);          /* Input F */
+	  if(pCad->sevr != INVALID_ALARM)
+	    { 
+	      agport = atoi(pCad->c);                                               /* Input C */
+	    } else {
+	      printf("attempt to read agport by CA\n");
+	      if(getDbInfo("ag:port:nirs",errMess,DBR_LONG,&agport) != OK) {
+		printf("error reading agport from ag via CA\n");
+	      }
+	    }
+	  strncpy(selectedPort, (char *)pCad->a, MAX_STRING_SIZE-1);            /* Input A */
+	  strncpy(camera, (char *)pCad->b, MAX_STRING_SIZE-1);                  /* Input B */
+	  /* Input D */	
+	  strncpy(aoInstr, (char *)pCad->e, MAX_STRING_SIZE-1);                 /* Input E */
+	  strncpy(selectedAoname, (char *)pCad->f, MAX_STRING_SIZE-1);          /* Input F */
 	  mywcsPoints = atoi(pCad->g);                                          /* Input G */
-	  									/* Input H RESERVED: It's accessed externally.*/
-          printf("selectedPort = %s\n",selectedPort); 
-          printf("camera = %s\n",camera); 
-          printf("agport = %d\n",agport); 
-          printf("wcspoints = %d\n",mywcsPoints); 
-          printf("aoName = %s\n",aoInstr); 
-          printf("matchFile = >>%s<<\n",pCad->d); 
-          printf("selectedAoname = %s\n",selectedAoname); 
-
+	  /* Input H RESERVED: It's accessed externally.*/
+	  printf("selectedPort = %s\n",selectedPort); 
+	  printf("camera = %s\n",camera); 
+	  printf("agport = %d\n",agport); 
+	  printf("wcspoints = %d\n",mywcsPoints); 
+	  printf("aoName = %s\n",aoInstr); 
+	  printf("matchFile = >>%s<<\n",pCad->d); 
+	  printf("selectedAoname = %s\n",selectedAoname); 
+	  
  
 	  /*Camera selection*/
 	  if ((strstr(camera, "Long") != NULL) || 
