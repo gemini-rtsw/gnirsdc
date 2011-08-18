@@ -2,9 +2,9 @@
 uniq 144
 [tools]
 [detail]
-w -190 -789 100 0 n#143 egenSub.combCars5.FLNK -480 -1024 -352 -1024 -352 -800 32 -800 junction
-w -638 -85 100 0 n#143 egenSub.combCars2.FLNK -352 -32 -256 -32 -256 -96 -960 -96 junction
 w -942 -1109 100 0 n#143 egenSub.combCars1.FLNK -1024 320 -960 320 -960 -96 -1856 -96 -1856 -1120 32 -1120 32 -800 100 -800 egenSub.ovrAllCar.SLNK
+w -638 -85 100 0 n#143 egenSub.combCars2.FLNK -352 -32 -256 -32 -256 -96 -960 -96 junction
+w -190 -789 100 0 n#143 egenSub.combCars5.FLNK -480 -1024 -352 -1024 -352 -800 32 -800 junction
 w -140 -597 100 0 n#141 egenSub.combCars5.OUTC -480 -448 -320 -448 -320 -608 100 -608 egenSub.ovrAllCar.I
 w -124 -533 100 0 n#140 egenSub.combCars5.OUTB -480 -384 -288 -384 -288 -544 100 -544 egenSub.ovrAllCar.H
 w -108 -469 100 0 n#139 egenSub.combCars5.OUTA -480 -320 -256 -320 -256 -480 100 -480 egenSub.ovrAllCar.G
@@ -22,76 +22,62 @@ w 612 -581 100 0 n#76 egenSub.ovrAllCar.FLNK 388 -832 608 -832 608 -320 832 -320
 w 696 -181 100 0 n#67 egenSub.ovrAllCar.OUTC 388 -256 608 -256 608 -192 832 -192 ecars.applyC.IMSS
 w 664 -213 100 0 n#65 egenSub.ovrAllCar.OUTB 388 -192 544 -192 544 -224 832 -224 ecars.applyC.IERR
 w 586 -117 100 0 n#53 egenSub.ovrAllCar.OUTA 388 -128 832 -128 ecars.applyC.IVAL
-s -1060 -792 100 0 inputs from
-s -1072 -824 100 0 lower level CARs
-s -1028 -864 100 0 ------>
-s -1712 748 100 0 ------>
-s -1756 788 100 0 lower level CARs
-s -1744 820 100 0 inputs from
-s -1748 -992 100 0 ------>
-s -1792 -952 100 0 lower level CARs
-s -1780 -920 100 0 inputs from
-s -904 104 100 0 inputs from
-s -916 72 100 0 lower level CARs
-s -872 32 100 0 ------>
-s 132 44 100 0 overall combination
 s 140 12 100 0 of individual CARs
+s 132 44 100 0 overall combination
+s -872 32 100 0 ------>
+s -916 72 100 0 lower level CARs
+s -904 104 100 0 inputs from
+s -1780 -920 100 0 inputs from
+s -1792 -952 100 0 lower level CARs
+s -1748 -992 100 0 ------>
+s -1744 820 100 0 inputs from
+s -1756 788 100 0 lower level CARs
+s -1712 748 100 0 ------>
+s -1028 -864 100 0 ------>
+s -1072 -824 100 0 lower level CARs
+s -1060 -792 100 0 inputs from
 [cell use]
-use egenSub -676 -244 100 0 combCars5
-xform 0 -624 -656
-p -664 -380 65 0 1 FTA:LONG
-p -664 -396 65 0 1 FTB:LONG
-p -664 -412 65 0 1 FTC:STRING
-p -664 -428 65 0 1 FTD:LONG
-p -664 -444 65 0 1 FTE:LONG
-p -664 -460 65 0 1 FTF:STRING
-p -664 -476 65 0 1 FTG:LONG
-p -664 -492 65 0 1 FTH:LONG
-p -664 -508 65 0 1 FTI:STRING
-p -991 -1563 65 0 0 FTJ:DOUBLE
-p -664 -540 65 0 1 FTVA:LONG
-p -664 -556 65 0 1 FTVB:LONG
-p -664 -576 65 0 1 FTVC:STRING
-p -680 -996 65 0 1 PV:$(top)
-p -1056 -386 100 0 0 SCAN:Passive
-p -680 -1016 65 0 1 SNAM:combCars
-p -1032 -328 65 0 0 def(INPA):0.0000000000000000e+00
-p -1032 -392 65 0 0 def(INPB):0.0000000000000000e+00
-p -1024 -448 65 0 0 def(INPC):0.0000000000000000e+00
-p -1048 -512 65 0 1 def(INPD):$(top)dcSetupC.VAL
-p -1048 -576 65 0 1 def(INPE):$(top)dcSetupC.OERR
-p -1052 -640 65 0 1 def(INPF):$(top)dcSetupC.OMSS
-p -1044 -700 65 0 0 def(INPG):0.0000000000000000e+00
-p -1044 -764 65 0 0 def(INPH):0.0000000000000000e+00
-p -1044 -828 65 0 0 def(INPI):0.0000000000000000e+00
-p -1056 -738 100 0 0 def(INPJ):0.0000000000000000e+00
-use egenSub -1412 -212 100 0 combCars3
-xform 0 -1360 -624
-p -1400 -348 65 0 1 FTA:LONG
-p -1400 -364 65 0 1 FTB:LONG
-p -1400 -380 65 0 1 FTC:STRING
-p -1400 -396 65 0 1 FTD:LONG
-p -1400 -412 65 0 1 FTE:LONG
-p -1400 -428 65 0 1 FTF:STRING
-p -1400 -444 65 0 1 FTG:LONG
-p -1400 -460 65 0 1 FTH:LONG
-p -1400 -476 65 0 1 FTI:STRING
-p -1727 -1531 65 0 0 FTJ:DOUBLE
-p -1400 -508 65 0 1 FTVA:LONG
-p -1400 -524 65 0 1 FTVB:LONG
-p -1400 -544 65 0 1 FTVC:STRING
-p -1416 -964 65 0 1 PV:$(top)
-p -1792 -354 100 0 0 SCAN:Passive
-p -1416 -984 65 0 1 SNAM:combCars
-p -1768 -296 65 0 1 def(INPA):$(top)combCars4.VALA
-p -1768 -360 65 0 1 def(INPB):$(top)combCars4.VALB
-p -1760 -416 65 0 1 def(INPC):$(top)combCars4.VALC
-p -1784 -480 65 0 1 def(INPD):$(top)noopC.VAL
-p -1784 -544 65 0 1 def(INPE):$(top)noopC.OERR
-p -1788 -608 65 0 1 def(INPF):$(top)noopC.OMSS
-p -1780 -668 65 0 1 def(INPG):$(top)parkC.VAL
-p -1780 -732 65 0 1 def(INPH):$(top)parkC.OERR
-p -1780 -796 65 0 1 def(INPI):$(top)parkC.OMSS
+use egenSub 188 -48 100 0 ovrAllCar
+xform 0 244 -464
+p 200 -108 65 0 1 FTA:LONG
+p 200 -124 65 0 1 FTB:LONG
+p 200 -140 65 0 1 FTC:STRING
+p 200 -156 65 0 1 FTD:LONG
+p 200 -172 65 0 1 FTE:LONG
+p 200 -188 65 0 1 FTF:STRING
+p 200 -204 65 0 1 FTG:LONG
+p 200 -220 65 0 1 FTH:LONG
+p 200 -236 65 0 1 FTI:STRING
+p 200 -260 65 0 1 FTVA:LONG
+p 200 -276 65 0 1 FTVB:LONG
+p 200 -292 65 0 1 FTVC:STRING
+p 200 -840 65 0 1 PV:$(top)
+p 200 -820 65 0 1 SNAM:combCars
+use egenSub -556 744 100 0 combCars2
+xform 0 -496 336
+p -544 636 65 0 1 FTA:LONG
+p -544 616 65 0 1 FTB:LONG
+p -544 596 65 0 1 FTC:STRING
+p -544 576 65 0 1 FTD:LONG
+p -544 556 65 0 1 FTE:LONG
+p -544 536 65 0 1 FTF:STRING
+p -544 516 65 0 1 FTG:LONG
+p -544 496 65 0 1 FTH:LONG
+p -544 476 65 0 1 FTI:STRING
+p -544 448 65 0 1 FTVA:LONG
+p -544 428 65 0 1 FTVB:LONG
+p -544 408 65 0 1 FTVC:STRING
+p -536 -40 65 0 1 PV:$(top)
+p -548 -20 65 0 1 SNAM:combCars
+p -900 676 65 0 1 def(INPA):$(top)initC.VAL
+p -904 612 65 0 1 def(INPB):$(top)initC.OERR
+p -908 548 65 0 1 def(INPC):$(top)initC.OMSS
+p -900 484 65 0 1 def(INPD):$(top)testC.VAL
+p -908 420 65 0 1 def(INPE):$(top)testC.OERR
+p -904 356 65 0 1 def(INPF):$(top)testC.OMSS
+p -896 292 65 0 1 def(INPG):$(top)gSysC.VAL
+p -904 228 65 0 1 def(INPH):$(top)gSysC.OERR
+p -904 164 65 0 1 def(INPI):$(top)gSysC.OMSS
 use egenSub -1208 1100 100 0 combCars1
 xform 0 -1168 688
 p -1212 1028 65 0 1 FTA:LONG
@@ -124,47 +110,61 @@ p -1552 688 65 0 1 def(INPG):$(top)drRoiSetC.VAL
 p -1568 620 65 0 1 def(INPH):$(top)drRoiSetC.OERR
 p -1556 552 65 0 1 def(INPI):$(top)drRoiSetC.OMSS
 p -1024 1034 75 0 -1 pproc(OUTA):NPP
-use egenSub -556 744 100 0 combCars2
-xform 0 -496 336
-p -544 636 65 0 1 FTA:LONG
-p -544 616 65 0 1 FTB:LONG
-p -544 596 65 0 1 FTC:STRING
-p -544 576 65 0 1 FTD:LONG
-p -544 556 65 0 1 FTE:LONG
-p -544 536 65 0 1 FTF:STRING
-p -544 516 65 0 1 FTG:LONG
-p -544 496 65 0 1 FTH:LONG
-p -544 476 65 0 1 FTI:STRING
-p -544 448 65 0 1 FTVA:LONG
-p -544 428 65 0 1 FTVB:LONG
-p -544 408 65 0 1 FTVC:STRING
-p -536 -40 65 0 1 PV:$(top)
-p -548 -20 65 0 1 SNAM:combCars
-p -900 676 65 0 1 def(INPA):$(top)initC.VAL
-p -904 612 65 0 1 def(INPB):$(top)initC.OERR
-p -908 548 65 0 1 def(INPC):$(top)initC.OMSS
-p -900 484 65 0 1 def(INPD):$(top)testC.VAL
-p -908 420 65 0 1 def(INPE):$(top)testC.OERR
-p -904 356 65 0 1 def(INPF):$(top)testC.OMSS
-p -896 292 65 0 1 def(INPG):$(top)gSysC.VAL
-p -904 228 65 0 1 def(INPH):$(top)gSysC.OERR
-p -904 164 65 0 1 def(INPI):$(top)gSysC.OMSS
-use egenSub 188 -48 100 0 ovrAllCar
-xform 0 244 -464
-p 200 -108 65 0 1 FTA:LONG
-p 200 -124 65 0 1 FTB:LONG
-p 200 -140 65 0 1 FTC:STRING
-p 200 -156 65 0 1 FTD:LONG
-p 200 -172 65 0 1 FTE:LONG
-p 200 -188 65 0 1 FTF:STRING
-p 200 -204 65 0 1 FTG:LONG
-p 200 -220 65 0 1 FTH:LONG
-p 200 -236 65 0 1 FTI:STRING
-p 200 -260 65 0 1 FTVA:LONG
-p 200 -276 65 0 1 FTVB:LONG
-p 200 -292 65 0 1 FTVC:STRING
-p 200 -840 65 0 1 PV:$(top)
-p 200 -820 65 0 1 SNAM:combCars
+use egenSub -1412 -212 100 0 combCars3
+xform 0 -1360 -624
+p -1400 -348 65 0 1 FTA:LONG
+p -1400 -364 65 0 1 FTB:LONG
+p -1400 -380 65 0 1 FTC:STRING
+p -1400 -396 65 0 1 FTD:LONG
+p -1400 -412 65 0 1 FTE:LONG
+p -1400 -428 65 0 1 FTF:STRING
+p -1400 -444 65 0 1 FTG:LONG
+p -1400 -460 65 0 1 FTH:LONG
+p -1400 -476 65 0 1 FTI:STRING
+p -1727 -1531 65 0 0 FTJ:DOUBLE
+p -1400 -508 65 0 1 FTVA:LONG
+p -1400 -524 65 0 1 FTVB:LONG
+p -1400 -544 65 0 1 FTVC:STRING
+p -1416 -964 65 0 1 PV:$(top)
+p -1792 -354 100 0 0 SCAN:Passive
+p -1416 -984 65 0 1 SNAM:combCars
+p -1768 -296 65 0 1 def(INPA):0.0
+p -1768 -360 65 0 1 def(INPB):0.0
+p -1760 -416 65 0 1 def(INPC):0.0
+p -1784 -480 65 0 1 def(INPD):$(top)noopC.VAL
+p -1784 -544 65 0 1 def(INPE):$(top)noopC.OERR
+p -1788 -608 65 0 1 def(INPF):$(top)noopC.OMSS
+p -1780 -668 65 0 1 def(INPG):$(top)parkC.VAL
+p -1780 -732 65 0 1 def(INPH):$(top)parkC.OERR
+p -1780 -796 65 0 1 def(INPI):$(top)parkC.OMSS
+use egenSub -676 -244 100 0 combCars5
+xform 0 -624 -656
+p -664 -380 65 0 1 FTA:LONG
+p -664 -396 65 0 1 FTB:LONG
+p -664 -412 65 0 1 FTC:STRING
+p -664 -428 65 0 1 FTD:LONG
+p -664 -444 65 0 1 FTE:LONG
+p -664 -460 65 0 1 FTF:STRING
+p -664 -476 65 0 1 FTG:LONG
+p -664 -492 65 0 1 FTH:LONG
+p -664 -508 65 0 1 FTI:STRING
+p -991 -1563 65 0 0 FTJ:DOUBLE
+p -664 -540 65 0 1 FTVA:LONG
+p -664 -556 65 0 1 FTVB:LONG
+p -664 -576 65 0 1 FTVC:STRING
+p -680 -996 65 0 1 PV:$(top)
+p -1056 -386 100 0 0 SCAN:Passive
+p -680 -1016 65 0 1 SNAM:combCars
+p -1032 -328 65 0 0 def(INPA):0.0000000000000000e+00
+p -1032 -392 65 0 0 def(INPB):0.0000000000000000e+00
+p -1024 -448 65 0 0 def(INPC):0.0000000000000000e+00
+p -1048 -512 65 0 1 def(INPD):$(top)dcSetupC.VAL
+p -1048 -576 65 0 1 def(INPE):$(top)dcSetupC.OERR
+p -1052 -640 65 0 1 def(INPF):$(top)dcSetupC.OMSS
+p -1044 -700 65 0 0 def(INPG):0.0000000000000000e+00
+p -1044 -764 65 0 0 def(INPH):0.0000000000000000e+00
+p -1044 -828 65 0 0 def(INPI):0.0000000000000000e+00
+p -1056 -738 100 0 0 def(INPJ):0.0000000000000000e+00
 use notes 560 695 100 0 notes#116
 xform 0 816 880
 p 588 1006 100 0 -1 COMMENT1:NOTES:  This schematic contains the
