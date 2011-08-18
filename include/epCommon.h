@@ -11,6 +11,9 @@
  * 
  *INDENT-OFF*
  * $Log$
+ * Revision 1.3  2011/08/04 21:44:35  gemvx
+ * use the local copies of the current frame, wavelength and equinox
+ *
  * Revision 1.2  2009/05/27 19:32:26  fkraemer
  * fkraemer - copied my complete working dir over trunk
  *
@@ -115,10 +118,13 @@
 #define CUR_MAX_ROW 	"curMaxRow"
 #define CUR_ROW 	"curRow" /* pr 2-27 */
 
-#define CURRENT_FRAME            "nirsg:dc:astCtx.VALB"
-#define CURRENT_WAVELENGTH       "nirsg:dc:astCtx.VALD"
-#define CURRENT_EQUINOX          "nirsg:dc:astCtx.VALC"
- 
+/* #define CURRENT_FRAME            "nirsg:dc:astCtx.VALB" */
+/* #define CURRENT_WAVELENGTH       "nirsg:dc:astCtx.VALD" */
+/* #define CURRENT_EQUINOX          "nirsg:dc:astCtx.VALC" */
+#define CURRENT_FRAME            "tcs:sad:sourceATrackFrame"
+#define CURRENT_WAVELENGTH       "tcs:sad:sourceAWavelength"
+#define CURRENT_EQUINOX          "tcs:sad:sourceATrackEq"
+
 
 #define DACS_FAILED	"DACsFailed"
 #define DATUM_CAR       "datumC"
