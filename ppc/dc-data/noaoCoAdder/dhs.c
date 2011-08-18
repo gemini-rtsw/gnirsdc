@@ -223,182 +223,65 @@ void useDHS(char *ip, char *server, int simulation,char *impName)
 	printf("********************* useDHS: format = %d\n",svrP.param.dhs.format);
     strncpy(dhs->impName,impName,MAXSTRING);
     dhs->initDone = 0;
+    dhs->connected = 0;
     strncpy(dhs->name, server, MAXSTRING);
     strncpy(dhs->ip, ip, MAXSTRING);
     svrP.server = DHS_SAVE;
     dhsSimulation = simulation;
+    printf ("useDHS dhs %x connect %ld\n",dhs,dhs->connect);
 }
+
 /*****************************************************************************
- * Function name:
- *	DhsConnect
- *
- * Invocation:
- *	DhsConnect(dhs);
- *
- * PARAMETERS:
- *	dhs - pointer to dhs structure
- *
- * FUNCTION VALUE:
- *	status
- *
- * PURPOSE:
- *	connect to the dhs
- *	set up callbacks and eventloop
- *
- * DESCRIPTION:
- *
- * EXTERNAL VARIABLES:
- *
- * PRIOR REQUIREMENTS:
- *	dhs server must be running.  
- *
- * DEFICIENCIES:
- * 	None known
- *
- * HISTORY:
- *
+ * servP_DhsInit
  *****************************************************************************/
-/* Actually do the dhs connection; called after vmeInit by upper level
- * code.  useDHS must have been called prior to this routine, presumably
- * by the startup file.
- * part of the API
- */
-int DhsConnect(dhsParams *dhs)
-{
-#ifdef DEBUG
-    int t1 = 1;
-#endif
-    DHS_STATUS status;
-    char buf[80];
+int servP_DhsInit() {
+   DHS_STATUS status = DHS_S_SUCCESS;
+   dhsParams *dhs;
+   dhs = &svrP.param.dhs;
 
-	printf("\n\nCONNECTING TO DHS\n\n");
-/* 	printf("dhsconnect 1 : format = %d\n",svrP.param.dhs.format); */
-    if (dhsSimulation) 
-    {
-        dhs->initDone = TRUE;
-        svrP.health = GOOD;
-	/* dhs->connect = DHS_CONNECT_NULL + 1; */ /* anything but ...NULL */
-        return OK;
-    }
-/* 	printf("dhsconnect 2 : format = %d\n",svrP.param.dhs.format); */
-    sprintf(buf,"init  %d, imp name %s\n",dhs->initDone, dhs->impName);
-	status = DHS_S_SUCCESS;
-    if (!dhs->initDone) 
-    {
-        dhsInit(dhs->impName, 16, &status);
-        if (status != DHS_S_SUCCESS) 
-	{
-            if (status > DHS_S_SUCCESS) 
-	    {
-                printf( "Error: dhs Init returned %d", status);
-            
-                status = DHS_S_SUCCESS;
-            } 
-	    else
-	    {
-                printf( "dhs Init failed (%d).", status);
-	    }
-            return ERROR;
-        }
-        /* callbacks */
-/* 	printf("dhsconnect 3 : format = %d\n",svrP.param.dhs.format); */
-	DPRINT(t1,"Setting callbacks\n");
-        dhsCallbackSet(DHS_CBT_ERROR, dhsErrorCallback, &status);
+   printf ("servP_DhsInit dhs %x connect %ld\n",dhs,dhs->connect);
 
-/* this is done in outline.c (MBEC)
- *
- *         dhsCallbackSet(DHS_CBT_PUT, dhsWriteCallback, &status);
- */
+   /* simulation mode */
+   if (dhsSimulation) {
+      dhs->initDone = TRUE;
+      svrP.health = GOOD;
+	   return OK;
+      }
 
-/*
- * 	dhsCallbackSet (DHS_CBT_GET, dhsGetCallback, &status);
- */
-         if (status != DHS_S_SUCCESS) 
-	 {
-	     if (status > DHS_S_SUCCESS) 
-	     {
-		
-		 status =DHS_S_SUCCESS;
-	     } 	
-	     else	
-	     {	
-		 printf("Could not register callbacks.\n");
-	     }	
-	 }	
+   if (!dhs->initDone) {
+      dhs->initDone = FALSE;
+      svrP.health = BAD;
+      /* init */
+      dhsInit(dhs->impName, 16, &status);
+      if (status != DHS_S_SUCCESS) {
+         printf( "dhsInit failed (status=%d)", status);
+         return ERROR;
+         }
+      /* callbacks */
+      dhsCallbackSet(DHS_CBT_ERROR, dhsErrorCallback, &status);
+      if (status != DHS_S_SUCCESS) {
+         printf( "dhsCallbackSet failed (status=%d)", status);
+         return ERROR;
+         }
+   	/* event loop */
+      dhsEventLoop(DHS_ELT_THREADED, (DHS_THREAD *) NULL, &status); 
+      if (status != DHS_S_SUCCESS) {
+         printf( "dhsEventLoop failed (status=%d)", status);
+         return ERROR;
+         }
+      dhs->initDone = TRUE;
+      }
+   else {
+      printf( "dhs already initialised\n");
+      }
+   
+   /* dhsDebugLevel(DHS_DEBUG_ON,&status); */
+   svrP.health = GOOD;
+   printf("Dhs initialized\n");
+   return OK;
+   }
 
-/* 	printf("dhsconnect 4 : format = %d\n",svrP.param.dhs.format); */
-	 /* event loop*/
 
-	  if (status == DHS_S_SUCCESS) 
-	  {
-	      dhs->initDone = TRUE;
-                printf( "dhs Init completed successfully");
-	  }
-	  else 
-	  {
-	      status = DHS_S_SUCCESS;
-	      svrP.health = BAD;
-	      dhsExit(&status);
-	      return ERROR;
-	  }
-    }
-    /* connection */
-    status = DHS_S_SUCCESS;
-	
-	printf("dhsConnect : ip %s, name %s \n",dhs->ip,dhs->name);
-	
-	
-/* 	printf("dhsconnect 5 : format = %d\n",svrP.param.dhs.format); */
-    dhs->connect = dhsConnect(dhs->ip, dhs->name, NULL, &status);
- 
-    if (status != DHS_S_SUCCESS) 
-    {
-	if (status > DHS_S_SUCCESS) 
-	{
-            printf( "Connect returns: %d\n", status);
-            logMessage(CICS_DB_LOG, "Connect returns: %d", status);
-        } 
-	else 
-	{
-            printf( "Cannot connect to DHS server.\n");
-            printf( "dhs->ip=%s, dhs->name=%s\n",dhs->ip,dhs->name);
-            dhs->connect = DHS_CONNECT_NULL;
-            svrP.health = BAD;
-            logMessage(CICS_DB_ERROR5, "Cannot connect to DHS server.");
-            return ERROR;
-        }
-    }
-
-    dhs->connected = TRUE;
-    sprintf(buf,"Connected to dhs %ld\n",dhs->connect);
-    DPRINT(t1,buf);
-	
-/* 	printf("%s, starting dhsEventLoop\n",buf); */
-	
-/* 	printf("dhsconnect 6 : format = %d\n",svrP.param.dhs.format); */
-    dhsEventLoop(DHS_ELT_THREADED, (DHS_THREAD *) NULL, &status); 
-  /*   dhsEventLoop(DHS_ELT_WAIT, &status); */
-    if (status != DHS_S_SUCCESS)
-    {
-	if (status > DHS_S_SUCCESS) 
-	{
-	    printf( "Event Loop: %d\n", status);
-	    status = DHS_S_SUCCESS;
-	}
-	else
-	{
-	    printf("Could not start event loop.\n");
-	}
-    }
-
-/*     dhsDebugLevel(DHS_DEBUG_ON,&status); */
-    svrP.health = GOOD;
-
-/* 	printf("dhsconnect 7 : format = %d\n",svrP.param.dhs.format); */
-/* 	printf("all good\n"); */
-	
-    return OK;
-}
 void printFormat()
 {
 

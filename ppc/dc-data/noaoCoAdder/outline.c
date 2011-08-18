@@ -63,7 +63,7 @@ long WRITE_FILE = 1;
 #include "timexLib.h"
 
 extern STATUS getDsHeader( int timing ,int captBuf);
-
+extern int servP_DhsInit();
 
 void printHdr(char hdrarray[255][2][MAX_STRING_SIZE] );
 /*global  variables*/
@@ -215,42 +215,17 @@ int saveDataset()
     if(svrP.server == DHS_SAVE)    
     {
 	dhs = &(svrP.param.dhs);
+	rc = 0;
 
-	gemLogMsg(4,"connecting to dhs name = %s\n",dhs->name);
-	
-	saverOK = 0;
-	if(DhsConnect(&svrP.param.dhs) != OK)	
-	{
-	    rc = 0;
-	    
-	    if(gnPutEpicsT(dbSadTop, DHSCONNECTED ".VAL", DCALONG, &rc)!= OK)
-		printf ("saveDataset: failed to set DHSCONNECTED\n");
-	    
-	    gemLogMsg(1,"couldn't connect to dhs\n");
-	    gemLogMsg(1,"Cpu needs to be rebooted\n");	
-	    /* 	    setObsFlags(FALSE, FALSE, FALSE); */
-	    return ERROR;
-	}
-	
-	/* 
-	 *     dhsCallbackSet(DHS_CBT_PUT, dhsPutCallback, &rc);
-	 *     printf( "----->After setting put callback, dhsStatus is %d \n", rc);
-	 */
-	
-	
-	
-	gemLogMsg(1,"connected\n");
-	
-	
-	rc = 1;
-	
 	if(gnPutEpicsT(dbSadTop, DHSCONNECTED ".VAL", DCALONG, &rc)!= OK)
-	    gemLogMsg (1,"failed to set DHSCONNECTED\n");
-	
-	
-	firstTick = tickGet();
-	
+	  printf ("saveDataset: failed to set DHSCONNECTED\n");
+    }  
+
+    if ( servP_DhsInit() != OK) {
+      printf ("couldn't init DHS, CPU need to be rebooted\n");
+      return -1;
     }
+
 #endif
     while (1)    
     {
