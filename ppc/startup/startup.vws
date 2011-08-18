@@ -5,8 +5,10 @@
 cd "$(iocpath)"
 pwd
 
-shellPromptSet "gnirs(DC) -> "
+shellPromptSet "gnirs(DC1) -> "
 < $(iocpath)/bin/$(arch)/local
+
+hostAdd ("mko-dc-ctrl-gnirs","10.2.2.84")
 
 #routeAdd ("140.252.23.212","140.252.31.41")# load dhs
 ld </gemini/dhs/dhs/external/lib/mv2700T2/libers.o
@@ -65,3 +67,5 @@ taskSpawn( "epicsServer",100,0x8,200000,epicsServer)
 
 loglevel = 1000
 
+# ping evry 10 seconds
+sp pinger,"mko-dc-ctrl-gnirs",10
