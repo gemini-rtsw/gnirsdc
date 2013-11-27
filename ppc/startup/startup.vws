@@ -47,10 +47,9 @@ sp epdq_server
 
 
 # DHS
-# archie
-routeAdd "10.2.4.0","10.2.2.1"
+# mkodhs1
 putenv "IMP_STARTUP=$(iocpath)/data"
-useDHS ("10.2.4.56", "dataServerNS", 0,"ngnirsdc1")
+useDHS ("10.2.2.31", "dataServerInsNS", 0,"ngnirsdc1")
 
 # dhs master routine
 taskSpawn ( "ImpMaster", 100, 0x8, 20000, ImpMaster)
