@@ -17,6 +17,9 @@ static struct {
  *
  *INDENT-OFF*
  * $Log$
+ * Revision 1.3  2010/08/16 20:30:15  mrippa
+ * More debug level statements for drRoiChk
+ *
  * Revision 1.2  2009/05/27 19:32:20  fkraemer
  * fkraemer - copied my complete working dir over trunk
  *
@@ -103,7 +106,6 @@ long drRoiChk( struct cadRecord *pCad )
     long ret;
     long status = CAD_ACCEPT;         /* return status */
     static long numRoi;
-    long lVal;
     unsigned short usVal;
     short flag;
     char name[MAX_STRING_SIZE];
@@ -536,11 +538,12 @@ long drRoiChk( struct cadRecord *pCad )
 
 	  /* CAD START directive detected. */
       case CAD_START:
+          char carVAL[32];	// WARNING: guessed at size.
+ 
 	  cicsLogMessage( 2, "drRoiChk - START directive."); 
-	  getDbInfoT(dbTop, OBSERVE_CAR ".IVAL", dummy,DBF_LONG,&lVal);
+          getDbInfoT(dbSadTop, OBSERVE_CAR ".VAL", dummy, DBF_STRING, carVAL);
 	  
-	  
-	  if (lVal != CAR_IDLE)
+	  if (carStatus(carVAL) != CAR_IDLE)
 	  {
 	      strcpy(MSG,"Cannot start drRoiChk while Observe is busy");
 	      cicsLogMessage( 2, "!!!Cannot start drRoiChk while Observe is busy");
