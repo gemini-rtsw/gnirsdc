@@ -25,6 +25,9 @@ static struct {
  *
  *INDENT-OFF*
  * $Log$
+ * Revision 1.4  2010/08/17 02:09:57  mrippa
+ * *** empty log message ***
+ *
  * Revision 1.3  2010/08/16 20:51:01  mrippa
  * formatting
  *
@@ -495,7 +498,7 @@ long obsSetupChk( struct cadRecord *pCad)
 	  /* CAD START directive detected. Do nothing. The directive is being
 	     monitored by the sequence code, which will start the appropriate
 	     action.       */
-		case CAD_START:
+      case CAD_START:
 	cicsLogMessage( 2, "obsSetupChk - START directive.");
 	getDbInfoT(dbTop, OBSERVE_CAR ".VAL", dummy,DBF_LONG,&lVal);
 	if (lVal != CAR_IDLE)
