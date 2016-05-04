@@ -1,4 +1,11 @@
 *************************************************************
+*V1-11
+- Fix REL-2470 where:
+     getDbInfoT(dbTop, OBSERVE_CAR ".IVAL", dummy,DBF_LONG,&lVal);
+  was using the wrong OBSERVE_CAR output. It was changed to: 
+     getDbInfoT(dbSadTop, OBSERVE_CAR ".VAL", dummy, DBF_STRING, carVAL);
+
+
 *V1-10
 DC2:
 
