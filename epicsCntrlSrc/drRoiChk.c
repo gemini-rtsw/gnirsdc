@@ -119,7 +119,7 @@ long drRoiChk( struct cadRecord *pCad )
     unsigned short usVal;
     short flag;
     char name[MAX_STRING_SIZE];
-    char carVAL[32];
+    char carVAL[MAX_STRING_SIZE];
     /* GNFR-75537 - Hawi Stecher 2026-9-8 - this declare moved here to solve compile error thay resulted in this file never being rebuilt */
     
     /* Initialise CAD status */
