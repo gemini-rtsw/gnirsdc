@@ -1,4 +1,4 @@
-static char rcid[]="$Id$";
+static char rcid[]="$Id: inst_setvars.c,v 1.1.1.1 1998/12/15 16:17:28 buchholz Exp $";
 #define INST_CTRLR 1
 /* Command and control process for INSTRUMENT CONTROL. */
 /******************************************************************************

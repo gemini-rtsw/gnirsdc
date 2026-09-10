@@ -3,7 +3,7 @@ static struct {
         char *c;
 } rcsid = {
         &rcsid,
-        "$Id$"
+        "$Id: simMode.c,v 1.2 2009/05/27 19:32:22 fkraemer Exp $"
 };
 /*
  * Copyright 1997 Association of Universities for Research in Astronomy, Inc.
@@ -24,7 +24,10 @@ static struct {
  * 
  *
  *INDENT-OFF*
- * $Log$
+ * $Log: simMode.c,v $
+ * Revision 1.2  2009/05/27 19:32:22  fkraemer
+ * fkraemer - copied my complete working dir over trunk
+ *
  * Revision 1.1.1.1  1998/12/15 16:18:51  buchholz
  * Imported gnaacSrc into CVS
  *

@@ -6,7 +6,7 @@ static struct
 rcsid =
 {
     &rcsid,
-        "$Id$"
+        "$Id: sdsuWcs.c,v 1.8 2011/08/04 21:42:49 gemvx Exp $"
 };
 #define DEBUG
 /*
@@ -24,7 +24,10 @@ rcsid =
  *  wcsCalibrate   -   Generate WCS data from data points and WCS EPICS information 
  *
  *INDENT-OFF*
- * $Log$
+ * $Log: sdsuWcs.c,v $
+ * Revision 1.8  2011/08/04 21:42:49  gemvx
+ * removed unused variables
+ *
  * Revision 1.7  2010/11/27 03:25:01  mrippa
  * Added globalWcsnpoints to be used in selectWcs cad.
  *
@@ -745,7 +748,9 @@ int myEnableTCS=1;
 
 long getWcsParams()
 {     
-   char equinox[30];
+   char equinox[MAX_STRING_SIZE];
+/* GNFR-75537 - Hawi Stecher 2026-9-9 - string size was hardcoded to 30 and causing a buffer overrun */
+
    int n = 0;
    double m2xy[3][2] = {{0.0,0.0},
       {0.0,0.0},
@@ -856,7 +861,8 @@ long getWcsParams()
    }
 
    if(getDbInfo(CURRENT_WAVELENGTH,errMess,DBR_DOUBLE,&trackWavelength) != OK) {
-      DPRINT(1,"Error getting trackWavelength from tcs\n");
+      printf("name = %s\n",CURRENT_WAVELENGTH);
+      DPRINT(1,"Error getting trackWavelength\n");
       return ERROR;
    }
 
@@ -864,7 +870,8 @@ long getWcsParams()
    trackWavelength = trackWavelength / 10000.0;
 
    if(getDbInfo(CURRENT_EQUINOX,errMess,DBR_STRING,equinox) != OK) {
-      printf("Error getting trackEquinox from tcs\n");
+      printf("name = %s, buf = %s\n",CURRENT_EQUINOX,equinox);
+      printf("Error getting trackEquinox\n");
       return ERROR;
    }
 

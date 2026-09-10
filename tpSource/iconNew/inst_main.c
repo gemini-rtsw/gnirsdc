@@ -1,4 +1,4 @@
-static char rcid[]="$Id$";
+static char rcid[]="$Id: inst_main.c,v 1.1.1.1 1998/12/15 16:17:27 buchholz Exp $";
 #define INST_MAIN 1
 /******************************************************************************
  * Program:  INST CONTROL main Process 

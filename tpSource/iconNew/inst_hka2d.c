@@ -1,4 +1,4 @@
-static char rcid[]="$Id$";
+static char rcid[]="$Id: inst_hka2d.c,v 1.1.1.1 1998/12/15 16:17:27 buchholz Exp $";
 #define INST_HKCAPT 1
 #define INST_CTRL 1
 #define DEBUG_HK 1

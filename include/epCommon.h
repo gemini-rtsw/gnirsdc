@@ -10,7 +10,12 @@
  *     EPICS support routines in the GNAAC software system.
  * 
  *INDENT-OFF*
- * $Log$
+ * $Log: epCommon.h,v $
+ * Revision 1.4  2011/08/18 20:01:27  gemvx
+ * back out of using the local copies of the current frame, wavelength and equinox
+ * This was causing a seg fault when calculating the wcs.  Ended up fixing getDbCaInfo
+ * to release connections instead ... I'd like to get back to this at some point.
+ *
  * Revision 1.3  2011/08/04 21:44:35  gemvx
  * use the local copies of the current frame, wavelength and equinox
  *
@@ -121,9 +126,15 @@
 /* #define CURRENT_FRAME            "nirsg:dc:astCtx.VALB" */
 /* #define CURRENT_WAVELENGTH       "nirsg:dc:astCtx.VALD" */
 /* #define CURRENT_EQUINOX          "nirsg:dc:astCtx.VALC" */
-#define CURRENT_FRAME            "tcs:sad:sourceATrackFrame"
-#define CURRENT_WAVELENGTH       "tcs:sad:sourceAWavelength"
-#define CURRENT_EQUINOX          "tcs:sad:sourceATrackEq"
+
+/*#define CURRENT_FRAME            "tcs:sad:sourceATrackFrame"*/
+/*#define CURRENT_WAVELENGTH       "tcs:sad:sourceAWavelength"*/
+/*#define CURRENT_EQUINOX          "tcs:sad:sourceATrackEq"*/
+
+#define CURRENT_FRAME            "nirsg:dc:srcATrackFrameTCS"
+#define CURRENT_WAVELENGTH       "nirsg:dc:srcAWavelengthTCS"
+#define CURRENT_EQUINOX          "nirsg:dc:srcATrackEqTCS"
+
 
 
 #define DACS_FAILED	"DACsFailed"

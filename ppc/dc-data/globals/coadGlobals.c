@@ -3,7 +3,7 @@ static struct {
         char *c;
 } rcsid = {
         &rcsid,
-        "$Id$"
+        "$Id: coadGlobals.c,v 1.2 2009/05/27 19:32:39 fkraemer Exp $"
 };
 #include <vxWorks.h>
 #include <stdio.h>

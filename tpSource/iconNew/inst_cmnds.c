@@ -1,4 +1,4 @@
-static char rcid[]="$Id$";
+static char rcid[]="$Id: inst_cmnds.c,v 1.1.1.1 1998/12/15 16:17:27 buchholz Exp $";
 /******************************************************************************
  * Program:	INSTRUMENT CONTROL software
  * File:        inst_cmnds.c     

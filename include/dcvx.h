@@ -31,7 +31,10 @@
  * DEPENDENCIES
  *
  *INDENT-OFF*
- * $Log$
+ * $Log: dcvx.h,v $
+ * Revision 1.2  2009/05/27 19:32:26  fkraemer
+ * fkraemer - copied my complete working dir over trunk
+ *
  * Revision 1.2  1998/11/20 17:14:13  pruckle
  * speed up saver, log messages
  *

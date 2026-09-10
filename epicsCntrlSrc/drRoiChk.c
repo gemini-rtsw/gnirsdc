@@ -3,7 +3,7 @@ static struct {
         char *c;
 } rcsid = {
         &rcsid,
-        "$Id$"
+        "$Id: drRoiChk.c,v 1.4 2016/05/04 21:32:50 gemvx Exp $"
 };
 /*
  * Copyright 1997 Association of Universities for Research in Astronomy, Inc.
@@ -16,7 +16,15 @@ static struct {
  * drRoiChk - CAD user subroutine for the drRoiSet CAD record
  *
  *INDENT-OFF*
- * $Log$
+ * $Log: drRoiChk.c,v $
+ * Revision 1.4  2016/05/04 21:32:50  gemvx
+ * Use:
+ * >         getDbInfoT(dbSadTop, OBSERVE_CAR ".VAL", dummy, DBF_STRING, carVAL);
+ * instead of:
+ * <         getDbInfoT(dbTop, OBSERVE_CAR ".IVAL", dummy,DBF_LONG,&lVal);
+ *
+ * .. to fix REL-2470.
+ *
  * Revision 1.3  2010/08/16 20:30:15  mrippa
  * More debug level statements for drRoiChk
  *
@@ -92,7 +100,9 @@ static struct {
 #include <naacTasks.h>
 #include <car.h>
 #include "gnDCADefs.h"
-extern char *dbTop;
+/*extern char *dbTop;*/
+extern char *dbTop, *dbSadTop;
+/* GNFR-75537 - Hawi Stecher 2026-9-8 - this declare moved here to solve compile error thay resulted in this file never being rebuilt */
 
 
 long drRoiChk( struct cadRecord *pCad ) 
@@ -109,6 +119,8 @@ long drRoiChk( struct cadRecord *pCad )
     unsigned short usVal;
     short flag;
     char name[MAX_STRING_SIZE];
+    char carVAL[32];
+    /* GNFR-75537 - Hawi Stecher 2026-9-8 - this declare moved here to solve compile error thay resulted in this file never being rebuilt */
     
     /* Initialise CAD status */
     status = CAD_ACCEPT;
@@ -538,10 +550,16 @@ long drRoiChk( struct cadRecord *pCad )
 
 	  /* CAD START directive detected. */
       case CAD_START:
-          char carVAL[32];	// WARNING: guessed at size.
+          /*char carVAL[32];	*/
+          /* WARNING: guessed at size.*/
+	/* GNFR-75537 - Hawi Stecher 2026-9-8 - this caused a compile error thay resulted in this file never being rebuilt */
  
 	  cicsLogMessage( 2, "drRoiChk - START directive."); 
-          getDbInfoT(dbSadTop, OBSERVE_CAR ".VAL", dummy, DBF_STRING, carVAL);
+          carVAL[0] = '\0';
+          if (getDbInfoT(dbTop, OBSERVE_CAR ".VAL", dummy, DBF_STRING, carVAL) != OK) {
+              cicsLogMessage(2, "drRoiChk - cannot read observeC, assuming not idle");
+              return CAD_REJECT;
+          }
 	  
 	  if (carStatus(carVAL) != CAR_IDLE)
 	  {

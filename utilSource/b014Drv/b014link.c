@@ -3,7 +3,7 @@ static struct {
         char *c;
 } rcsid = {
         &rcsid,
-        "$Id$"
+        "$Id: b014link.c,v 1.2 2009/05/27 19:33:32 fkraemer Exp $"
 };
 /*
  *      ISERVER  -  INMOS standard file server

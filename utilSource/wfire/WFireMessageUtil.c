@@ -3,7 +3,7 @@ static struct {
         char *c;
 } rcsid = {
         &rcsid,
-        "$Id$"
+        "$Id: WFireMessageUtil.c,v 1.2 2009/05/27 19:33:38 fkraemer Exp $"
 };
 extern int wfiredebug;
 /* #define DEBUG */
@@ -45,7 +45,10 @@ extern int wfiredebug;
  *	devWFireMessage.c.  
  *
  *INDENT-OFF*
- * $Log$
+ * $Log: WFireMessageUtil.c,v $
+ * Revision 1.2  2009/05/27 19:33:38  fkraemer
+ * fkraemer - copied my complete working dir over trunk
+ *
  * Revision 1.1.1.1  1998/12/15 16:18:33  buchholz
  * Imported gnaacSrc into CVS
  *

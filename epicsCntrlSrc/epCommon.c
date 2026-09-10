@@ -3,7 +3,7 @@ static struct {
         char *c;
 } rcsid = {
         &rcsid,
-        "$Id$"
+        "$Id: epCommon.c,v 1.3 2010/11/17 00:47:03 mrippa Exp $"
 };
 
 /*
@@ -39,7 +39,10 @@ static struct {
  *   
  *
  *INDENT-OFF*
- * $Log$
+ * $Log: epCommon.c,v $
+ * Revision 1.3  2010/11/17 00:47:03  mrippa
+ * Modify getDbInfo to use getDbCaInfo routine if needed.
+ *
  * Revision 1.2  2009/05/27 19:32:20  fkraemer
  * fkraemer - copied my complete working dir over trunk
  *

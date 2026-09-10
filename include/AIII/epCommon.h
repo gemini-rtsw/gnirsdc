@@ -10,7 +10,10 @@
  *     EPICS support routines in the GNAAC software system.
  * 
  *INDENT-OFF*
- * $Log$
+ * $Log: epCommon.h,v $
+ * Revision 1.3  2011/08/04 21:45:31  gemvx
+ * *** empty log message ***
+ *
  * Revision 1.2  2009/05/27 19:32:29  fkraemer
  * fkraemer - copied my complete working dir over trunk
  *

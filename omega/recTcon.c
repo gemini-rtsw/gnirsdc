@@ -1,4 +1,4 @@
-static char rcsid[] = "$Id$";
+static char rcsid[] = "$Id: recTcon.c,v 1.2 2009/05/27 19:32:32 fkraemer Exp $";
 
 /*
  * Copyright 1998 University of Hawaii, Institute for Astronomy.  All

@@ -3,7 +3,7 @@ static struct {
         char *c;
 } rcsid = {
         &rcsid,
-        "$Id$"
+        "$Id: obsSetupChk.c,v 1.5 2016/05/04 21:33:28 gemvx Exp $"
 };
 /*
  * Copyright 1997 Association of Universities for Research in Astronomy, Inc.
@@ -24,7 +24,10 @@ static struct {
  * in this software.  
  *
  *INDENT-OFF*
- * $Log$
+ * $Log: obsSetupChk.c,v $
+ * Revision 1.5  2016/05/04 21:33:28  gemvx
+ * Fix indentation
+ *
  * Revision 1.4  2010/08/17 02:09:57  mrippa
  * *** empty log message ***
  *

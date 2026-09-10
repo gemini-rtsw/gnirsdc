@@ -3,7 +3,7 @@ static struct {
 	char *c;
 } rcsid = {
 	&rcsid,
-	"$Id$"
+	"$Id: initWcsCad.c,v 1.9 2011/08/18 20:49:27 gemvx Exp $"
 };
 /*
  * Copyright 1997 Association of Universities for Research in Astronomy, Inc.
@@ -25,7 +25,10 @@ static struct {
  *
  *
  *INDENT-OFF*
- * $Log$
+ * $Log: initWcsCad.c,v $
+ * Revision 1.9  2011/08/18 20:49:27  gemvx
+ * read the agPort by channel access if the db link isn't working
+ *
  * Revision 1.8  2010/11/27 03:29:16  mrippa
  * Prevent disabling the wcs input file processing when
  * the wcsInfo array is undefined.
@@ -210,8 +213,10 @@ long updateAstCtx(struct genSubRecord *pgsub)
 {
    printf ("wfsUpdateAstCtx: pgsub->sevr = %d\n", pgsub->sevr); 
 
-   if(pgsub->sevr != INVALID_ALARM)
-   { 
+   if (1) {
+	printf("Gnirs Fast-track Debug: %d\n", pgsub->sevr);
+/*(pgsub->sevr != INVALID_ALARM)*/
+    
       printf("TCS = 1 !!!!!, to astSetctx\n");
       TCS = 1;
 

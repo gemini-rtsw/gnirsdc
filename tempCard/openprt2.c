@@ -5,7 +5,7 @@ static struct {
 	char *c;
 } rcsid = {
 	&rcsid,
-	"$Id$"
+	"$Id: openprt2.c,v 1.2 2009/05/27 19:33:20 fkraemer Exp $"
 };
 #include <stdioLib.h>
 #include <ioLib.h>

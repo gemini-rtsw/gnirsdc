@@ -3,7 +3,7 @@ static struct {
 	char *c;
 } rcsid = {
 	&rcsid,
-	"$Id$"
+	"$Id: initWcsCtrl.c,v 1.3 2010/11/17 00:56:27 mrippa Exp $"
 };
 /* #define DEBUG */
 /*
@@ -29,7 +29,13 @@ static struct {
  *	astLib
  *
  *INDENT-OFF*
- * $Log$
+ * $Log: initWcsCtrl.c,v $
+ * Revision 1.3  2010/11/17 00:56:27  mrippa
+ * Process CalcWcs(0,0) when semInitWcs semaphore
+ * is released. This favors getWcsParams() since CalcWcs
+ * is called there as well and the WCS data gets processed
+ * in CalcWcs().
+ *
  * Revision 1.2  2009/05/27 19:32:21  fkraemer
  * fkraemer - copied my complete working dir over trunk
  *

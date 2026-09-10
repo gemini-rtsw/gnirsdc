@@ -3,7 +3,7 @@ static struct {
         char *c;
 } rcsid = {
         &rcsid,
-        "$Id$"
+        "$Id: b014Drv.c,v 1.2 2009/05/27 19:33:32 fkraemer Exp $"
 };
 /* B014 device driver for VxWorks, 21Mar97, jan@noao.edu. */
 

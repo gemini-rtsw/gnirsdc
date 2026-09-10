@@ -3,7 +3,7 @@
         char *c;
 } rcsid = {
         &rcsid,
-        "$Id$"
+        "$Id: initTasks.c,v 1.4 2010/08/16 19:57:41 mrippa Exp $"
 };
 /*
  * Copyright 1997 Association of Universities for Research in Astronomy, Inc.
@@ -28,7 +28,10 @@
  * all the tasks have been spawned and are waiting to be activated.
  *
  *INDENT-OFF*
- * $Log$
+ * $Log: initTasks.c,v $
+ * Revision 1.4  2010/08/16 19:57:41  mrippa
+ * Removed delay after bias adjustment
+ *
  * Revision 1.3  2010/07/08 21:26:17  mrippa
  * Bias delay in place for testing. We'll sleep 3.1 seconds here
  * allowing HK time to scan again. Sleeping here should not

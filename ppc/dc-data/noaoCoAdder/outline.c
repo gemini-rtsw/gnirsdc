@@ -5,7 +5,7 @@ static struct {
     char *c;
 } rcsid = {
     &rcsid,
-    "$Id$"
+    "$Id: outline.c,v 1.3 2011/08/18 20:59:33 gemvx Exp $"
 };
 long WRITE_FILE = 1;  
 #define DEBUG

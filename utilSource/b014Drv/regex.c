@@ -3,7 +3,7 @@ static struct {
         char *c;
 } rcsid = {
         &rcsid,
-        "$Id$"
+        "$Id: regex.c,v 1.2 2009/05/27 19:33:32 fkraemer Exp $"
 };
 #if !defined(lint) && defined(SCCSIDS)
 static	char sccsid[] = "@(#)regex.c 1.1 90/10/29 SMI"; /* from UCB 4.1 80/12/21 */

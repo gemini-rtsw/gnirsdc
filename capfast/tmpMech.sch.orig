@@ -308,5 +308,5 @@ xform 0 -1376 -16
 use eborderC 1600 -160 100 1280 $Id:
 xform 0 16 1024
 p 1136 -64 200 1536 -1 file:tmp.sch
-p 1600 -160 100 1280 -1 id:$Id$
+p 1600 -160 100 1280 -1 id:$Id: tmpMech.sch.orig,v 1.2 2009/05/27 19:32:16 fkraemer Exp $
 [comments]

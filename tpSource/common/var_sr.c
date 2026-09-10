@@ -1,4 +1,4 @@
-static char rcid[]="$Id$";
+static char rcid[]="$Id: var_sr.c,v 1.1.1.1 1998/12/15 16:17:24 buchholz Exp $";
 /******************************************************************************
  * File:	var_sr.c (variable set/read)
  * Purpose:	to provide an easy method for adding the variable set and

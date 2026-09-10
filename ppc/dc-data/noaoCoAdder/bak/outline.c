@@ -5,7 +5,7 @@ static struct {
     char *c;
 } rcsid = {
     &rcsid,
-    "$Id$"
+    "$Id: outline.c,v 1.2 2009/05/27 19:32:47 fkraemer Exp $"
 };
 long WRITE_FILE = 1;  
 /* #define DEBUG */

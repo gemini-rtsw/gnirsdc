@@ -3,7 +3,7 @@ static struct {
         char *c;
 } rcsid = {
         &rcsid,
-        "$Id$"
+        "$Id: reader.c,v 1.2 2009/05/27 19:33:36 fkraemer Exp $"
 };
 /*
  * reader.c

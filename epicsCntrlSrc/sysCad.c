@@ -3,7 +3,7 @@ static struct {
         char *c;
 } rcsid = {
         &rcsid,
-        "$Id$"
+        "$Id: sysCad.c,v 1.3 2010/08/19 04:00:19 mrippa Exp $"
 };
 /*
  * Copyright 1997 Association of Universities for Research in Astronomy, Inc.
@@ -50,7 +50,10 @@ static struct {
  * record properties.
  *
  *INDENT-OFF*
- * $Log$
+ * $Log: sysCad.c,v $
+ * Revision 1.3  2010/08/19 04:00:19  mrippa
+ * Removes unused setDHSInfoProc() routine.
+ *
  * Revision 1.2  2009/05/27 19:32:22  fkraemer
  * fkraemer - copied my complete working dir over trunk
  *

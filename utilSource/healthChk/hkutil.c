@@ -3,7 +3,7 @@ static struct {
         char *c;
 } rcsid = {
         &rcsid,
-        "$Id$"
+        "$Id: hkutil.c,v 1.2 2009/05/27 19:33:33 fkraemer Exp $"
 };
 extern int healthdebug;
 /*
@@ -40,7 +40,10 @@ extern int healthdebug;
  * record properties.
  *
  *INDENT-OFF*
- * $Log$
+ * $Log: hkutil.c,v $
+ * Revision 1.2  2009/05/27 19:33:33  fkraemer
+ * fkraemer - copied my complete working dir over trunk
+ *
  * Revision 1.1.1.1  1998/12/15 16:18:47  buchholz
  * Imported gnaacSrc into CVS
  *

@@ -3,7 +3,7 @@ static struct {
         char *c;
 } rcsid = {
         &rcsid,
-        "$Id$"
+        "$Id: sockutil.c,v 1.2 2009/05/27 19:32:48 fkraemer Exp $"
 };
 /*
  * Copyright 1997 Association of Universities for Research in Astronomy, Inc.
@@ -33,7 +33,10 @@ static struct {
  * dcvx.h for strndup
  *
  *INDENT-OFF*
- * $Log$
+ * $Log: sockutil.c,v $
+ * Revision 1.2  2009/05/27 19:32:48  fkraemer
+ * fkraemer - copied my complete working dir over trunk
+ *
  * Revision 1.1.1.1  2001/10/30 21:15:25  mbec
  * checking in
  *

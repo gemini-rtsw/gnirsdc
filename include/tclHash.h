@@ -13,7 +13,7 @@
  * software for any purpose.  It is provided "as is" without
  * express or implied warranty.
  *
- * $Header$ SPRITE (Berkeley)
+ * $Header: /usr/software/dev/cvsroot/rtcvsroot/gnirs/DC/include/tclHash.h,v 1.2 2009/05/27 19:32:28 fkraemer Exp $ SPRITE (Berkeley)
  */
 
 #ifndef _TCLHASH

@@ -6,7 +6,7 @@ static struct
 rcsid =
 {
     &rcsid,
-        "$Id$"
+        "$Id: intRoutine.c,v 1.2 2009/05/27 19:32:47 fkraemer Exp $"
 };
 extern int noao_intDisable;
 #include <vxWorks.h>

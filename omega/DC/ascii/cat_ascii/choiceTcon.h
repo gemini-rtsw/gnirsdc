@@ -1,4 +1,4 @@
-/* $Id$ */
+/* $Id: choiceTcon.h,v 1.2 2009/05/27 19:32:33 fkraemer Exp $ */
 
 /*
  * Author: Hubert Yamada

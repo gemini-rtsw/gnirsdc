@@ -1,4 +1,4 @@
-static char rcid[]="$Id$";
+static char rcid[]="$Id: gnRpcDHServer.c,v 1.2 2009/05/27 19:32:25 fkraemer Exp $";
 int rpcdebug;
 int rundebug;
 

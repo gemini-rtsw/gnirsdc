@@ -1,4 +1,4 @@
-static char rcid[]="$Id$";
+static char rcid[]="$Id: HKVars.c,v 1.2 2009/05/27 19:33:33 fkraemer Exp $";
 #include "stdio.h"
 #include "errno.h"
 

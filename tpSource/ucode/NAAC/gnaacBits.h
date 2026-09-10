@@ -25,7 +25,7 @@
  *		controller - ncb
  *	
  *INDENT-OFF*
- * $Log$
+ * $Log: gnaacBits.h,v $
  * Revision 1.1.1.1  1998/12/15 16:17:31  buchholz
  * Imported gnaacSrc into CVS
  *

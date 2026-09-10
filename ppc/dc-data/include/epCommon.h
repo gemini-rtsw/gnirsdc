@@ -10,7 +10,11 @@
  *     EPICS support routines in the GNAAC software system.
  * 
  *INDENT-OFF*
- * $Log$
+ * $Log: epCommon.h,v $
+ * Revision 1.3  2010/12/09 23:26:15  mrippa
+ * All epics channels support gateway alias from here out.
+ * That is "nirs:*" have changed to "nirsg:*"
+ *
  * Revision 1.2  2009/05/27 19:32:41  fkraemer
  * fkraemer - copied my complete working dir over trunk
  *

@@ -3,10 +3,13 @@ static struct {
         char *c;
 } rcsid = {
         &rcsid,
-        "$Id$"
+        "$Id: dataSimCtrl.c,v 1.2 2009/05/27 19:32:20 fkraemer Exp $"
 };
  /*INDENT-OFF*
- * $Log$
+ * $Log: dataSimCtrl.c,v $
+ * Revision 1.2  2009/05/27 19:32:20  fkraemer
+ * fkraemer - copied my complete working dir over trunk
+ *
  * Revision 1.1.1.1  1998/12/15 16:18:50  buchholz
  * Imported gnaacSrc into CVS
  *

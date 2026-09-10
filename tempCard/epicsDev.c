@@ -4,7 +4,7 @@ static struct {
 	char *c;
 } rcsid = {
 	&rcsid,
-	"$Id$"
+	"$Id: epicsDev.c,v 1.2 2009/05/27 19:33:20 fkraemer Exp $"
 };
 #define DEBUG 
  

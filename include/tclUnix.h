@@ -31,7 +31,7 @@
  * ON AN "AS IS" BASIS, AND THE UNIVERSITY OF CALIFORNIA HAS NO OBLIGATION TO
  * PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
  *
- * $Header$ SPRITE (Berkeley)
+ * $Header: /usr/software/dev/cvsroot/rtcvsroot/gnirs/DC/include/tclUnix.h,v 1.2 2009/05/27 19:32:29 fkraemer Exp $ SPRITE (Berkeley)
  */
 
 #ifndef _TCLUNIX

@@ -1,0 +1,253 @@
+TLNK Linker, Version 91.1, Copyright (c) 1986-1991 by Logical Systems
+
+Reading input file: inst_main.trl
+debug_line	protection	*chan_list	trace_flag	*ChanAlloc	*ProcAlloc
+*ProcRunLow	hk_names	Cntrl_to_HK_A2D	HK_A2D	*Hka2d	data_simul
+HK_XM	my_unit	*mem_init	echo_float	SCBreg_lock	dbus_lock
+var_lock	idxlock	spad_mode	echo_me	status_report	wheel_pos
+SCBreg_ptr	iconSrcID	main	A2D_vals	A2D_array	deactivate
+cp_state	filter_number	num_arrays	hk_norms	Writer_to_Control	srvo_control
+stdbuf	hk_buf	debug	*send_debug	Reader_to_Writer	Control_to_Reader
+Pic_Ctrl_to_Reader	HK_A2D_to_Reader	Reader	Writer	*reader	*writer
+Cntrl_to_Pic_Ctrl	ARRAY_Cntrl	DEV_Cntrl	*INSTcmndctrl	SCBreg_val	a2d_freeze
+hkbufix	
+
+Reading input file: inst_ctrl.trl
+*Cntrl_to_HK_A2D	init_inst	*status_report	*A2D_array	*mod_scb_reg	*control
+*hk_buf	*debug	INSTcmndctrl	
+
+Reading input file: inst_hka2d.trl
+*trace_flag	*mem_alloc	*Cntrl_to_HK_A2D	Hka2d	*idxlock	*var_lock
+*dbus_lock	*var_ptr	*mod_scb_reg	*_node_number	*hk_buf	*send_debug
+*write_dbus	*read_dbus	ReadOneHK	*Control_to_Reader	read_onehk	*_SemP
+*_SemV	*chdesc	*hkcdesc	*a2d_freeze	*hkbufix	
+
+Reading input file: inst_cmnds.trl
+*abort_img	*protection	chan_list	mem_size	*trace_flag	*bad_msg
+setv_cmnds	readv_cmnds	*data_simul	*setDataSimul	*readDataSimul	poweroff
+*read_hk	*check_hk	*echo_me	*status_report	memory	*wheel_pos
+*array_d2a	var_ptr	*set_camera_pwr	*read_camera_pwr	command	num_command
+*deactivate	*cp_state	scb_reg	*filter_number	*num_arrays	*hk_buf
+*no_set	mem_blocks	*read_onehk	*DEBUG_CHAN	*SCBreg_val	*var
+*set_var	*set_SCBreg_var	*start_picture	*set_d2a_var	*read_var	*read_d2a_var
+*read_servo_var	mem_use	*a2d_freeze	
+
+Reading input file: cmnd_funcs.trl
+abort_img	*tolerance	*idxlock	*inst	check_hk	*hk_buf
+*send_debug	*Cntrl_to_Pic_Ctrl	*_SemP	*_SemV	start_picture	*a2d_freeze
+*hkbufix	
+
+Reading input file: arr_ctrl.trl
+*protection	*trace_flag	*setd2a_12b	tolerance	*dbus_lock	inst
+*sprintf	array_d2a	*mod_scb_reg	*send_debug	*write_dbus	arr_d2a_set
+*ReadOneHK	ucode_def	proc_def	ucode_cur	data_order	arr_d2a_read
+*_SemP	*_SemV	chdesc	hkcdesc	arr_dconfig	arr_set_fconfig
+arr_power	
+
+Reading input file: inst_setvars.trl
+*trace_flag	setDataSimul	*inst	set_spad_mode	*write_spad_mode	set_camera_pwr
+*mod_scb_reg	*send_debug	no_set	*arr_d2a_set	*me_servo_cmd	*sol_servo_cmd
+*SCBreg_val	set_SCBreg_var	set_d2a_var	set_servo_var	*arr_power	
+
+Reading input file: inst_rdvars.trl
+*trace_flag	*mem_alloc	readDataSimul	*inst	read_spad_mode	read_hk
+*array_d2a	*var_ptr	read_camera_pwr	*_node_number	*send_debug	*write_dbus
+*read_dbus	*me_servo_cmd	*sol_servo_cmd	*Control_to_Reader	*arr_d2a_read	*SCBreg_val
+read_d2a_var	read_servo_var	
+
+Reading input file: inst_hdw.trl
+*trace_flag	setd2a_12b	strobe_a2d	*SCBreg_lock	*dbus_lock	write_spad_mode
+read_spmode	*SCBreg_ptr	mod_scb_reg	*scb_reg	*send_debug	write_dbus
+read_dbus	write_a2daddr	*_SemP	*_SemV	*SCBreg_val	*a2d_freeze
+
+Reading input file: dev_funcs.trl
+*trace_flag	servo_delay	*dbus_lock	*inst	updpos	*wheel_pos
+*abs	*mod_scb_reg	*send_debug	*write_dbus	me_servo_cmd	sol_servo_cmd
+*_SemP	*_SemV	safe_devs	
+
+Reading input file: ../common/mem.trl
+mem_print	*mem_size	mem_alloc	mem_init	*sprintf	*memory
+mem_free	*_node_number	*strcat	*send_debug	mem_sem	*mem_blocks
+*_HSemP	*_HSemV	*mem_use	
+
+Reading input file: ../common/control.trl
+*trace_flag	*num_command	*command	*mem_free	control	*Writer_to_Control
+*send_debug	*var	
+
+Reading input file: ../common/debug.trl
+*ProcAltList	*strlen	*q_alloc	*ChanAlloc	*ProcAlloc	*mem_alloc
+*vsprintf	*_node_number	debug_buf	send_debug	*ProcRun	*deq
+*emptyq	*_HSemP	*_HSemV	debug_send	*enq	DEBUG_CHAN
+
+Reading input file: ../common/talk.trl
+*chan_list	*fullq	*q_alloc	*malloc	*mem_alloc	*ProcSkipAlt
+*mem_free	*_node_number	*Writer_to_Control	*deq	router	reader
+*Reader_to_Writer	writer	*emptyq	*enq	out_chan	hw_chan
+
+Reading input file: ../common/var_sr.trl
+*strlen	*mem_alloc	*var_ptr	*_node_number	*send_debug	*Control_to_Reader
+set_var	read_var	
+
+Reading input file: ../common/queue.trl
+fullq	q_alloc	*malloc	deq	emptyq	enq
+
+Reading input file: ../common/var.trl
+*trace_flag	*readv_cmnds	*setv_cmnds	*mem_free	*send_debug	var
+
+Reading input file: ../common/message.trl
+bad_msg	*send_debug	
+
+Reading file 'abs.trl' from library: /dlirim0/gn.4/tptools/lib/t8lib.tll
+abs	labs	
+
+Reading file 'alt.trl' from library: /dlirim0/gn.4/tptools/lib/t8lib.tll
+ProcAltList	ProcSkipAltList	ProcTimerAltList	ProcAlt	ProcSkipAlt	ProcTimerAlt
+
+Reading file 'conc.trl' from library: /dlirim0/gn.4/tptools/lib/t8lib.tll
+ProcParList	*ProcToLow	ProcRunLow	ProcInit	*PJoin	ProcPar
+ProcPriPar	ProcParam	ProcRun	*PStop	ProcRunHigh	
+
+Reading file 'proc.trl' from library: /dlirim0/gn.4/tptools/lib/t8lib.tll
+PJoin	*bcopy	PHalt	PRun	PStop	PSetup
+
+Reading file 'bcopy.trl' from library: /dlirim0/gn.4/tptools/lib/t8lib.tll
+bcopy	
+
+Reading file 'nsstart.trl' from library: /dlirim0/gn.4/tptools/lib/t8lib.tll
+*ChanIn	*_boot_chan_in	*_host_chan_in	*_boot_chan_out	*ChanOut	*_host_chan_out
+*_HostOut	*main	_ns_main	*_node_number	*_HostIn	*_ns_exit
+
+Reading file 'comm.trl' from library: /dlirim0/gn.4/tptools/lib/t8lib.tll
+ChanInInt	ChanOutInt	ChanIn	ChanOut	ChanReset	ChanInChar
+ChanOutChar	
+
+Reading file 'print.trl' from library: /dlirim0/gn.4/tptools/lib/t8lib.tll
+*strlen	sprintf	vsprintf	*_ctype_	*memmove	*strchr
+_fmt	
+
+Reading file 'ctype.trl' from library: /dlirim0/gn.4/tptools/lib/t8lib.tll
+_ctype_	toupper	tolower	
+
+Reading file 'nsio.trl' from library: /dlirim0/gn.4/tptools/lib/t8lib.tll
+_ns_printf	*_host_chan_out	_ns_exit	
+
+Reading file 'talloc.trl' from library: /dlirim0/gn.4/tptools/lib/t8lib.tll
+ChanAlloc	*malloc	ProcAlloc	SemAlloc	ChanFree	*free
+ProcFree	SemFree	
+
+Reading file 'free.trl' from library: /dlirim0/gn.4/tptools/lib/t8lib.tll
+*_freelist	*ProcToLow	cfree	free	*ProcToHigh	
+
+Reading file 'malloc.trl' from library: /dlirim0/gn.4/tptools/lib/t8lib.tll
+*_freelist	malloc	*ProcToLow	*_heapstart	*_heapend	*ProcToHigh
+
+Reading file 'env.trl' from library: /dlirim0/gn.4/tptools/lib/t8lib.tll
+_freelist	_boot_chan_in	_host_chan_in	_boot_chan_out	_host_chan_out	_HostOut
+_heapstart	_node_number	_HostIn	_heapend	
+
+Reading file 'memmove.trl' from library: /dlirim0/gn.4/tptools/lib/t8lib.tll
+memmove	
+
+Reading file 'pv.trl' from library: /dlirim0/gn.4/tptools/lib/t8lib.tll
+*ProcToLow	_HSemP	_SemP	_HSemV	_SemV	*ProcToHigh
+
+Reading file 'strcat.trl' from library: /dlirim0/gn.4/tptools/lib/t8lib.tll
+strcat	
+
+Reading file 'strchr.trl' from library: /dlirim0/gn.4/tptools/lib/t8lib.tll
+strchr	
+
+Reading file 'strlen.trl' from library: /dlirim0/gn.4/tptools/lib/t8lib.tll
+strlen	
+
+Reading file 'switchp.trl' from library: /dlirim0/gn.4/tptools/lib/t8lib.tll
+ProcToLow	ProcToHigh	
+TLNK Linker, Version 91.1, Copyright (c) 1986-1991 by Logical Systems
+
+Module load map:
+
+Module #0:
+	Start:	0x80001000	End:	0x8001196B	Size:	0x1096C
+Module #0 contained 0x1096C (67948) bytes
+
+Module #254:
+	Start:	0x8001196C	End:	0x8001196F	Size:	0x4
+Module #254 contained 0x4 (4) bytes
+TLNK Linker, Version 91.1, Copyright (c) 1986-1991 by Logical Systems
+
+Symbol table:
+
+A2D_array	0x8000155C	A2D_vals	0x8000195C	ARRAY_Cntrl	0x8000ADB4
+ChanAlloc	0x800114CC	ChanFree	0x800114DE	ChanIn	0x800106D4
+ChanInChar	0x800106DA	ChanInInt	0x800106E5	ChanOut	0x800106EF
+ChanOutChar	0x800106F5	ChanOutInt	0x800106FB	ChanReset	0x80010701
+Cntrl_to_HK_A2D	0x8000107C	Cntrl_to_Pic_Ctrl	0x80001080	Control_to_Reader	0x80001078
+DEBUG_CHAN	0x8000FB40	DEV_Cntrl	0x8000ADB8	HK_A2D	0x8000ADAC
+HK_A2D_to_Reader	0x80001088	HK_XM	0x8000ADB0	Hka2d	0x8000B084
+INSTcmndctrl	0x8000B034	PHalt	0x80010600	PJoin	0x8001060B
+PRun	0x8001061B	PSetup	0x80010620	PStop	0x80010664
+Pic_Ctrl_to_Reader	0x80001084	ProcAlloc	0x800114E3	ProcAlt	0x80010420
+ProcAltList	0x80010424	ProcFree	0x80011558	ProcInit	0x800104F4
+ProcPar	0x80010528	ProcParList	0x80010540	ProcParam	0x8001052D
+ProcPriPar	0x80010580	ProcRun	0x800105B5	ProcRunHigh	0x800105CF
+ProcRunLow	0x800105E5	ProcSkipAlt	0x8001045E	ProcSkipAltList	0x80010462
+ProcTimerAlt	0x800104A7	ProcTimerAltList	0x800104AC	ProcToHigh	0x80011950
+ProcToLow	0x80011934	ReadOneHK	0x8000B1C8	Reader	0x8000ADA4
+Reader_to_Writer	0x80001070	SCBreg_lock	0x8000148C	SCBreg_ptr	0x800014BC
+SCBreg_val	0x800014C0	SemAlloc	0x80011561	SemFree	0x8001157A
+Writer	0x8000ADA8	Writer_to_Control	0x80001074	_HSemP	0x80011850
+_HSemV	0x8001186E	_HostIn	0x800117BC	_HostOut	0x800117C0
+_SemP	0x8001188D	_SemV	0x800118B5	_boot_chan_in	0x800117AC
+_boot_chan_out	0x800117B0	_ctype_	0x8001121C	_fmt	0x80010D9C
+_freelist	0x800117C8	_heapend	0x800117D0	_heapstart	0x800117CC
+_host_chan_in	0x800117B4	_host_chan_out	0x800117B8	_node_number	0x800117C4
+_ns_exit	0x800113E6	_ns_main	0x80010670	_ns_printf	0x800113EA
+a2d_freeze	0x80001554	abort_img	0x8000B9E3	abs	0x80010414
+arr_d2a_read	0x8000D627	arr_d2a_set	0x8000CE76	arr_dconfig	0x8000D8C0
+arr_power	0x8000CC84	arr_set_fconfig	0x8000D8C4	array_d2a	0x8000C7C8
+bad_msg	0x800103E8	bcopy	0x80010668	cfree	0x80011584
+chan_list	0x8000B6B8	chdesc	0x8000C800	check_hk	0x8000B724
+command	0x8000B5B4	control	0x8000FA44	cp_state	0x80001550
+data_order	0x8000C7F8	data_simul	0x80001558	dbus_lock	0x80001498
+deactivate	0x8000154C	debug	0x8000296C	debug_buf	0x8000FB54
+debug_line	0x80002974	debug_send	0x8000FBDF	deq	0x800102AB
+echo_float	0x80002964	echo_me	0x80002960	emptyq	0x800102C4
+enq	0x80010296	filter_number	0x8000AD74	free	0x80011588
+fullq	0x800102CC	hk_buf	0x8000215C	hk_names	0x8000A974
+hk_norms	0x80001D5C	hkbufix	0x8000295C	hkcdesc	0x8000CC00
+hw_chan	0x8000FD38	iconSrcID	0x8000103E	idxlock	0x800014B0
+init_inst	0x8000AF98	inst	0x8000B9F4	labs	0x80010414
+main	0x8000ADC0	malloc	0x80011694	me_servo_cmd	0x8000EE98
+mem_alloc	0x8000F897	mem_blocks	0x8000B524	mem_free	0x8000F992
+mem_init	0x8000F866	mem_print	0x8000F7B4	mem_sem	0x8000F7A8
+mem_size	0x8000B520	mem_use	0x8000B528	memmove	0x800117E0
+memory	0x8000B5A8	mod_scb_reg	0x8000E9E0	my_unit	0x8000106C
+no_set	0x8000D909	num_arrays	0x80001544	num_command	0x8000B600
+out_chan	0x8000FD28	poweroff	0x8000B5AC	proc_def	0x8000C7FC
+protection	0x80001548	q_alloc	0x80010282	readDataSimul	0x8000E7D3
+read_camera_pwr	0x8000E238	read_d2a_var	0x8000E312	read_dbus	0x8000E90A
+read_hk	0x8000E771	read_onehk	0x8000B436	read_servo_var	0x8000E433
+read_spad_mode	0x8000E5F7	read_spmode	0x8000ECF9	read_var	0x8001018E
+reader	0x8000FD8C	readv_cmnds	0x8000B67C	router	0x8000FD48
+safe_devs	0x8000EDD6	scb_reg	0x8000B5B0	send_debug	0x8000FC2C
+servo_delay	0x8000EDE2	setDataSimul	0x8000E1F6	set_SCBreg_var	0x8000D946
+set_camera_pwr	0x8000D9C3	set_d2a_var	0x8000DAC5	set_servo_var	0x8000DBC3
+set_spad_mode	0x8000E169	set_var	0x80010093	setd2a_12b	0x8000EB69
+setv_cmnds	0x8000B640	sol_servo_cmd	0x8000F4D9	spad_mode	0x800014C4
+sprintf	0x800111E1	srvo_control	0x8000AD78	start_picture	0x8000B9C1
+status_report	0x80002968	stdbuf	0x8000108C	strcat	0x800118D8
+strchr	0x80011900	strlen	0x8001191C	strobe_a2d	0x8000E9C7
+tolerance	0x8000CC80	tolower	0x8001132E	toupper	0x8001131D
+trace_flag	0x80002970	ucode_cur	0x8000C3C7	ucode_def	0x8000BFC7
+updpos	0x8000EDDC	var	0x80010314	var_lock	0x800014A4
+var_ptr	0x8000B604	vsprintf	0x800111FF	wheel_pos	0x8000ADA0
+write_a2daddr	0x8000E96B	write_dbus	0x8000E815	write_spad_mode	0x8000EC46
+writer	0x8000FF84	
+
+Load address:	0x80001000	Stack address:	0x80001000
+Entry point [_ns_main]:	0x80010670
+
+External symbols: 196	External symbol table usage: 9%
+Total symbols:    1076	Total symbol table usage:    19%
+
+No errors detected

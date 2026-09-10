@@ -3,7 +3,7 @@ static struct {
         char *c;
 } rcsid = {
         &rcsid,
-        "$Id$"
+        "$Id: stateTasks.c,v 1.2 2009/05/27 19:32:22 fkraemer Exp $"
 };
 /*
  * Copyright 1997 Association of Universities for Research in Astronomy, Inc.
@@ -25,7 +25,10 @@ static struct {
  * doStop    - stops an observation (keeps the data)
  *   
  *INDENT-OFF*
- * $Log$
+ * $Log: stateTasks.c,v $
+ * Revision 1.2  2009/05/27 19:32:22  fkraemer
+ * fkraemer - copied my complete working dir over trunk
+ *
  * Revision 1.2  1998/11/20 17:13:54  pruckle
  * speed up saver, log messages
  *

@@ -6,10 +6,13 @@
  * History:
  *		15Jan92	created						dak
  *
- *$Id$
+ *$Id: shared.h,v 1.2 2009/05/27 19:32:28 fkraemer Exp $
  *
  *
- *$Log$
+ *$Log: shared.h,v $
+ *Revision 1.2  2009/05/27 19:32:28  fkraemer
+ *fkraemer - copied my complete working dir over trunk
+ *
  *Revision 1.1.1.1  1998/12/15 16:18:21  buchholz
  *Imported gnaacSrc into CVS
  *

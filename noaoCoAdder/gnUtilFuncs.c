@@ -4,7 +4,7 @@ static struct {
         char *c;
 } rcsid = {
         &rcsid,
-        "$Id$"
+        "$Id: gnUtilFuncs.c,v 1.2 2009/05/27 19:32:31 fkraemer Exp $"
 };
 /*****************************************************************************
  * Copyright 1997 Association of Universities for Research in Astronomy, Inc. 

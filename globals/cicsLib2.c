@@ -3,7 +3,7 @@ static struct {
 	char *c;
 } rcsid = {
 	&rcsid,
-	"$Id$"
+	"$Id: cicsLib2.c,v 1.2 2009/05/27 19:32:24 fkraemer Exp $"
 };
 /*
 *   FILENAME
@@ -40,7 +40,10 @@ static struct {
 */
 /* *INDENT-OFF* */
 /*
- * $Log$
+ * $Log: cicsLib2.c,v $
+ * Revision 1.2  2009/05/27 19:32:24  fkraemer
+ * fkraemer - copied my complete working dir over trunk
+ *
  */
 /* *INDENT-ON* */
 

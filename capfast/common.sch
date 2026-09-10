@@ -11,5 +11,5 @@ p -1408 2016 100 768 1 VAL:$(name)
 use eborderC 1600 -160 100 1280 $Id:
 xform 0 16 1024
 p 1136 -64 200 1536 -1 file:common.sch
-p 1600 -160 100 1280 -1 id:$Id$
+p 1600 -160 100 1280 -1 id:$Id: common.sch,v 1.2 2009/05/27 19:32:14 fkraemer Exp $
 [comments]

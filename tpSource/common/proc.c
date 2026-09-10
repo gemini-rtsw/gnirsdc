@@ -1,4 +1,4 @@
-static char rcid[]="$Id$";
+static char rcid[]="$Id: proc.c,v 1.1.1.1 1998/12/15 16:17:24 buchholz Exp $";
 /******************************************************************************
  * Program:	seq
  * File:	proc.c

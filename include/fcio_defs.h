@@ -7,10 +7,13 @@
  * History:
  *	14-Dec-1990 - created file - ncb
  *
- *$Id$
+ *$Id: fcio_defs.h,v 1.2 2009/05/27 19:32:27 fkraemer Exp $
  *
  *
- *$Log$
+ *$Log: fcio_defs.h,v $
+ *Revision 1.2  2009/05/27 19:32:27  fkraemer
+ *fkraemer - copied my complete working dir over trunk
+ *
  *Revision 1.1.1.1  1998/12/15 16:18:20  buchholz
  *Imported gnaacSrc into CVS
  *

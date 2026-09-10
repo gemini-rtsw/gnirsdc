@@ -1,0 +1,14 @@
+# UAE build artifacts
+O.mv162/
+O.mv167/
+O.solaris/
+bin/
+lib/
+config/
+epics/
+.applTop
+.version
+Distfile
+Distfile.*
+*.o
+.epics/

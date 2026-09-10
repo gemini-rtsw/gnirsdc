@@ -9,7 +9,10 @@
  *    control tasks of the GNAAC software system.
  * 
  *INDENT-OFF*
- * $Log$
+ * $Log: naacTasks.h,v $
+ * Revision 1.2  2009/05/27 19:32:28  fkraemer
+ * fkraemer - copied my complete working dir over trunk
+ *
  * Revision 1.1.1.1  1998/12/15 16:18:19  buchholz
  * Imported gnaacSrc into CVS
  *

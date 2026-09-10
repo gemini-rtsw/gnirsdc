@@ -3,7 +3,7 @@ static struct {
     char *c;
 } rcsid = {
     &rcsid,
-    "$Id$"
+    "$Id: arSetupChk.c,v 1.4 2010/08/17 02:00:15 mrippa Exp $"
 };
 /*
  * Copyright 1997 Association of Universities for Research in Astronomy, Inc. 
@@ -25,7 +25,10 @@ static struct {
  * in this software.  
  *
  *INDENT-OFF*
- * $Log$
+ * $Log: arSetupChk.c,v $
+ * Revision 1.4  2010/08/17 02:00:15  mrippa
+ * *** empty log message ***
+ *
  * Revision 1.3  2010/08/16 20:27:08  mrippa
  * More debug level statements for array setup
  *

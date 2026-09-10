@@ -3,7 +3,7 @@ static struct {
         char *c;
 } rcsid = {
         &rcsid,
-        "$Id$"
+        "$Id: putWFMsg.c,v 1.2 2009/05/27 19:33:38 fkraemer Exp $"
 };
 /* Work on a routine to transmit WFire messages; for use with WFireDev code.
  * Mar97, jan@noao.edu

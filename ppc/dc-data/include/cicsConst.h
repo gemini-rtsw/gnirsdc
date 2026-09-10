@@ -46,7 +46,10 @@
 */
 /* *INDENT-OFF* */
 /*
- * $Log$
+ * $Log: cicsConst.h,v $
+ * Revision 1.2  2009/05/27 19:32:41  fkraemer
+ * fkraemer - copied my complete working dir over trunk
+ *
  * Revision 1.1.1.1  2001/10/30 21:15:25  mbec
  * checking in
  *

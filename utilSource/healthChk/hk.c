@@ -4,7 +4,7 @@ static struct {
         char *c;
 } rcsid = {
         &rcsid,
-        "$Id$"
+        "$Id: hk.c,v 1.2 2009/05/27 19:33:33 fkraemer Exp $"
 };
 int healthdebug;
 extern long hkDelay;
@@ -48,7 +48,10 @@ extern long hkDelay;
  * record properties.
  *
  *INDENT-OFF*
- * $Log$
+ * $Log: hk.c,v $
+ * Revision 1.2  2009/05/27 19:33:33  fkraemer
+ * fkraemer - copied my complete working dir over trunk
+ *
  * Revision 1.1.1.1  1998/12/15 16:18:47  buchholz
  * Imported gnaacSrc into CVS
  *

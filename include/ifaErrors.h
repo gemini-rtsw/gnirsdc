@@ -1,4 +1,4 @@
-/* $Id$ */
+/* $Id: ifaErrors.h,v 1.2 2009/05/27 19:32:27 fkraemer Exp $ */
 
 #if !defined(IFA_ERRORS_H)
 #define IFA_ERRORS_H
