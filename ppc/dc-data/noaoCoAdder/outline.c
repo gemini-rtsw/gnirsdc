@@ -64,6 +64,7 @@ long WRITE_FILE = 1;
 
 extern STATUS getDsHeader( int timing ,int captBuf);
 extern int servP_DhsInit();
+extern int servP_DhsConnect();
 
 void printHdr(char hdrarray[255][2][MAX_STRING_SIZE] );
 /*global  variables*/
@@ -99,7 +100,6 @@ extern SEM_ID coaddSem;
 
 /* function prototypes*/
 STATUS getFrameHeader( int timing,int bufnum);
-int DhsConnect(dhsParams *dhs);
 int getFitsName(char *label);
 int printName(int i);
 
@@ -393,7 +393,7 @@ printf ("**** IN saveDhsData\n");
       sleep(1,0);
 	gemLogMsg( 5,"connecting to dhs name = %s from %s\n",dhs->name,dhs->impName);
 	 
-	if(DhsConnect(dhs) != OK)
+	if(servP_DhsConnect() != OK)
 	{
 	    gemLogMsg (1,"couldn't connect to dhs\n");
 	    goto DHSError1;
