@@ -64,6 +64,7 @@ long WRITE_FILE = 1;
 
 extern STATUS getDsHeader( int timing ,int captBuf);
 extern int servP_DhsInit();
+extern int servP_DhsConnect();
 
 void printHdr(char hdrarray[255][2][MAX_STRING_SIZE] );
 /*global  variables*/
@@ -99,7 +100,6 @@ extern SEM_ID coaddSem;
 
 /* function prototypes*/
 STATUS getFrameHeader( int timing,int bufnum);
-int DhsConnect(dhsParams *dhs);
 int getFitsName(char *label);
 int printName(int i);
 
@@ -370,6 +370,9 @@ short  *pbufInt16;
  *-
  */
 static   callBackStruct cb;
+/* global variable to signal error in another save process */
+/* (declared here so saveDhsData can re-arm it after a reconnect) */
+static int dhs_ok=1;
 int saveDhsData(int bufNum, dhsParams *dhs, roiParams *roiStruct)
 {
 
@@ -387,18 +390,25 @@ int saveDhsData(int bufNum, dhsParams *dhs, roiParams *roiStruct)
 printf ("**** IN saveDhsData\n");
     /* connect to dhs server if not done already*/
     printf("connect to dhs? %d\n",dhs->connect);
-    if (dhs->connect == NULL)
+    if (dhs->connected == FALSE || dhs->connect == DHS_CONNECT_NULL)
     {
       printf("connecting to dhs\n");
       sleep(1,0);
 	gemLogMsg( 5,"connecting to dhs name = %s from %s\n",dhs->name,dhs->impName);
-	 
-	if(DhsConnect(dhs) != OK)
+	sprintf(errString,"saveDhsData: ERROR: couldn't connect to dhs\n");
+	/* re-init the DHS library if a previous error did dhsExit */
+	if (!dhs->initDone && servP_DhsInit() != OK)
+	{
+	    gemLogMsg (1,"couldn't init dhs\n");
+	    goto DHSError1;
+	}
+	dhs->connected = FALSE;	/* force servP_DhsConnect to really connect */
+	if(servP_DhsConnect() != OK)
 	{
 	    gemLogMsg (1,"couldn't connect to dhs\n");
 	    goto DHSError1;
 	} 
-	if (*(int *)dhs->connect == NULL)
+	if (dhs->connect == DHS_CONNECT_NULL)
 	{
 	    sprintf(errString,"saveDhsData: ERROR: saveFrame - unable to initialize Saver connection\n");
 	   
@@ -406,6 +416,13 @@ printf ("**** IN saveDhsData\n");
 	    goto DHSError1;
 	}
 	gemLogMsg( 5 ,"connected to dhs\n");
+    }
+    /* connection is good: re-arm DHS sending after an earlier error */
+    if (!dhs_ok)
+    {
+	dhs_ok = 1;
+	if(gnPutEpicsT(dbSadTop, DHSCONNECTED ".VAL", DCALONG, &dhs_ok)!= OK)
+	    gemLogMsg (1,"failed to set DHSCONNECTED\n");
     }
 
     status = DHS_S_SUCCESS;
@@ -431,6 +448,7 @@ printf ("**** IN saveDhsData\n");
     return OK;
 
   DHSError1:
+    putEmptyBuf(bufNum);
     setCar(OBSERVE_CAR,menuCarstatesERROR,ERROR,errString,dummy);
    
     gemLogMsg (1,"Error in saveDhsData\n");
@@ -441,7 +459,11 @@ printf ("**** IN saveDhsData\n");
     if(status != DHS_S_SUCCESS)
 	gemLogMsg(1,"dhsExit failed\n");
     dhs->initDone = 0;
-    dhs->connect = NULL;
+    dhs->connect = DHS_CONNECT_NULL;
+    dhs->connected = FALSE;	/* dhs is &svrP.param.dhs here */
+    svrP.health = BAD;
+    if(gnPutEpicsT(dbSadTop, DHSCONNECTED ".VAL", DCALONG, &dhs->connected)!= OK)
+	gemLogMsg (1,"failed to set DHSCONNECTED\n");
 
     return ERROR;
 }
@@ -482,8 +504,7 @@ printf ("**** IN saveDhsData\n");
  *-
  */
 
-/* global variable to signal error in another save process */
-static int dhs_ok=1;
+/* dhs_ok is declared above saveDhsData */
 
 int dhsSave(int arg1 ,int arg2 ,int arg3 ,int arg4 ,int arg5 ,int arg6 ,
 	    int arg7 ,int arg8 ,int arg9 ,int arg10 )
@@ -524,6 +545,7 @@ int dhsSave(int arg1 ,int arg2 ,int arg3 ,int arg4 ,int arg5 ,int arg6 ,
     int dhs_i;
     int dhs_j;
     long  *dhs_data32;
+    long  *dhs_tmp32 = NULL;	/* per-ROI conversion buffer, freed on error */
     /* initialize variables*/
 	
 #ifdef TRACE
@@ -745,6 +767,7 @@ int dhsSave(int arg1 ,int arg2 ,int arg3 ,int arg4 ,int arg5 ,int arg6 ,
 				       ndims[0], dims, 
 				       (const void **)&dhs->data16,&status);
 		dhs->data = (long*) malloc (sizeof(long)*dx*dy);
+		dhs_tmp32 = dhs->data;
 		/* 	printf("frame = %x, success = %d, status = %d\n",frame, */
 		/* 		       DHS_S_SUCCESS,status); */
 	    } 
@@ -754,6 +777,7 @@ int dhsSave(int arg1 ,int arg2 ,int arg3 ,int arg4 ,int arg5 ,int arg6 ,
 				       ndims[0], dims, 
 				       (const void **)&dhs->data8,&status);
 		dhs->data = (long*) malloc (sizeof(long)*dx*dy);
+		dhs_tmp32 = dhs->data;
 		/* 	printf("frame = %x, success = %d, status = %d\n",frame, */
 		/* 		       DHS_S_SUCCESS,status); */
 	    } 
@@ -766,6 +790,7 @@ int dhsSave(int arg1 ,int arg2 ,int arg3 ,int arg4 ,int arg5 ,int arg6 ,
                 printf( "dx = %i\n", dx);
                 printf( "dy = %i\n", dy);
                 dhs->data = (long*) malloc (sizeof(long)*dx*dy);
+                dhs_tmp32 = dhs->data;
 		 	printf("frame = %x, success = %d, status = %d\n",frame, 
 		 		       DHS_S_SUCCESS,status); 
             }
@@ -777,6 +802,13 @@ int dhsSave(int arg1 ,int arg2 ,int arg3 ,int arg4 ,int arg5 ,int arg6 ,
 	if (status != DHS_S_SUCCESS)
 	{
 	    sprintf(errString,"saveDhsData: ERROR: unable to allocate new frame buffer\n");
+	    gemLogMsg(1,errString);
+	    goto DHSError;
+	}
+	if (dhs_ok && dhs_tmp32 == NULL && (dhs->format == DHS_UINT16 ||
+	    dhs->format == DHS_UINT8 || dhs->format == DHS_FLT32))
+	{
+	    sprintf(errString,"saveDhsData: ERROR: unable to malloc conversion buffer\n");
 	    gemLogMsg(1,errString);
 	    goto DHSError;
 	}
@@ -985,6 +1017,7 @@ int dhsSave(int arg1 ,int arg2 ,int arg3 ,int arg4 ,int arg5 ,int arg6 ,
 		    }
 		gemLogMsg( 3 ,"free 32 bits buffer\n");
 		free(dhs_data32);
+		dhs_tmp32 = NULL;
 		gemLogMsg( 3 ,"conversion done\n");
 	    }
 	    else if (dhs->format == DHS_UINT8) 
@@ -998,6 +1031,7 @@ int dhsSave(int arg1 ,int arg2 ,int arg3 ,int arg4 ,int arg5 ,int arg6 ,
 		    }
 		gemLogMsg( 3 ,"free 32 bits buffer\n");
 		free(dhs_data32);
+		dhs_tmp32 = NULL;
 		gemLogMsg( 3 ,"conversion done\n");
 	    }
             else if (dhs->format == DHS_FLT32) 
@@ -1012,6 +1046,7 @@ int dhsSave(int arg1 ,int arg2 ,int arg3 ,int arg4 ,int arg5 ,int arg6 ,
                     }
                 gemLogMsg( 3 ,"free 32 bits buffer\n");
                 free(dhs_data32);
+                dhs_tmp32 = NULL;
                 printf("conversion done\n");
                 gemLogMsg( 3 ,"conversion done\n");
             }
@@ -1127,6 +1162,17 @@ int dhsSave(int arg1 ,int arg2 ,int arg3 ,int arg4 ,int arg5 ,int arg6 ,
 	gemLogMsg(0,"dhsExit failed\n");
     dhs->connect = NULL;
     dhs->initDone = 0;
+    /* dhs is the per-frame copy cb->dhs: reset the REAL state too so the
+       next saveDhsData re-inits and reconnects */
+    svrP.param.dhs.connect = DHS_CONNECT_NULL;
+    svrP.param.dhs.initDone = FALSE;
+    svrP.param.dhs.connected = FALSE;
+    svrP.health = BAD;
+    if (dhs_tmp32 != NULL)
+    {
+	free(dhs_tmp32);
+	dhs_tmp32 = NULL;
+    }
 #ifdef TRACE
     free(ptimer);		
 #endif
