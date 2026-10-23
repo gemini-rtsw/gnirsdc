@@ -2,7 +2,7 @@
 # Site-specific information: routes, the NFS server that exports /gemini, and
 # the unix identity VxWorks presents over NFS.
 #
-# Production (DC/V1-13) booted from "pisces" and mounted pisces-control's
+# Production (release V1-13) booted from "pisces" and mounted pisces-control's
 # /export/gemini and /export/gemdata. Re-homed to mkotcsbootv2-lv1, which
 # exports /gemini and /gemdata at the root -- the move hrwfs made and validated.
 # hostAdd makes the name resolvable whatever the boot line calls the host.

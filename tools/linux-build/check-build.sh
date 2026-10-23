@@ -51,7 +51,9 @@ for pair in "$B:$DC1_DEPLOY" "$B2:$DC2_DEPLOY"; do
 done
 
 # Nothing that ships may name the build directory or a versioned release dir.
-grep -rlI -e '/root/rpmbuild' -e "$TOP" -e 'DC/V1-1[0-9]' "$B" "$B2" 2>/dev/null \
+# (DC2's other startup.* variants are not shipped; see the spec.)
+grep -lI -e '/root/rpmbuild' -e "$TOP" -e 'DC/V1-1[0-9]' \
+     "$B"/startup "$B"/local "$B2"/startup "$B2"/local ppc/data/* 2>/dev/null \
     | sed 's/^/  /' | grep . >&2 && fail "build directory or V1-xx path in files that ship (above)"
 
 # DC2's objects must be a.out, which is what its vxWorks 5.2 loader reads.

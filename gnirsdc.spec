@@ -110,9 +110,11 @@ rm -f $D/bin/ppc604/Distfile*
 
 # DC2
 D=$RPM_BUILD_ROOT%{dc2}
-mkdir -p $D/bin
-cp -a bin/mv162 $D/bin/
-rm -f $D/bin/mv162/Distfile*
+mkdir -p $D/bin/mv162
+# Only what DC2 boots: the objects and the startup/local scripts. The other
+# startup.* variants macTest generates (arthur, romeo, EPICS, ...) are old
+# per-crate leftovers that cd into the build directory.
+cp -a bin/mv162/*.o bin/mv162/startup bin/mv162/local $D/bin/mv162/
 cp -a data tpSource RELEASE.NOTES $D/
 
 K=$RPM_BUILD_ROOT/gemini/gnirs/vw/mv162
