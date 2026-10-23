@@ -5,6 +5,7 @@
 # Production (DC/V1-10/ppc) booted from pisces-control, exporting
 # /export/gemini and /export/gemdata. Re-homed to mkotcsbootv2-lv1, which
 # exports /gemini and /gemdata at the root -- the move hrwfs made and validated.
+# hostAdd makes the name resolvable whatever the boot line calls the host.
 # 
 
 < /gemini/external/vxWorks/vxUsers
@@ -12,6 +13,8 @@
 routeAdd "0.0.0.0" , "10.2.2.1"
 routeAdd "0.0.0.0" , "10.1.2.1"
 routeAdd "0.0.0.0" , "10.1.5.1"
+
+hostAdd ("mkotcsbootv2-lv1","10.2.2.145")
 
 nfsMount "mkotcsbootv2-lv1", "/gemini", "/gemini"
 nfsMount "mkotcsbootv2-lv1", "/gemdata", "/gemdata"

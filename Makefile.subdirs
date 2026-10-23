@@ -2,7 +2,9 @@ DIRS += annex
 DIRS += ascii
 DIRS += capfast
 #DIRS += dhs_temp
-DIRS += dl
+# dl is not built: its .adl -> .dl conversion needs a Solaris-only tool,
+# and the .dl files are committed in data/ (identical to production).
+#DIRS += dl
 DIRS += pv
 DIRS += dqSocket
 DIRS += epicsCntrlSrc

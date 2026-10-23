@@ -1,14 +1,15 @@
-# UAE build artifacts
-O.mv162/
-O.mv167/
-O.solaris/
-bin/
-lib/
-config/
-epics/
+# Build output. tools/linux-build/setup-dc2.sh and `make` generate these for
+# DC2 (this tree); ppc/.gitignore covers DC1.
+O.*/
+/bin/
+/lib/
+/epics
+/config/CONFIG.Defs
+/config.par
 .applTop
+.epics
 .version
 Distfile
 Distfile.*
 *.o
-.epics/
+rpms/
