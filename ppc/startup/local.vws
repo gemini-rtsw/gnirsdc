@@ -8,7 +8,7 @@
 # hostAdd makes the name resolvable whatever the boot line calls the host.
 # 
 
-< /gemini/external/vxWorks/vxUsers
+< /gemini/external/vxWorks/tornado2.0/vxUsers
 
 routeAdd "0.0.0.0" , "10.2.2.1"
 routeAdd "0.0.0.0" , "10.1.2.1"
