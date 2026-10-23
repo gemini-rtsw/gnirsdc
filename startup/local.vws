@@ -1,5 +1,11 @@
 #
-# This file contains site-specific information
+# Site-specific information: routes, the NFS server that exports /gemini, and
+# the unix identity VxWorks presents over NFS.
+#
+# Production (release V1-13) booted from "pisces" and mounted pisces-control's
+# /export/gemini and /export/gemdata. Re-homed to mkotcsbootv2-lv1, which
+# exports /gemini and /gemdata at the root -- the move hrwfs made and validated.
+# hostAdd makes the name resolvable whatever the boot line calls the host.
 # 
 
 # mv162 doesn't have logAuthority built in the kernel
@@ -10,12 +16,14 @@ routeAdd "0.0.0.0" , "10.2.2.1"
 routeAdd "0.0.0.0" , "10.1.2.1"
 routeAdd "0.0.0.0" , "10.1.5.1"
 
-nfsMount "pisces-control", "/export/gemini", "/gemini"
-nfsMount "pisces-control", "/export/gemdata", "/gemdata"
+hostAdd ("mkotcsbootv2-lv1","10.2.2.145")
+
+nfsMount "mkotcsbootv2-lv1", "/gemini", "/gemini"
+nfsMount "mkotcsbootv2-lv1", "/gemdata", "/gemdata"
 
 # Tell VxWorks the unix user ID and group ID of "gemvx",
 # so that file access over NFS works.
 
-nfsAuthUnixSet "pisces-control", 2966, 10, 0
+nfsAuthUnixSet "mkotcsbootv2-lv1", 2966, 10, 0
 
 cd "$(iocpath)"
