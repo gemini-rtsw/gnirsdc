@@ -104,7 +104,7 @@ for preset in sys.argv[1:]:
     # Files DC2 opens after boot, relative to the tree it cd's into: the
     # microcode the arSetup CAD names (TED logs: Path=<./tpSource/ucode/NAAC/>,
     # Name=<gnAIII_1024xSU01_4u>) and the WCS tables sdsuWcs reads.
-    if "/GEM5/" in deploy:
+    if deploy.endswith("/gnirs/DC/DC"):
         for ext in ("cmd", "tld"):
             need(os.path.join(deploy, "tpSource/ucode/NAAC/gnAIII_1024xSU01_4u." + ext), "microcode, at runtime")
         for port in (1, 3, 5):
