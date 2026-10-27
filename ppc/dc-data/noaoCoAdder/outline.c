@@ -118,49 +118,47 @@ void simOff()
     dcaLoadRegister(TESTENBLNSEL,0);
 }
 
-/* Copy up to eight int-sized varargs out of a va_list (see gemLogMsg). */
-#define VA_UNPACK8(a, ap) do { int _k; for (_k = 0; _k < 8; _k++) \
-	(a)[_k] = va_arg((ap), int); } while (0)
-
-/********************************************************************************
- * gemLogMsg
- *******************************************************************************/
-void gemLogMsg(int level, const char *pFormat, ...) 
+/*
+ * gemLogMsg / gemTimeLogMsg take up to eight int-sized arguments as plain
+ * parameters instead of "...". Callers still see the variadic prototype; on
+ * PowerPC SysV a variadic caller passes int arguments exactly where these
+ * fixed parameters are read (r3-r10, then the stack parameter area), and no
+ * caller passes floating point. The asm label gives the fixed-argument
+ * definition the global symbol gemLogMsg while this file keeps calling it
+ * through the variadic prototype.
+ *
+ * Why not <stdarg.h>: the Linux toolchain is ANL's gcc 2.96, but the vxWorks
+ * target/h/va-ppc.h it picks up is Tornado 2.0's, written for gcc 2.7.2's
+ * __builtin_args_info layout. With that pairing va_arg reads the wrong words
+ * (PFTWGN-949: every logged number was garbage and a garbage %s pointer
+ * crashed tsaveDataSet).
+ */
+void gemLogMsg(int level, const char *pFormat, ...);
+void gemLogMsgFixed(int level, const char *pFormat, int a1, int a2,
+	int a3, int a4, int a5, int a6, int a7, int a8) __asm__("gemLogMsg");
+void gemLogMsgFixed(int level, const char *pFormat, int a1, int a2,
+	int a3, int a4, int a5, int a6, int a7, int a8)
 {
-    va_list		pvar;
-	
-    int a[8];
-
     if (level > logLevel) return;
-	
-    /* Unpack the arguments here and call printf directly: a va_list built
-     * by this compiler (gcc 2.96) must not be handed to the kernel's
-     * vprintf (built with gcc 2.7.2), which reads it as garbage. Every
-     * caller passes ints or pointers (no floating point). */
-    va_start (pvar, pFormat);
-    VA_UNPACK8(a, pvar);
-    va_end(pvar);
-    printf(pFormat, a[0], a[1], a[2], a[3], a[4], a[5], a[6], a[7]);
+    printf(pFormat, a1, a2, a3, a4, a5, a6, a7, a8);
 }
 	
 #ifdef TRACE
-/********************************************************************************
- * gemTimeLogMsg
- *******************************************************************************/
-void gemTimeLogMsg(dhs_timer *ptimer, int level, const char *pFormat, ...) {
-    va_list		pvar;
+void gemTimeLogMsg(dhs_timer *ptimer, int level, const char *pFormat, ...);
+void gemTimeLogMsgFixed(dhs_timer *ptimer, int level,
+	const char *pFormat, int a1, int a2, int a3, int a4, int a5, int a6,
+	int a7, int a8) __asm__("gemTimeLogMsg");
+void gemTimeLogMsgFixed(dhs_timer *ptimer, int level,
+	const char *pFormat, int a1, int a2, int a3, int a4, int a5, int a6,
+	int a7, int a8)
+{
     int tick;
 	
     /* if (level > loglevel) return;*/
 	
-    int a[8];
-
-    va_start (pvar, pFormat);
-    VA_UNPACK8(a, pvar);
-    va_end(pvar);
     tick=tickGet();
     printf("tick: %d sec:%.2f ",tick-ptimer->start,(tick-ptimer->start)/(double)tps);
-    printf(pFormat, a[0], a[1], a[2], a[3], a[4], a[5], a[6], a[7]);
+    printf(pFormat, a1, a2, a3, a4, a5, a6, a7, a8);
 }
 #endif
 
