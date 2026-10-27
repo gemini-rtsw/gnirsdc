@@ -144,9 +144,17 @@ void logMessage(const long debug, const char *format, ...)
  */
 
 /* build message from input */
-        va_start(arglist, format);
-        vsprintf(composeBuffer, format, arglist);
-        va_end(arglist);
+        /* Not vsprintf: the kernel's vsprintf (gcc 2.7.2) misreads a
+         * va_list built by this compiler (gcc 2.96). Unpack the int-sized
+         * arguments here and call sprintf directly; see gemLogMsg. */
+        {
+            int a[8], k;
+            va_start(arglist, format);
+            for (k = 0; k < 8; k++)
+                a[k] = va_arg(arglist, int);
+            va_end(arglist);
+            sprintf(composeBuffer, format, a[0], a[1], a[2], a[3], a[4], a[5], a[6], a[7]);
+        }
 
 /* Copy message to ErrorMessage */
       /*   strncpy(ErrorMessage, composeBuffer, MESSAGE_LENGTH-1); */

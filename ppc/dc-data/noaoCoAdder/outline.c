@@ -118,6 +118,10 @@ void simOff()
     dcaLoadRegister(TESTENBLNSEL,0);
 }
 
+/* Copy up to eight int-sized varargs out of a va_list (see gemLogMsg). */
+#define VA_UNPACK8(a, ap) do { int _k; for (_k = 0; _k < 8; _k++) \
+	(a)[_k] = va_arg((ap), int); } while (0)
+
 /********************************************************************************
  * gemLogMsg
  *******************************************************************************/
@@ -125,11 +129,18 @@ void gemLogMsg(int level, const char *pFormat, ...)
 {
     va_list		pvar;
 	
+    int a[8];
+
     if (level > logLevel) return;
 	
+    /* Unpack the arguments here and call printf directly: a va_list built
+     * by this compiler (gcc 2.96) must not be handed to the kernel's
+     * vprintf (built with gcc 2.7.2), which reads it as garbage. Every
+     * caller passes ints or pointers (no floating point). */
     va_start (pvar, pFormat);
-    vprintf(pFormat, pvar);
+    VA_UNPACK8(a, pvar);
     va_end(pvar);
+    printf(pFormat, a[0], a[1], a[2], a[3], a[4], a[5], a[6], a[7]);
 }
 	
 #ifdef TRACE
@@ -142,11 +153,14 @@ void gemTimeLogMsg(dhs_timer *ptimer, int level, const char *pFormat, ...) {
 	
     /* if (level > loglevel) return;*/
 	
+    int a[8];
+
     va_start (pvar, pFormat);
+    VA_UNPACK8(a, pvar);
+    va_end(pvar);
     tick=tickGet();
     printf("tick: %d sec:%.2f ",tick-ptimer->start,(tick-ptimer->start)/(double)tps);
-    vprintf(pFormat, pvar);
-    va_end(pvar);
+    printf(pFormat, a[0], a[1], a[2], a[3], a[4], a[5], a[6], a[7]);
 }
 #endif
 
