@@ -100,9 +100,14 @@ extern saverParams svrP;
  *                out, since it still needs testing).               (smb)
  *-
  */
-void logMessage(const long debug, const char *format, ...)
+/* Fixed int arguments behind the variadic prototype in gnDCADefs.h, for the
+ * same reason as gemLogMsg in outline.c (Tornado's va-ppc.h does not match
+ * gcc 2.96). The asm label makes this the global symbol logMessage. */
+void logMessageFixed(const long debug, const char *format, int a1, int a2,
+	int a3, int a4, int a5, int a6, int a7, int a8) __asm__("logMessage");
+void logMessageFixed(const long debug, const char *format, int a1, int a2,
+	int a3, int a4, int a5, int a6, int a7, int a8)
 {
-    va_list arglist;
     static char buffer[MESSAGE_BUFFERS][MESSAGE_LENGTH];
     static char composeBuffer[MESSAGE_LENGTH];
    
@@ -144,9 +149,7 @@ void logMessage(const long debug, const char *format, ...)
  */
 
 /* build message from input */
-        va_start(arglist, format);
-        vsprintf(composeBuffer, format, arglist);
-        va_end(arglist);
+        sprintf(composeBuffer, format, a1, a2, a3, a4, a5, a6, a7, a8);
 
 /* Copy message to ErrorMessage */
       /*   strncpy(ErrorMessage, composeBuffer, MESSAGE_LENGTH-1); */
